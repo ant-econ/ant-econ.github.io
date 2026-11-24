@@ -211,12 +211,17 @@
     });
 
     if (labels.length) {
-      ctx.fillStyle = muted; ctx.textAlign = 'center';
+      ctx.fillStyle = muted;
       var every = Math.max(1, Math.ceil(n / (cfg.xTicks || 8)));
+      var lastDrawn = -99;
       for (var i = 0; i < n; i++) {
         if (i % every !== 0 && i !== n - 1) continue;
-        if (labels[i] == null) continue;
-        ctx.fillText(String(labels[i]), x(i), padT + ih + 13);
+        if (labels[i] == null || labels[i] === '') continue;
+        if (i === n - 1 && (n - 1 - lastDrawn) < every * 0.6) continue;
+        lastDrawn = i;
+        var px2 = x(i);
+        ctx.textAlign = px2 < padL + 18 ? 'left' : (px2 > padL + iw - 18 ? 'right' : 'center');
+        ctx.fillText(String(labels[i]), px2, padT + ih + 13);
       }
     }
 
