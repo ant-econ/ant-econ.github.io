@@ -253,8 +253,13 @@
     ctx.clearRect(0, 0, w, h);
     return { ctx: ctx, w: w, h: h };
   }
-  function niceMax(v) {
-    if (!(v > 0)) return 1;
+  function axisOf(peak) {
+    var p = Math.max(peak || 0, 1);
+    var step = niceStep(p / 4);
+    while (step * 4 < p) step *= 2;
+    return { step: step, max: step * 4 };
+  }
+  function niceStep(v) {
     var e = Math.pow(10, Math.floor(Math.log(v) / Math.LN10));
     var m = v / e;
     var n = m <= 1 ? 1 : m <= 2 ? 2 : m <= 2.5 ? 2.5 : m <= 5 ? 5 : 10;
@@ -276,7 +281,7 @@
     var iw = w - padL - padR, ih = h - padT - padB;
     var peak = 0;
     data.forEach(function (d) { peak = Math.max(peak, d.value, d.paid); });
-    var maxV = niceMax(peak);
+    var ax = axisOf(peak), maxV = ax.max;
     var grid = cssVar('--line'), muted = cssVar('--muted'), accent = cssVar('--accent'),
         accent2 = cssVar('--accent-2'), up = cssVar('--up');
 
@@ -287,7 +292,7 @@
       ctx.strokeStyle = grid; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(padL, yy + .5); ctx.lineTo(padL + iw, yy + .5); ctx.stroke();
       ctx.fillStyle = muted; ctx.textAlign = 'right';
-      ctx.fillText(shortWon(maxV * g / 4), padL - 8, yy);
+      ctx.fillText(shortWon(ax.step * g), padL - 8, yy);
     }
 
     var n = data.length - 1;
@@ -347,7 +352,7 @@
     var padL = 52, padR = 16, padT = 14, padB = 26;
     var iw = w - padL - padR, ih = h - padT - padB;
     var grossEach = divState.gross / n, netEach = divState.net / n;
-    var maxV = niceMax(Math.max(grossEach, netEach));
+    var ax = axisOf(Math.max(grossEach, netEach)), maxV = ax.max;
     var grid = cssVar('--line'), muted = cssVar('--muted'), accent = cssVar('--accent'), accent2 = cssVar('--accent-2');
     var soft = document.documentElement.getAttribute('data-theme') === 'light' ? 'rgba(29,92,246,.18)' : 'rgba(120,160,230,.30)';
 
@@ -358,7 +363,7 @@
       ctx.strokeStyle = grid; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(padL, yy + .5); ctx.lineTo(padL + iw, yy + .5); ctx.stroke();
       ctx.fillStyle = muted; ctx.textAlign = 'right';
-      ctx.fillText(shortWon(maxV * g / 4), padL - 8, yy);
+      ctx.fillText(shortWon(ax.step * g), padL - 8, yy);
     }
 
     var slot = iw / n;
