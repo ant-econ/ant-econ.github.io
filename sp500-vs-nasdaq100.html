@@ -378,7 +378,7 @@
     var rows = [], step = years > 30 ? 5 : (years > 12 ? 3 : 1);
     for (var i = 1; i <= years; i++) {
       if (i % step !== 0 && i !== years) continue;
-      rows.push('<tr><td>' + i + '년</td><td>' + K.won(a.paids[i]) + '</td><td>' + K.won(a.series[i]) +
+      rows.push('<tr><td>' + i + '년</td><td>' + K.won(init + monthly * 12 * i) + '</td><td>' + K.won(a.series[i]) +
         '</td><td>' + K.won(b.series[i]) + '</td><td class="' + (b.series[i] >= a.series[i] ? 'pos' : 'neg') + '">' +
         K.won(b.series[i] - a.series[i]) + '</td></tr>');
     }
