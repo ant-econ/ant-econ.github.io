@@ -349,7 +349,7 @@
       (prev ? '<span class="hide-sm"> (전일대비)</span>' : '');
     $('p-sub').innerHTML = s.session.currency === 'USD'
       ? usd(p) + ' × 환율 ' + s.fx.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원'
-      : (s.sym.ex || '') + ' 정규장 · 원화';
+      : (pick.blind ? '' : (s.sym.ex || '') + ' ') + '정규장 · 원화';
     $('p-clock').textContent = hhmm(bar[0], s.session.tzOffset);
     $('p-bar').textContent = (s.idx + 1) + ' / ' + s.total + '봉';
     var prog = (s.idx + 1) / s.total * 100;
@@ -497,7 +497,7 @@
     // 현재가 라벨
     var pNow = bars[last][4];
     var lab = won(pNow * S.fx).replace('원', '');
-    var lw = ctx.measureText(lab).width + 12;
+    var lw = padR - 6;
     var ly = Math.min(padT + priceH - 9, Math.max(padT + 9, y(pNow)));
     ctx.fillStyle = pNow >= (prev || pNow) ? UP : DN;
     ctx.fillRect(padL + iw + 2, ly - 9, lw, 18);

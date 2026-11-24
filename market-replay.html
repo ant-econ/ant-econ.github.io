@@ -201,11 +201,11 @@
 .mr-panel{background:var(--g-card);border-radius:20px;padding:16px 16px 18px}
 .mr-cashrow{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;color:var(--g-mut);font-weight:700}
 .mr-cashrow b{font-size:15px;color:var(--g-text);font-weight:800;font-variant-numeric:tabular-nums}
-.mr-hold{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;margin:8px 0 14px}
+.mr-hold{margin:8px 0 14px}
 .mr-irow{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;font-size:13px;color:var(--g-mut);font-weight:600}
 .mr-irow b{font-size:13.5px;color:var(--g-text);font-weight:750;font-variant-numeric:tabular-nums;text-align:right;min-width:0}
 .mr-irow b.strong{font-size:15.5px;font-weight:850}
-.mr-irow.total{grid-column:1/-1;border-top:1px solid var(--g-line);margin-top:5px;padding-top:9px}
+.mr-irow.total{border-top:1px solid var(--g-line);margin-top:5px;padding-top:9px}
 .mr-frac{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
 .mr-frac button{border-radius:11px;padding:10px 0;font-size:13px;font-weight:800;background:var(--g-card2);color:var(--g-mut);transition:.14s}
 .mr-frac button.on{background:var(--g-text);color:var(--g-bg)}
@@ -258,7 +258,6 @@
 }
 @media(max-width:430px){
   .mr-symbols{grid-template-columns:1fr}
-  .mr-hold{grid-template-columns:1fr}
   .mr-fine{font-size:11px}
   .hide-sm{display:none}
 }
@@ -434,6 +433,6 @@
   </div>
 </footer>
 <script src="assets/kit.js"></script>
-<script src="assets/market-replay.js?v=20261125c"></script>
+<script src="assets/market-replay.js?v=20261125d"></script>
 </body>
 </html>
