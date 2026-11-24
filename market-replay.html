@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>어제 장 실전 트레이딩 게임 — 현실 1:1 실시간 리플레이·내 포트폴리오 | 개미일지 계산기</title>
-<meta name="description" content="직전 거래일 실제 주식시장의 5분봉을 현실 시간 그대로(1초=1초) 재생하며 매매하는 무료 트레이딩 게임. 삼성전자·SK하이닉스·엔비디아 등 146종목을 동시에 보유하고, 토스증권식 '내 포트폴리오'에서 종목별 수익률·오늘 등락률을 확인하세요. 보유 주식은 다음 날 장에도 그대로 이어집니다.">
-<meta name="keywords" content="트레이딩 게임, 모의투자 게임, 주식 리플레이, 단타 연습, 5분봉 리플레이, 실시간 모의투자, 내 포트폴리오, 삼성전자 차트, 엔비디아 차트, 존버 비교, 주식 초보 연습, 무료 모의투자">
+<title>국장·미장 통합 실전 트레이딩 게임 — 한국시간 한 화면 동시 매매 | 개미일지 계산기</title>
+<meta name="description" content="한국시간(KST) 한 줄 타임라인에서 국내 78종목과 미국 68종목을 한 판에 동시에 사고팔 수 있는 무료 트레이딩 게임. 직전 거래일 실제 5분봉(프리·애프터마켓 포함)을 현실 시간대로 재생하고, 토스증권식 '내 포트폴리오'에서 한국·미국 보유 종목을 함께 평가합니다.">
+<meta name="keywords" content="트레이딩 게임, 모의투자 게임, 주식 리플레이, 단타 연습, 5분봉 리플레이, 실시간 모의투자, 국장 미장 동시, 프리마켓, 애프터마켓, 내 포트폴리오, 삼성전자 차트, 엔비디아 차트, 존버 비교, 무료 모의투자">
 <meta name="author" content="개미일지 계산기">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="naver-site-verification" content="cdb28886cc67b8325db51e7ed2cb076ad8123aeb">
@@ -15,13 +15,13 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="개미일지 계산기">
 <meta property="og:locale" content="ko_KR">
-<meta property="og:title" content="어제 장 실전 트레이딩 게임 — 현실 1:1 실시간, 내 포트폴리오">
-<meta property="og:description" content="어제 실제 시장이 현실 시간과 똑같이(1초=1초) 다시 흐릅니다. 여러 종목을 동시에 보유하고 내 포트폴리오에서 종목별 수익률·등락률을 확인하세요. 보유 주식은 팔기 전까지 다음 날 장에도 그대로 이어집니다.">
+<meta property="og:title" content="국장·미장 통합 트레이딩 게임 — 한국시간 한 화면에서 동시 매매">
+<meta property="og:description" content="한국시간 한 줄 타임라인에서 한국장 78종목과 미국장 68종목을 한 판에 동시 보유·매매합니다. 프리·애프터마켓 실제 봉까지 반영하고, 내 포트폴리오에서 두 나라 보유 종목을 함께 평가합니다.">
 <meta property="og:url" content="https://ant-econ.github.io/market-replay.html">
 <meta property="og:image" content="https://ant-econ.github.io/assets/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="어제 장 실전 트레이딩 게임 — 현실 1:1 실시간 리플레이">
-<meta name="twitter:description" content="어제 장이 1초=1초로 다시 흐릅니다. 다종목 동시 보유, 토스식 내 포트폴리오, 보유 주식 다음 날 이월까지.">
+<meta name="twitter:title" content="국장·미장 통합 트레이딩 게임 — 한국시간 한 화면 동시 매매">
+<meta name="twitter:description" content="한국장과 미국장을 KST 한 타임라인에 놓고 146종목을 동시에 보유·매매합니다. 확장장 실제 봉 반영, 토스식 내 포트폴리오.">
 <meta name="theme-color" content="#070b14">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/style.css">
@@ -31,7 +31,7 @@
  "@graph": [
   {
    "@type": "WebApplication",
-   "name": "어제 장 실전 트레이딩 게임",
+   "name": "국장·미장 통합 실전 트레이딩 게임",
    "url": "https://ant-econ.github.io/market-replay.html",
    "applicationCategory": "GameApplication",
    "operatingSystem": "Web",
@@ -42,13 +42,14 @@
     "price": "0",
     "priceCurrency": "KRW"
    },
-   "description": "직전 거래일 실제 주식시장의 정규장 5분봉을 현실 시간과 1:1로 재생하며 매매하는 트레이딩 게임. 장중이면 지금 시각에 맞춰 어제 같은 시각부터 시작하고, 여러 종목을 동시에 보유하며 토스증권식 내 포트폴리오에서 수익률을 확인합니다. 보유 주식은 팔기 전까지 다음 날 장에도 이어집니다.",
+   "description": "한국시간(KST) 단일 타임라인 위에서 국내 78종목과 미국 68종목을 한 판에 동시에 보유·매매하는 트레이딩 게임. 두 시장의 직전 거래일 실제 5분봉을 프리마켓·애프터마켓까지 반영해 재생하고, 지금 봉이 흐르는 종목만 실시간으로 거래되며 장이 아닌 종목은 직전 종가로 평가됩니다.",
    "featureList": [
-    "시장별 직전 거래일 한 판만 재생(과거 날짜 선택 없음)",
-    "기본 1x = 현실 1:1(5분봉 1개 = 300초) · 최대 5배속",
-    "장중이면 현실 시각에 맞춰 자동 시작",
-    "삼성전자·SK하이닉스·엔비디아 등 여러 종목 동시 보유",
-    "토스증권식 내 포트폴리오 — 종목별 수익률·오늘 등락률·총자산",
+    "한국시간(KST) 단일 타임라인 — 국장·미장 한 화면",
+    "국내 78 + 미국 68 = 146종목 동시 보유",
+    "프리마켓·애프터마켓 실제 5분봉 포함(실제로 받은 봉만)",
+    "기본 1x = 현실 1:1(5분봉 1개 = 300초) · 최대 20배속 · 구간 이동",
+    "거래시간이 아닌 종목은 직전 종가 + '거래시간 외' 표시",
+    "토스증권식 내 포트폴리오 — 한국·미국 보유를 함께 평가",
     "보유 주식 다음 날 이월(강제 청산 없음)",
     "증권거래세·위탁수수료·환율 반영",
     "장 마감 결과 리포트와 존버 수익률 비교"
@@ -71,7 +72,7 @@
     {
      "@type": "ListItem",
      "position": 2,
-     "name": "어제 장 트레이딩 게임",
+     "name": "국장·미장 통합 트레이딩 게임",
      "item": "https://ant-econ.github.io/market-replay.html"
     }
    ]
@@ -84,7 +85,7 @@
      "name": "정말 실제 시장 데이터인가요?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "네. Yahoo Finance 공개 차트 API에서 받은 직전 거래일의 정규장 5분봉을 그대로 사용합니다. 값은 보기 좋게 다듬지 않으며, 임의로 만든 가짜 데이터는 한 건도 없습니다. 데이터는 매일 장 마감 뒤 자동으로 갱신됩니다."
+      "text": "네. Yahoo Finance 공개 차트 API에서 받은 직전 거래일의 5분봉을 그대로 사용합니다. 정규장뿐 아니라 프리마켓·애프터마켓 봉까지 받아 넣고, 실제로 받지 않은 봉은 만들어 넣지 않습니다. 임의로 만든 가짜 데이터는 한 건도 없습니다."
      }
     },
     {
@@ -140,7 +141,7 @@
      "name": "배속은 얼마나 빨라지나요?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "기본 1배속은 현실과 똑같이 흐릅니다. 1초에 게임도 1초, 5분봉 한 개가 실제 5분(300초)입니다. 시계는 1초 단위로 흐르고 현재 봉의 진행률도 실제 시간과 일치합니다. 급하면 2x·3x·5x로 올릴 수 있고, 5배속이면 5분봉 하나가 1분에 지나갑니다."
+      "text": "기본 1배속은 현실과 똑같이 흐릅니다. 1초에 게임도 1초, 5분봉 한 개가 실제 5분(300초)입니다. 한국장과 미국장을 한 줄로 이어 붙였기 때문에 한 판이 길어서 2x·5x·10x·20x까지 올릴 수 있습니다. 20배속이면 5분봉 하나가 15초에 지나갑니다. 상단의 구간 이동 버튼으로 국장·미장 정규장 시작점으로 바로 건너뛰 수도 있습니다."
      }
     },
     {
@@ -148,7 +149,15 @@
      "name": "여러 종목을 동시에 살 수 있나요?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "네. 한 판에 여러 종목을 동시에 보유할 수 있습니다. 상단 종목 탭이나 '전체 종목'에서 종목을 열어 차트를 보고 구매·판매하면, 그동안 시장 시계와 계좌는 계속 실시간으로 움직입니다. 내 포트폴리오 탭에서 종목별 보유 수량·평단가·현재가·평가금액·평가손익·수익률·오늘 등락률과 총자산을 한 번에 봅니다."
+      "text": "네. 한 판에 국장·미장 종목을 동시에 보유할 수 있습니다. 상단 종목 탭이나 '전체 종목'에서 종목을 열어 차트를 보고 구매·판매하는 동안에도 시계와 계좌는 계속 흐릅니다. 내 포트폴리오 탭에서 한국·미국 보유 종목의 수량·평단가·현재가·평가금액·평가손익·수익률·오늘 등락률과 총자산을 한 번에 봅니다."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "장이 닫힌 종목은 어떻게 되나요?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "그 시각에 봉이 없는 종목은 직전 종가로 표시되고 '거래시간 외'로 보이며 매수·매도를 눌러도 체결되지 않습니다. 한국장은 09:00~15:30 KST, 미국장은 프리마켓부터 애프터마켓까지 끝나면 잠기고, 그 시장 시간이 다시 오면 이어서 거래됩니다. 보유한 주식은 그대로 남습니다."
      }
     },
     {
@@ -164,7 +173,7 @@
      "name": "어떤 종목을 거래할 수 있나요?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "코스피·코스닥·나스닥·뉴욕증권거래소 상장 종목과 지수 ETF까지 146종목입니다. 다우존스 30종목은 전부 포함되어 있고, 검색창에 종목명이나 티커를 넣어 바로 고를 수 있습니다."
+      "text": "코스피·코스닥·나스닥·뉴욕증권거래소 상장 종목과 지수 ETF까지 146종목(국내 78, 미국 68)입니다. 다우존스 30종목은 전부 포함되어 있고, 검색창에 종목명이나 티커를 넣어 바로 고를 수 있습니다."
      }
     },
     {
@@ -172,7 +181,7 @@
      "name": "왜 직전 거래일만 할 수 있나요?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "지난 날짜를 골라 이미 결과를 아는 장을 거래하면 연습이 되지 않기 때문입니다. 한국장·미국장 각각 가장 최근에 마감한 거래일 한 판만 열리고, 매일 아침 데이터가 갱신되면 자동으로 다음 거래일로 넘어갑니다."
+      "text": "지난 날짜를 골라 이미 결과를 아는 장을 거래하면 연습이 되지 않기 때문에, 두 시장 모두 가장 최근에 마감한 거래일만 엽니다. 매일 아침 데이터가 갱신되면 자동으로 다음 날로 넘어갑니다."
      }
     }
    ]
@@ -287,6 +296,40 @@
 .mr-primary:hover{filter:brightness(1.06)}
 .mr-primary:disabled{background:var(--g-card2);color:var(--g-dim);cursor:default;filter:none}
 .mr-fine{font-size:11.5px;color:var(--g-mut);margin:12px 0 0;line-height:1.6}
+
+/* ===== 통합 장 카드 · 시작 지점 · 구간 이동 ===== */
+.mr-daycard{background:var(--g-card);border-radius:18px;padding:15px 16px;margin:0 0 16px}
+.mr-dayhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.mr-dayhead b{font-size:14px;font-weight:800;letter-spacing:-.02em}
+.mr-dayhead span{font-size:11.5px;color:var(--g-mut);font-weight:700;font-variant-numeric:tabular-nums}
+.mr-dayrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--g-line)}
+.mr-dayrow .fl{font-size:17px;line-height:1}
+.mr-dayrow div{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.mr-dayrow b{font-size:13px;font-weight:800;letter-spacing:-.02em}
+.mr-dayrow span{font-size:11px;color:var(--g-mut);font-weight:650;font-variant-numeric:tabular-nums}
+.mr-dayrow em{font-style:normal;font-size:11px;font-weight:800;color:var(--g-mut);flex:0 0 auto}
+.mr-daynote{font-size:11.5px;color:var(--g-mut);font-weight:600;line-height:1.65;margin:10px 0 0}
+.mr-daynote b{color:var(--g-text)}
+.mr-lobbyrow .sub i{font-style:normal;font-weight:800}
+.mr-lobbyrow .sub i.on{color:var(--g-up)}
+.mr-lobbyrow .sub i.off{color:var(--g-dim)}
+.mr-live .mkt b.mr-mkrow{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.mr-mkchip{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--g-mut);
+  background:var(--g-card2);border-radius:999px;padding:3px 9px;letter-spacing:0;font-variant-numeric:tabular-nums}
+.mr-mkchip b{font-weight:850;color:inherit;font-size:11px;letter-spacing:0}
+.mr-mkchip.reg{color:#fff;background:var(--g-up)}
+.mr-mkchip.pre,.mr-mkchip.post{color:var(--g-amber);background:color-mix(in srgb,var(--g-amber) 15%,var(--g-card2))}
+.mr-mkchip.off{color:var(--g-dim)}
+.mr-jumps{display:flex;gap:6px;overflow-x:auto;padding:0 0 12px;-webkit-overflow-scrolling:touch}
+.mr-jumpbtn{flex:0 0 auto;font-size:11.5px;font-weight:700;color:var(--g-mut);background:var(--g-card);
+  border:1px solid var(--g-line);border-radius:999px;padding:7px 12px;white-space:nowrap}
+.mr-jumpbtn b{color:var(--g-text);font-weight:850;font-variant-numeric:tabular-nums}
+.mr-jumpbtn:hover{color:var(--g-text);border-color:var(--g-dim)}
+.mr-status{font-size:11.5px;font-weight:700;color:var(--g-mut);background:var(--g-card);
+  border-radius:11px;padding:9px 12px;margin:0 0 8px;line-height:1.55}
+.mr-status b{color:var(--g-text);font-weight:850}
+.mr-status.on{color:var(--g-up);background:color-mix(in srgb,var(--g-up) 10%,var(--g-card))}
+.mr-buy:disabled,.mr-sell:disabled{background:var(--g-card2);color:var(--g-dim);cursor:default;filter:none}
 
 /* 진행 화면 */
 .mr-head{padding:2px 0 6px}
@@ -494,27 +537,27 @@
 </header>
 
 <main class="wrap">
-<nav class="breadcrumb" aria-label="현재 위치"><a href="index.html">계산기 홈</a><span>›</span>어제 장 트레이딩 게임</nav>
+<nav class="breadcrumb" aria-label="현재 위치"><a href="index.html">계산기 홈</a><span>›</span>국장·미장 통합 트레이딩 게임</nav>
 <section class="pagehead">
-  <div class="crumbtab">🎮 실전 리플레이</div>
-  <h1>어제 장이 <em>1초에 1초</em>로<br>다시 흐릅니다, 내 계좌로</h1>
-  <p class="lede">한국장·미국장 각각 <strong>가장 최근에 마감한 거래일 한 판</strong>만 열립니다. 1배속은 현실과 똑같이 1초에 1초씩 흐르고, 장중이면 지금 시각에 맞춰 어제 같은 시각부터 시작합니다. 삼성전자와 SK하이닉스를 동시에 담고, 토스증권식 <strong>내 포트폴리오</strong>에서 종목별 수익률을 확인하세요. 보유 주식은 팔기 전까지 다음 날 장에도 그대로 이어집니다.</p>
+  <div class="crumbtab">🎮 통합 리플레이</div>
+  <h1>국장과 미장을 <em>한 화면에서</em><br>동시에 사고팔기</h1>
+  <p class="lede">시장을 골라 들어가는 대신, <strong>한국시간(KST) 한 줄로 이어진 통합 장</strong> 하나만 열립니다. 국내 78종목과 미국 68종목이 시간 순서대로 이어지고, 그 시각에 실제 봉이 흐르는 종목은 바로 매수·매도할 수 있습니다. 장이 아닌 종목은 직전 종가와 <strong>거래시간 외</strong>로 표시됩니다. 프리마켓·애프터마켓 실제 봉까지 반영하고, 보유 주식은 팔기 전까지 다음 날도 그대로 이어집니다.</p>
   <div class="hero-stats">
-    <div class="chipstat"><b>현실 1:1</b>1배속 = 1초에 1초</div>
-    <div class="chipstat"><b>직전 거래일만</b>과거 날짜 선택 없음</div>
-    <div class="chipstat"><b>다종목 동시 보유</b>토스식 내 포트폴리오</div>
+    <div class="chipstat"><b>국장 78 + 미장 68</b>146종목 한 판에 동시 보유</div>
+    <div class="chipstat"><b>한국시간 한 줄</b>KST 18:00 → 다음날 15:00</div>
+    <div class="chipstat"><b>확장장까지</b>프리·애프터마켓 실제 5분봉</div>
     <div class="chipstat"><b>보유 이월</b>팔기 전엔 다음 날도 그대로</div>
   </div>
 </section>
 
-<section class="mr" id="mr-app" aria-label="어제 장 실전 트레이딩 게임">
+<section class="mr" id="mr-app" aria-label="국장·미장 통합 실전 트레이딩 게임">
   <div class="mr-toast" id="mr-toast"></div>
-  <div class="mr-loading" id="mr-loading"><span class="spin"></span><div><b>실제 시세를 불러오는 중…</b><span>직전 거래일 5분봉을 내려받고 있습니다.</span></div></div>
+  <div class="mr-loading" id="mr-loading"><span class="spin"></span><div><b>실제 시세를 불러오는 중…</b><span>두 시장의 직전 거래일 5분봉(프리·애프터마켓 포함)을 내려받고 있습니다.</span></div></div>
 
   <div class="mr-screen" id="mr-lobby">
-    <div class="mr-eyebrow">실제 시세 · 현실 1:1 리플레이</div>
-    <h2 class="mr-h2">어제 장, 다시 거래해 볼까요?</h2>
-    <p class="mr-lead">한국장·미국장 각각 <b>가장 최근에 마감한 거래일 한 판</b>만 열립니다. 1배속은 현실과 똑같이 1초에 1초씩 흐르고, 장중이면 지금 시각에 맞춰 어제 같은 시각부터 시작합니다. 한 판에 여러 종목을 동시에 보유할 수 있고, 보유 주식은 팔기 전까지 다음 날 장에도 그대로 이어집니다.</p>
+    <div class="mr-eyebrow">실제 시세 · 국장·미장 통합 · 현실 1:1 리플레이</div>
+    <h2 class="mr-h2">한국시간 한 줄에서, 두 시장을 같이</h2>
+    <p class="mr-lead">두 시장의 <b>가장 최근에 마감한 거래일</b>을 한국시간 순서대로 이어 붙였습니다. 1배속은 현실과 똑같이 1초에 1초씩 흐르고, 한 판이 길어서 배속과 구간 이동을 함께 쓰면 됩니다. 한 판에 국내·미국 종목을 동시에 보유할 수 있고, 보유 주식은 팔기 전까지 다음 날도 이어집니다.</p>
 
     <div class="mr-acct">
       <div class="mr-acct-main">
@@ -527,12 +570,14 @@
         <div><span>최고 수익률</span><b id="acct-best">—</b></div>
         <button type="button" id="mr-reset">기록 초기화</button>
       </div>
-      <p class="mr-acct-note">첫 시드 1,000만 원은 처음 한 번만 지급됩니다. 이후에는 지금 잔고 그대로 다음 판을 시작하고, 번 돈도 잃은 돈도 그 계좌에 그대로 남습니다. <b>산 주식은 팔기 전까지 다음 날 장에도 그대로</b> 남습니다.</p>
+      <p class="mr-acct-note">첫 시드 1,000만 원은 처음 한 번만 지급됩니다. 이후에는 지금 잔고 그대로 다음 판을 시작합니다. <b>산 주식은 팔기 전까지 다음 날 장에도 그대로</b> 남고, 미국 종목은 그날의 원/달러 환율로 원화 평가합니다.</p>
       <span class="mr-acct-holds" id="acct-holds">—</span>
     </div>
 
-    <div class="mr-step"><span>1</span>어느 장을 거래할까요? <i class="mr-stepnote">직전 거래일 한 판만</i></div>
-    <div class="mr-sessions" id="mr-sessions"></div>
+    <div class="mr-daycard" id="mr-daycard"></div>
+
+    <div class="mr-step"><span>1</span>어디서부터 볼까요? <i class="mr-stepnote">한국시간 기준</i></div>
+    <div class="mr-pills" id="mr-startpick"></div>
 
     <div class="mr-step"><span>2</span>종목을 고르세요 <i class="mr-stepnote" id="mr-count">—</i></div>
     <div class="mr-searchwrap" id="mr-searchwrap">
@@ -558,8 +603,9 @@
 
 <article class="card prose" style="margin-top:24px">
   <h2>이 게임이 하는 일</h2>
-  <p>지난 거래일의 <strong>정규장 5분봉</strong>을 현실과 같은 속도로 다시 흘려보내며 매매합니다. 시계는 1초 단위로 흐르고, 5분봉 한 개가 실제 5분(300초)에 걸쳐 완성됩니다. 미래를 모르는 상태에서 눌러 본 버튼의 결과가 그대로 손익이 됩니다.</p>
-  <p>흔한 모의투자 게임은 랜덤 워크나 과거 데이터를 각색해 씁니다. 여기서는 다릅니다. Yahoo Finance 공개 차트 API에서 받은 <strong>실제 5분봉의 시가·고가·저가·종가·거래량</strong>을 값 하나 바꾸지 않고 그대로 씁니다. 화면에 그려지는 캔들은 그날 실제로 오간 가격이고, 거래량 막대도 실제 체결량입니다.</p>
+  <p>두 시장의 <strong>직전 거래일 5분봉</strong>을 한국시간(KST) 한 줄에 이어 붙여, 현실과 같은 속도로 다시 흘려보내며 매매합니다. 시계는 1초 단위로 흐르고, 5분봉 한 개가 실제 5분(300초)에 걸쳐 완성됩니다. 미래를 모르는 상태에서 눌러 본 버튼의 결과가 그대로 손익이 됩니다.</p>
+  <p>한국장만 보던 화면과 다른 점은 셋입니다. 첫째, <strong>시장을 골라 들어가지 않습니다</strong>. 미국장 프리마켓·정규장·애프터마켓과 한국장 정규장이 한국시간 순서대로 이어져 한 판이 됩니다. 둘째, <strong>국내 78종목과 미국 68종목이 같은 포트폴리오</strong>에 담깁니다. 셋째, 봉이 흐르지 않는 종목은 직전 종가로 평가되고 <strong>‘거래시간 외’</strong>로 표시되어 매매 버튼이 잠깁니다.</p>
+  <p>흔한 모의투자 게임은 랜덤 워크나 과거 데이터를 각색해 씁니다. 여기서는 다릅니다. Yahoo Finance 공개 차트 API에서 받은 <strong>실제 5분봉의 시가·고가·저가·종가·거래량</strong>을 값 하나 바꾸지 않고 그대로 씁니다. 확장장 봉도 실제로 받아온 것만 넣고, 받지 않은 시간대를 만들어 채우지 않습니다. 화면에 그려지는 캔들은 그날 실제로 오간 가격입니다.</p>
 
   <h2>1,000만 원은 한 번만, 그다음은 내 계좌로</h2>
   <p>첫 시드는 <strong>1,000만 원</strong>을 한 번만 지급받습니다. 한 판이 끝났다고 원점으로 돌아가지 않습니다. 번 돈은 계좌에 그대로 남아 다음 판의 시작 자금이 되고, 잃은 돈도 그대로 줄어든 채로 다음 판을 시작합니다. 국내 종목에서 30%를 벌면 그다음 미국 종목은 1,300만 원으로 사는 식입니다.</p>
@@ -596,26 +642,31 @@
     <li><strong>너무 자주 산다.</strong> 하루에 10번 매매하면 국내주식 기준 비용만 2%에 가깝습니다. 방향을 맞혀도 비용에 잡아먹힙니다.</li>
   </ul>
 
+  <h3>국장 오전, 미장 밤 — 한 줄로 이어진 하루</h3>
+  <p>통합 장은 <strong>한국시간</strong> 기준입니다. 예를 들어 미국장 11/23(월)은 KST 18:00 프리마켓으로 열려 23:30 정규장을 거쳐 다음 날 09:00 애프터마켓까지 이어지고, 바로 뒤에 한국장 11/24(화) 09:00 정규장이 붙습니다. 그래서 한 판이 하루를 조금 넘고, 1배속으로는 오래 걸립니다. 화면 위의 <strong>구간 이동</strong> 버튼으로 국장·미장 정규장 시작점으로 건너뛰고, 2x·5x·10x·20x 배속을 섮는 것이 기본 사용법입니다.</p>
+  <p>시간대가 겹치지 않기 때문에 “지금 이 순간 두 시장을 동시에” 사는 대신, <strong>한 판 안에서 두 시장을 함께 보유</strong>하게 됩니다. 미국장에서 담은 종목을 들고 국장으로 넘어가 국장 종목을 더하거나, 반대로 국장에서 번 돈을 밤 미국장에 넣는 식입니다. 두 나라 돈을 각각 쓸 필요 없이 한 원화 계좌에서 환율로 환산해 매매합니다.</p>
+
   <h3>여러 종목을 동시에, 내 포트폴리오로</h3>
-  <p>한 판에 한 종목만 거래하면 “이 종목이 오르는 동안 저 종목은 어땠을까”를 볼 수 없습니다. 이제는 상단 종목 탭에서 자유롭게 오가며 삼성전자와 SK하이닉스를 함께 담을 수 있고, 그동안 시장 시계와 내 계좌는 계속 실시간으로 움직입니다. <strong>내 포트폴리오</strong> 탭에서는 총 자산·투자 원금·총 평가손익·주문 가능 현금과 함께, 보유 종목별 수량·평단가·현재가·평가금액·평가손익·수익률·오늘 등락률을 토스증권과 같은 한 줄 행으로 봅니다.</p>
-  <p>산 주식은 <strong>직접 판매하기를 누르기 전까지 계좌에 그대로 남습니다</strong>. 장이 끝나거나 데이터가 다음 거래일로 넘어가도 강제로 팔리지 않고, 다음 날 장에서도 내 포트폴리오에 이어져 새 날짜의 현재가(미국주식은 새 날짜 환율)로 평가됩니다. 지금 장에 없는 다른 시장 종목은 가장 최근 종가로 평가합니다.</p>
+  <p>한 판에 한 종목만 거래하면 “이 종목이 오르는 동안 저 종목은 어땠을까”를 볼 수 없습니다. 상단 종목 탭에서 자유롭게 오가며 삼성전자와 엔비디아를 함께 담을 수 있고, 그동안 시계와 내 계좌는 계속 흘러갑니다. <strong>내 포트폴리오</strong> 탭에서는 총 자산·투자 원금·총 평가손익·주문 가능 현금과 함께, 보유 종목별 수량·평단가·현재가·평가금액·평가손익·수익률·오늘 등락률을 토스증권과 같은 한 줄 행으로 봅니다. 국기 배지로 어느 시장 종목인지 바로 구분됩니다.</p>
+  <p>산 주식은 <strong>직접 판매하기를 누르기 전까지 계좌에 그대로 남습니다</strong>. 장이 끝나거나 데이터가 다음 거래일로 넘어가도 강제로 팔리지 않고, 다음 통합 장에서도 내 포트폴리오에 이어져 평가됩니다. 그 종목의 장이 아닐 때는 직전 종가로 평가하고 <strong>거래시간 외</strong>로 표시합니다.</p>
 
   <h3>자주 묻는 질문</h3>
-  <details class="faq" open><summary>정말 실제 시장 데이터인가요?</summary><p>네. Yahoo Finance 공개 차트 API에서 받은 직전 거래일의 정규장 5분봉을 그대로 사용합니다. 값은 보기 좋게 다듬지 않으며, 임의로 만든 가짜 데이터는 한 건도 없습니다. 데이터는 매일 장 마감 뒤 자동으로 갱신됩니다.</p></details>
+  <details class="faq" open><summary>정말 실제 시장 데이터인가요?</summary><p>네. Yahoo Finance 공개 차트 API에서 받은 직전 거래일의 5분봉을 그대로 사용합니다. 정규장뿐 아니라 프리마켓·애프터마켓 봉까지 받아 넣고, 실제로 받지 않은 봉은 만들어 넣지 않습니다. 임의로 만든 가짜 데이터는 한 건도 없습니다.</p></details>
   <details class="faq"><summary>수수료와 세금은 어떻게 반영되나요?</summary><p>국내주식은 매수 시 위탁수수료 0.015%, 매도 시 위탁수수료 0.015%와 증권거래세 0.20%를 뺍니다. 미국주식은 매수·매도 각각 0.1%를 뺍니다. 환전 스프레드와 미국주식 양도소득세는 거래 단위로 계산하지 않아 결과에 포함되지 않습니다.</p></details>
   <details class="faq"><summary>미국 주식을 왜 원화로 표시하나요?</summary><p>국내·미국을 같은 조건에서 비교하려고 초기 자금을 양쪽 다 1,000만 원으로 통일했습니다. 미국 종목은 해당 거래일의 원/달러 환율(USDKRW 종가)로 원화 환산해 매매하고, 손익과 자산도 원화로 계산합니다. 화면에는 달러 가격과 적용 환율을 함께 표시합니다.</p></details>
   <details class="faq"><summary>등급은 어떻게 매기나요?</summary><p>그날 시초가에 매수해 종가에 판 경우(존버)와 내 수익률을 비교합니다. +8%p 이상 앞서면 S, +3%p 이상이면 A, ±3%p 이내면 B, -3~-8%p면 C, -8~-15%p면 D, 그보다 뒤지거나 -15% 손실이면 F입니다.</p></details>
   <details class="faq"><summary>매매는 어느 가격에 체결되나요?</summary><p>가장 최근에 <strong>완료된 5분봉의 종가</strong>로 체결됩니다. 봉이 진행 중일 때는 직전 봉 종가가 현재가이고, 그 봉이 끝나는 순간(현실 시간 5분)에 새 가격으로 바뀝니다. 1배속에서는 현실의 5분과 똑같이 기다립니다.</p></details>
   <details class="faq"><summary>매판 1,000만 원으로 돌아가나요?</summary><p>아니요. 1,000만 원은 처음 한 번만 지급됩니다. 한 판이 끝나면 번 돈과 잃은 돈이 그대로 계좌에 남고, 다음 판은 그 잔고로 시작합니다. 계좌가 1주도 살 수 없는 금액까지 줄면 안내와 함께 1,000만 원을 다시 지급받아 새로 시작할 수 있습니다(전적 유지).</p></details>
   <details class="faq"><summary>종목 고를 때 등락률이 안 보이는데요?</summary><p>일부러 가렸습니다. 종목 목록에는 이름·티커·시장만 나오고 그날의 가격·등락률은 나오지 않습니다. 오른 종목만 골라 담는 습관을 막기 위해서입니다. 종목을 열어 차트를 보면 그때부터 실시간 시세가 보이고, 보유 중이면 내 포트폴리오에서 내 수익률과 오늘 등락률을 봅니다.</p></details>
-  <details class="faq"><summary>배속은 얼마나 빨라지나요?</summary><p>기본 1배속은 현실과 똑같이 흐릅니다. 1초에 게임도 1초, 5분봉 한 개가 실제 5분(300초)입니다. 시계는 1초 단위로 흐르고 현재 봉의 진행률도 실제 시간과 일치합니다. 급하면 2x·3x·5x로 올릴 수 있고, 5배속이면 5분봉 하나가 1분에 지나갑니다.</p></details>
-  <details class="faq"><summary>여러 종목을 동시에 살 수 있나요?</summary><p>네. 한 판에 여러 종목을 동시에 보유할 수 있습니다. 상단 종목 탭이나 ‘전체 종목’에서 종목을 열어 차트를 보고 구매·판매하면, 그동안 시장 시계와 계좌는 계속 실시간으로 움직입니다. 내 포트폴리오 탭에서 종목별 보유 수량·평단가·현재가·평가금액·평가손익·수익률·오늘 등락률과 총자산을 한 번에 봅니다.</p></details>
-  <details class="faq"><summary>다음 날이 되면 보유 주식이 사라지나요?</summary><p>아니요. 산 주식은 직접 판매하기를 누르기 전까지 계좌에 그대로 남습니다. 장이 끝나거나 데이터가 다음 거래일로 넘어가도 강제로 팔리지 않고, 다음 날 장에서도 내 포트폴리오에 그대로 이어져 새 날짜의 현재가(미국주식은 새 날짜 환율)로 평가됩니다.</p></details>
-  <details class="faq"><summary>어떤 종목을 거래할 수 있나요?</summary><p>코스피·코스닥·나스닥·뉴욕증권거래소 상장 종목과 지수 ETF까지 146종목입니다. 다우존스 30종목은 전부 포함되어 있고, 검색창에 종목명이나 티커를 넣어 바로 고를 수 있습니다.</p></details>
-  <details class="faq"><summary>왜 직전 거래일만 할 수 있나요?</summary><p>지난 날짜를 골라 이미 결과를 아는 장을 거래하면 연습이 되지 않기 때문입니다. 한국장·미국장 각각 가장 최근에 마감한 거래일 한 판만 열리고, 매일 아침 데이터가 갱신되면 자동으로 다음 거래일로 넘어갑니다.</p></details>
-  <details class="faq"><summary>장중에 열면 어디서 시작하나요?</summary><p>그 시장이 지금 장중이면 어제 장의 같은 시각부터 시작합니다. 예를 들어 한국장이 11:25에 돌고 있으면 어제 11:25부터, 미국장이 열려 있으면 뉴욕 시각 기준 같은 시각부터입니다. 장이 닫혀 있으면 장 시작(09:00 / 09:30)부터 재생합니다.</p></details>
+  <details class="faq"><summary>배속은 얼마나 빨라지나요?</summary><p>기본 1배속은 현실과 똑같이 흐릅니다. 1초에 게임도 1초, 5분봉 한 개가 실제 5분(300초)입니다. 두 시장을 한 줄로 이어 한 판이 길어서 2x·5x·10x·20x까지 올릴 수 있고, 20배속이면 5분봉 하나가 15초에 지나갑니다. 상단의 구간 이동 버튼으로 국장·미장 정규장 시작점으로 바로 건너뛰 수도 있습니다.</p></details>
+  <details class="faq"><summary>여러 종목을 동시에 살 수 있나요?</summary><p>네. 한 판에 국장·미장 종목을 동시에 보유할 수 있습니다. 상단 종목 탭이나 ‘전체 종목’에서 종목을 열어 차트를 보고 구매·판매하는 동안에도 시계와 계좌는 계속 흐릅니다. 내 포트폴리오 탭에서 한국·미국 보유 종목의 수량·평단가·현재가·평가금액·평가손익·수익률·오늘 등락률과 총자산을 한 번에 봅니다.</p></details>
+  <details class="faq"><summary>장이 닫힌 종목은 어떻게 되나요?</summary><p>그 시각에 봉이 없는 종목은 직전 종가로 표시되고 <strong>거래시간 외</strong>로 보이며, 매수·매도를 눌러도 체결되지 않습니다. 한국장은 09:00~15:30 KST, 미국장은 프리마켓부터 애프터마켓까지 끝나면 잠기고, 그 시장 시간이 다시 오면 이어서 거래됩니다. 보유한 주식은 그대로 남습니다.</p></details>
+  <details class="faq"><summary>다음 날이 되면 보유 주식이 사라지나요?</summary><p>아니요. 산 주식은 직접 판매하기를 누르기 전까지 계좌에 그대로 남습니다. 장이 끝나거나 데이터가 다음 거래일로 넘어가도 강제로 팔리지 않고, 다음 통합 장에서도 내 포트폴리오에 이어져 평가됩니다.</p></details>
+  <details class="faq"><summary>어떤 종목을 거래할 수 있나요?</summary><p>코스피·코스닥·나스닥·뉴욕증권거래소 상장 종목과 지수 ETF까지 146종목(국내 78, 미국 68)입니다. 다우존스 30종목은 전부 포함되어 있고, 검색창에 종목명이나 티커를 넣어 바로 고를 수 있습니다.</p></details>
+  <details class="faq"><summary>왜 직전 거래일만 할 수 있나요?</summary><p>지난 날짜를 골라 이미 결과를 아는 장을 거래하면 연습이 되지 않기 때문에, 두 시장 모두 가장 최근에 마감한 거래일만 엽니다. 매일 아침 데이터가 갱신되면 자동으로 다음 날로 넘어갑니다.</p></details>
+  <details class="faq"><summary>장중에 열면 어디서 시작하나요?</summary><p>지금 한국시간이 통합 장 구간 안이면 ‘지금’ 버튼이 생기고, 그 시각에 해당하는 지점부터 재생됩니다. 구간 밖이면 로비에서 <strong>처음부터 / 미장 프리 / 미장 정규장 / 국장 정규장</strong> 중 고르거나, 재생 중 상단 구간 이동 버튼으로 옮기면 됩니다.</p></details>
 
-  <p class="mini" style="margin-top:22px">기준 시점: 2026년 11월. 시세 데이터는 Yahoo Finance 공개 차트 API의 직전 거래일 정규장 5분봉·일봉이며, 원/달러 환율은 같은 출처의 USDKRW 일봉 종가입니다. 대상은 코스피·코스닥·나스닥·뉴욕증권거래소·지수 ETF 146종목으로 매일 갱신됩니다. 본 게임은 과거 데이터를 이용한 학습·오락용 도구로 투자 권유가 아니며, 어떤 수익도 보장하지 않습니다. 계좌 기록은 내 브라우저(localStorage)에만 저장되고 서버로 전송되지 않습니다.</p>
+  <p class="mini" style="margin-top:22px">기준 시점: 2026년 11월. 시세 데이터는 Yahoo Finance 공개 차트 API의 직전 거래일 5분봉(프리·애프터마켓 포함)·일봉이며, 원/달러 환율은 같은 출처의 USDKRW 일봉 종가입니다. 대상은 코스피·코스닥·나스닥·뉴욕증권거래소·지수 ETF 146종목으로 매일 갱신됩니다. 본 게임은 과거 데이터를 이용한 학습·오락용 도구로 투자 권유가 아니며, 어떤 수익도 보장하지 않습니다. 계좌 기록은 내 브라우저(localStorage)에만 저장되고 서버로 전송되지 않습니다.</p>
 </article>
 
 <section class="related">
@@ -647,7 +698,7 @@
 <footer class="site">
   <div class="wrap">
     <div class="fnav">
-      <a href="market-replay.html">🎮 어제 장 트레이딩 게임</a>
+      <a href="market-replay.html">🎮 국장·미장 통합 트레이딩 게임</a>
       <a href="us-stock-tax-guide.html">미국주식 양도세</a>
       <a href="dividend-health-insurance.html">배당소득세·건보료</a>
       <a href="sp500-vs-nasdaq100.html">S&amp;P500 vs 나스닥100</a>
@@ -666,6 +717,6 @@
   </div>
 </footer>
 <script src="assets/kit.js"></script>
-<script src="assets/market-replay.js?v=20261125mr8"></script>
+<script src="assets/market-replay.js?v=20261125mr9"></script>
 </body>
 </html>

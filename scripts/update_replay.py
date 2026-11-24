@@ -5,6 +5,7 @@
 
 실제 시장 데이터만 사용합니다(가짜/랜덤 데이터 생성 없음).
   - Yahoo Finance 공개 차트 API (query1 / query2), 5분봉 + 일봉
+  - 5분봉은 확장장 포함(includePrePost=true)으로 요청해 프리마켓·애프터마켓 실제 봉까지 받는다
   - 미국 주식은 해당 거래일 원/달러 환율(USDKRW=X) 일봉 종가로 원화 환산
 
 대상: 코스피·코스닥·나스닥·뉴욕증권거래소(NYSE)·ETF 주요 종목 145개 (다우존스 30종목 전부 포함)
@@ -213,6 +214,7 @@ FEES = {
 
 UA = "Mozilla/5.0 (compatible; ant-econ-market-replay/1.0; +https://ant-econ.github.io/)"
 WORKERS = 6
+INCLUDE_PREPOST = True   # 확장장(프리마켓·애프터마켓) 실제 5분봉까지 수신
 
 
 def fetch_json(path, tries=3):
@@ -231,8 +233,8 @@ def fetch_json(path, tries=3):
 
 
 def chart(ticker, interval, rng):
-    path = "/v8/finance/chart/%s?interval=%s&range=%s&includePrePost=false&events=div%%2Csplit" % (
-        urllib.parse.quote(ticker), interval, rng)
+    path = "/v8/finance/chart/%s?interval=%s&range=%s&includePrePost=%s&events=div%%2Csplit" % (
+        urllib.parse.quote(ticker), interval, rng, "true" if INCLUDE_PREPOST else "false")
     return fetch_json(path)
 
 
@@ -270,6 +272,12 @@ def parse_bars(ticker, interval="5m", rng="1mo"):
         days.setdefault(day, {"offset": off, "bars": []})
         days[day]["bars"].append([int(t), round(float(o), 3), round(float(h), 3),
                                   round(float(l), 3), round(float(c), 3), int(v)])
+    # 같은 시각 봉이 두 번 오는 경우가 있어 시각 기준으로 정리(실제 값만 유지)
+    for info in days.values():
+        uniq = {}
+        for b in info["bars"]:
+            uniq[b[0]] = b
+        info["bars"] = [uniq[k] for k in sorted(uniq)]
     return meta, days
 
 
@@ -307,11 +315,32 @@ def fx_daily():
         return {}, None
 
 
+def regular_bars(market, day, bars):
+    """확장장 봉 중 정규장 시간대(현지 시각 기준 open~close)에 속한 봉만 고른다."""
+    m = MARKET_META[market]
+    o, c = hms(m["open"]), hms(m["close"])
+    out = []
+    for b in bars:
+        t = to_local(b[0], day["offset"])
+        sec = t.hour * 3600 + t.minute * 60
+        if o <= sec < c:
+            out.append(b)
+    return out
+
+
+def hms(txt):
+    p = txt.split(":")
+    return int(p[0]) * 3600 + int(p[1]) * 60
+
+
 def session_complete(market, day, bars):
-    """정규장 시작 봉과 마지막 봉이 모두 있고 봉 수가 충분한지"""
+    """정규장 시작 봉과 마지막 봉이 모두 있고 봉 수가 충분한지(확장장 봉은 세지 않는다)"""
     m = MARKET_META[market]
     if not bars:
         return False, "empty"
+    bars = regular_bars(market, day, bars)
+    if not bars:
+        return False, "no regular bars"
     first = hhmm(to_local(bars[0][0], day["offset"]))
     last = hhmm(to_local(bars[-1][0], day["offset"]))
     if first != m["open"]:
@@ -348,6 +377,7 @@ def one_symbol(item):
         ok, why = session_complete(market, info, info["bars"])
         if not ok:
             continue
+        reg = regular_bars(market, info, info["bars"])
         dayrow = daily.get(day)
         if dayrow is None:
             # 야후 일봉이 아직 게시되지 않은 날 → 같은 날 실제 5분봉으로 시가·고가·저가·종가 구성
@@ -371,6 +401,7 @@ def one_symbol(item):
             "ex": ex,
             "tags": tags,
             "bars": info["bars"],
+            "reg": [reg[0][0], reg[-1][0] + 300],   # 이 종목의 정규장 봉 구간(에폭 초)
             "day": dayrow,
         }
         rows.append((market, day, info["offset"], row))
@@ -411,6 +442,10 @@ def build(keep):
                 if not rate:
                     notes.append("%s %s: 환율 없음 → 세션 제외" % (market, day))
                     continue
+            reg_start = min(x["reg"][0] for x in syms)
+            reg_end = max(x["reg"][1] for x in syms)
+            ext_start = min(x["bars"][0][0] for x in syms)
+            ext_end = max(x["bars"][-1][0] + 300 for x in syms)
             sessions.append({
                 "id": "%s-%s" % (market.lower(), day),
                 "market": market,
@@ -421,15 +456,26 @@ def build(keep):
                 "close": m["close"],
                 "currency": m["currency"],
                 "fx": round(float(rate), 4),
+                "extended": True,
+                "extStart": ext_start,
+                "extEnd": ext_end,
+                "regStart": reg_start,
+                "regEnd": reg_end,
+                "openKst": datetime.fromtimestamp(reg_start, KST).strftime("%H:%M"),
+                "closeKst": datetime.fromtimestamp(reg_end, KST).strftime("%H:%M"),
+                "extStartKst": datetime.fromtimestamp(ext_start, KST).strftime("%H:%M"),
+                "extEndKst": datetime.fromtimestamp(ext_end, KST).strftime("%H:%M"),
                 "symbols": syms,
             })
 
     out = {
-        "version": 2,
+        "version": 3,
         "generatedAt": datetime.now(KST).isoformat(timespec="seconds"),
         "generatedBy": "scripts/update_replay.py",
-        "source": "Yahoo Finance Chart API (v8/finance/chart), 정규장 5분봉·일봉",
+        "source": "Yahoo Finance Chart API (v8/finance/chart), 확장장 포함 5분봉·일봉",
         "interval": "5m",
+        "includePrePost": INCLUDE_PREPOST,
+        "kstOffset": 540,
         "startCash": 10000000,
         "fees": FEES,
         "fxSource": fx_source,

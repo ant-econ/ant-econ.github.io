@@ -1,9 +1,9 @@
-/* 개미일지 — 어제 장 실전 트레이딩 게임
-   · 시장별 '직전 거래일' 한 판만 (과거 날짜 선택 없음)
-   · 1x = 현실 1:1 (5분봉 1개 = 300초), 2x·3x·5x 배속
-   · 장중이면 현실 시각에 맞춰 어제 같은 시각부터 시작
-   · 여러 종목 동시 보유 · 계좌(cash + holdings)는 localStorage에 영구 저장
-     → 보유 주식은 팔기 전까지 다음 날·다음 판에도 그대로 이어진다
+/* 개미일지 — 국장·미장 통합 실전 트레이딩 게임
+   · 한국시간(KST) 단일 타임라인 하나에서 국내 78 + 미국 68 = 146종목을 동시에 보유·매매
+   · 5분봉은 확장장(프리마켓·애프터마켓)까지 실제 수신한 봉만 사용 (가짜·랜덤 없음)
+   · 봉이 있는 동안만 그 종목을 매매할 수 있고, 장이 아닐 때는 직전 종가 + '거래시간 외'
+   · 1x = 현실 1:1 (5분봉 1개 = 300초), 최대 20배속 · 구간 이동
+   · 계좌(cash + holdings)는 localStorage에 영구 저장 → 보유 주식은 팔기 전까지 다음 날도 이월
    데이터: data/market-replay.json (Yahoo Finance 실제 시세) */
 (function () {
   'use strict';
@@ -11,14 +11,18 @@
   var $ = function (id) { return document.getElementById(id); };
 
   var DATA = null;
+  var U = null;                                  // 통합 장 (KST 단일 타임라인)
   var S = null;                                  // 진행 중 게임 상태
-  var pick = { market: 'KR', sym: null, q: '', grp: 'ALL' };
+  var pick = { sym: null, q: '', grp: 'ALL', startAt: null };
   var raf = 0, lastReal = 0, toastTimer = 0;
-  var SPEEDS = [1, 2, 3, 5];
+  var SPEEDS = [1, 2, 5, 10, 20];
   var BAR_SEC = 300;
+  var KST = 540;                                 // 표시 시간대(분) — 데이터의 kstOffset
 
   var TABS = [
     { id: 'ALL', label: '전체' },
+    { id: 'MKT:KR', label: '🇰🇷 국장' },
+    { id: 'MKT:US', label: '🇺🇸 미장' },
     { id: 'KOSPI', label: '코스피' },
     { id: 'KOSDAQ', label: '코스닥' },
     { id: 'NASDAQ', label: '나스닥' },
@@ -53,31 +57,34 @@
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
-  function hms(txt) {
-    var p = String(txt || '09:00').split(':');
-    return (+p[0] || 0) * 3600 + (+p[1] || 0) * 60;
-  }
   function shortSym(sym) { return String(sym == null ? '' : sym).replace(/\.(KS|KQ)$/, ''); }
-  function shortDate(dateStr) {
-    var p = dateStr.split('-');
-    return +p[1] + '/' + +p[2];
-  }
-  function weekday(dateStr) {
-    var p = dateStr.split('-');
-    var d = new Date(Date.UTC(+p[0], +p[1] - 1, +p[2]));
-    return '일월화수목금토'.charAt(d.getUTCDay());
-  }
-  function sessionLabel(s) {
-    return (s.market === 'KR' ? '한국장' : '미국장') + ' · ' + shortDate(s.date) + '(' + weekday(s.date) + ')';
-  }
-  function clockText(epoch, off) {
-    var d = new Date((epoch + off * 60) * 1000);
-    return pad2(d.getUTCHours()) + ':' + pad2(d.getUTCMinutes()) + ':' + pad2(d.getUTCSeconds());
-  }
-  function hmText(epoch, off) {
-    var d = new Date((epoch + off * 60) * 1000);
+
+  /* ---------------- KST 시각 ---------------- */
+  function kst(epoch) { return new Date((epoch + KST * 60) * 1000); }
+  function hmText(epoch) {
+    var d = kst(epoch);
     return pad2(d.getUTCHours()) + ':' + pad2(d.getUTCMinutes());
   }
+  function clockText(epoch) {
+    var d = kst(epoch);
+    return pad2(d.getUTCHours()) + ':' + pad2(d.getUTCMinutes()) + ':' + pad2(d.getUTCSeconds());
+  }
+  function dayText(epoch) {
+    var d = kst(epoch);
+    return (d.getUTCMonth() + 1) + '/' + d.getUTCDate() + '(' + '일월화수목금토'.charAt(d.getUTCDay()) + ')';
+  }
+  function shortDate(dateStr) {
+    var p = String(dateStr || '').split('-');
+    return (+p[1] || 0) + '/' + (+p[2] || 0);
+  }
+  function weekday(dateStr) {
+    var p = String(dateStr || '').split('-');
+    var d = new Date(Date.UTC(+p[0] || 1970, (+p[1] || 1) - 1, +p[2] || 1));
+    return '일월화수목금토'.charAt(d.getUTCDay());
+  }
+  function marketName(m) { return m === 'KR' ? '한국장' : '미국장'; }
+  function marketFlag(m) { return m === 'KR' ? '🇰🇷' : '🇺🇸'; }
+
   function css(name) { return K.cssVar(name) || '#888'; }
   function toast(msg) {
     var t = $('mr-toast');
@@ -85,7 +92,7 @@
     t.textContent = msg;
     t.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { t.classList.remove('show'); t.textContent = ''; }, 1900);
+    toastTimer = setTimeout(function () { t.classList.remove('show'); t.textContent = ''; }, 2200);
   }
   function hashStr(s) {
     var str = String(s == null ? '' : s);
@@ -93,15 +100,14 @@
     for (var i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
     return Math.abs(h);
   }
-  /** 종목 아이콘 — 원형 배지 + 우하단 국기. id를 넘기면 보유 객체처럼 sym 필드가 없어도 된다. */
+  /** 종목 아이콘 — 원형 배지 + 우하단 국기 */
   function iconHTML(sym, market, id) {
     var key = id || (sym && sym.sym) || '';
     var name = String((sym && sym.name) || '');
     var ini = market === 'KR' ? name.replace(/\s/g, '').slice(0, 1) || '•' : shortSym(key).slice(0, 2);
     var c = ICON_COLORS[hashStr(key) % ICON_COLORS.length];
-    var flag = market === 'KR' ? '🇰🇷' : '🇺🇸';
     return '<span class="mr-ic" style="background:' + c + '" aria-hidden="true"><i>' + esc(ini) + '</i>' +
-      '<em>' + flag + '</em></span>';
+      '<em>' + marketFlag(market) + '</em></span>';
   }
 
   /* ---------------- 결과 공유(클립보드) ---------------- */
@@ -149,7 +155,7 @@
 
   /* ---------------- 계좌(localStorage) ----------------
      cash(현금) + holdings(종목별 보유)를 영구 저장한다.
-     보유 주식은 사용자가 '판매하기'를 누르기 전까지 다음 날 장에도 그대로 남는다. */
+     보유 주식은 '판매하기'를 누르기 전까지 다음 날 장에도 그대로 남는다. */
   var ACCT_KEY = 'ant-market-replay-v1';
   function baseCash() { return (DATA && DATA.startCash) || 10000000; }
 
@@ -188,7 +194,11 @@
     try { localStorage.setItem(ACCT_KEY, JSON.stringify(a)); } catch (e) {}
   }
 
-  /* 시장별 가장 최근(직전) 세션 */
+  /* ---------------- 통합 장 만들기 ----------------
+     시장별 '가장 최근에 마감한 거래일'을 그대로 가져와
+     절대 시각(에폭) 기준으로 한 줄에 늘어놓는다. 두 시장의 시계를 따로 두지 않는다. */
+  function feeOf(market) { return (DATA && DATA.fees && DATA.fees[market]) || { buy: 0, sell: 0, tax: 0 }; }
+
   function latestSession(market) {
     var best = null;
     if (!DATA) return null;
@@ -198,36 +208,109 @@
     });
     return best;
   }
-  function findSym(session, id) {
-    if (!session) return null;
-    for (var i = 0; i < session.symbols.length; i++) {
-      if (session.symbols[i].sym === id) return session.symbols[i];
+
+  /** 예전 형식 JSON도 받아들이도록(구간 정보가 없으면 실제 봉으로 계산) 세션 값을 채운다 */
+  function normPart(ss) {
+    if (!isFinite(ss.extStart)) {
+      ss.extStart = Infinity;
+      ss.symbols.forEach(function (x) { if (x.bars[0][0] < ss.extStart) ss.extStart = x.bars[0][0]; });
     }
-    return null;
+    if (!isFinite(ss.extEnd)) {
+      ss.extEnd = -Infinity;
+      ss.symbols.forEach(function (x) {
+        var e = x.bars[x.bars.length - 1][0] + BAR_SEC;
+        if (e > ss.extEnd) ss.extEnd = e;
+      });
+    }
+    if (!isFinite(ss.regStart)) ss.regStart = ss.extStart;
+    if (!isFinite(ss.regEnd)) ss.regEnd = ss.extEnd;
+    return ss;
   }
-  /** 보유 종목의 현재 평가 기준
-      · 지금 판의 종목이면 실시간 재생 가격
-      · 아니면 마지막으로 본 가격(내가 산 값·마감 값)
-      · 그보다 새 날짜 세션이 들어왔으면 그 날 종가와 환율로 다시 매긴다 */
+
+  function buildUnified() {
+    var parts = [];
+    ['KR', 'US'].forEach(function (m) {
+      var s = latestSession(m);
+      if (s && s.symbols && s.symbols.length) parts.push(s);
+    });
+    if (!parts.length) return null;
+    parts.forEach(normPart);
+    parts.sort(function (a, b) { return a.extStart - b.extStart; });
+
+    var start = Infinity, end = -Infinity, syms = [], bySym = {};
+    parts.forEach(function (ss) {
+      ss.fee = feeOf(ss.market);
+      ss.symbols.forEach(function (x) {
+        var e = {
+          sym: x.sym, name: x.name, ex: x.ex, tags: x.tags || [], market: ss.market,
+          bars: x.bars, day: x.day,
+          reg: x.reg || [x.bars[0][0], x.bars[x.bars.length - 1][0] + BAR_SEC],
+          fx: ss.fx, fee: ss.fee, cur: ss.currency, sess: ss
+        };
+        e.win = { start: e.bars[0][0], end: e.bars[e.bars.length - 1][0] + BAR_SEC };
+        if (e.win.start < start) start = e.win.start;
+        if (e.win.end > end) end = e.win.end;
+        syms.push(e);
+        bySym[e.sym] = e;
+      });
+    });
+
+    syms.sort(function (a, b) {
+      if (a.market !== b.market) return a.market === 'KR' ? -1 : 1;
+      return a.name.localeCompare(b.name, 'ko');
+    });
+
+    return {
+      parts: parts,
+      symbols: syms,
+      bySym: bySym,
+      span: { start: start, end: end, dur: Math.max(BAR_SEC, end - start) },
+      rangeText: dayText(start) + ' ' + hmText(start) + ' → ' + dayText(end) + ' ' + hmText(end)
+    };
+  }
+
+  /* ---------------- 봉 시각·가격·거래 가능 여부 ---------------- */
+  /** now보다 먼저 '완료'된 마지막 봉의 인덱스 (없으면 -1) */
+  function lastClosedIdx(e, now) {
+    var bars = e.bars, lo = 0, hi = bars.length - 1, ans = -1;
+    while (lo <= hi) {
+      var m = (lo + hi) >> 1;
+      if (bars[m][0] + BAR_SEC <= now) { ans = m; lo = m + 1; } else hi = m - 1;
+    }
+    return ans;
+  }
+  /** 현재가 — 완료된 봉이 없으면 진행 중인 첫 봉의 시가, 장 밖이면 그 종목의 직전 종가 */
+  function priceOf(e, now) {
+    var i = lastClosedIdx(e, now);
+    if (i >= 0) return e.bars[i][4];
+    if (isLive(e, now)) return e.bars[0][1];      // 첫 봉이 진행 중 → 그 봉의 시가(그 시각의 실제 가격)
+    if (isFinite(e.day && e.day.prevClose)) return e.day.prevClose;
+    return e.bars[0][1];
+  }
+  function isLive(e, now) { return now >= e.win.start && now < e.win.end; }
+  function priceInfo(e, now) {
+    var p = priceOf(e, now);
+    var prev = (e.day && isFinite(e.day.prevClose)) ? e.day.prevClose : null;
+    return { px: p, fx: e.fx, live: isLive(e, now), prevClose: prev, chg: prev ? (p / prev - 1) * 100 : 0 };
+  }
+  /** 종목의 현재 평가 기준 (보유 종목 평가·포트폴리오 공용) */
   function markFor(id, h) {
-    if (S && S.bySym[id] && S.px && isFinite(S.px[id])) {
-      return { px: S.px[id], fx: S.fx, live: true, prevClose: S.bySym[id].day.prevClose };
+    var e = U && U.bySym[id];
+    if (e) {
+      var pi = priceInfo(e, nowEpoch());
+      return { px: pi.px, fx: e.fx, live: pi.live, prevClose: pi.prevClose };
     }
-    var sess = latestSession(h.market || 'KR');
-    var sy = sess ? findSym(sess, id) : null;
-    var newer = sess && (!h.lastDate || sess.date > h.lastDate);
-    if (sy && (newer || !isFinite(h.lastPx))) {
-      return { px: sy.bars[sy.bars.length - 1][4], fx: sess.fx, live: false, prevClose: sy.day.prevClose };
+    if (h && isFinite(h.lastPx)) {
+      return { px: h.lastPx, fx: isFinite(h.lastFx) ? h.lastFx : 1, live: false, prevClose: null };
     }
-    if (isFinite(h.lastPx)) {
-      return {
-        px: h.lastPx,
-        fx: isFinite(h.lastFx) ? h.lastFx : (sess ? sess.fx : 1),
-        live: false, prevClose: sy ? sy.day.prevClose : null
-      };
-    }
-    return { px: h.avgOrig || 0, fx: 1, live: false, prevClose: null };
+    return { px: (h && h.avgOrig) || 0, fx: 1, live: false, prevClose: null };
   }
+  /** 게임 중이면 재생 시계, 아니면 통합 장의 마지막 봉(종가) 기준 */
+  function nowEpoch() {
+    if (S) return S.span.start + S.elapsed;
+    return U ? U.span.end : 0;
+  }
+
   function acctEquity(a) {
     var eq = a.cash;
     for (var id in a.holdings) {
@@ -264,50 +347,55 @@
     }
   }
 
-  /* ---------------- 세션 시간 ---------------- */
-  function spanOf(s) {
-    if (s._span) return s._span;
-    var a = Infinity, b = -Infinity;
-    s.symbols.forEach(function (x) {
-      var f = x.bars[0][0], l = x.bars[x.bars.length - 1][0];
-      if (f < a) a = f;
-      if (l > b) b = l;
+  /* ---------------- 시작 지점 ---------------- */
+  function autoOffset() {
+    if (!U) return 0;
+    var now = Math.floor(Date.now() / 1000);
+    if (now > U.span.start && now < U.span.end - 120) return now - U.span.start;
+    return 0;
+  }
+  function startOptions() {
+    var out = [{ off: 0, label: '처음부터', sub: hmText(U.span.start) }];
+    U.parts.forEach(function (ss) {
+      if (ss.extStart < ss.regStart - 60) {
+        out.push({ off: ss.extStart - U.span.start, label: marketFlag(ss.market) + ' 프리', sub: hmText(ss.extStart) });
+      }
+      out.push({ off: ss.regStart - U.span.start, label: marketFlag(ss.market) + ' 정규장', sub: hmText(ss.regStart) });
     });
-    s._span = { start: a, end: b + BAR_SEC, dur: (b + BAR_SEC) - a };
-    return s._span;
+    var ao = autoOffset();
+    if (ao > 300) out.push({ off: ao, label: '지금', sub: hmText(U.span.start + ao) });
+    out.sort(function (a, b) { return a.off - b.off; });
+    var seen = {}, uniq = [];
+    out.forEach(function (o) { if (!seen[o.off]) { seen[o.off] = 1; uniq.push(o); } });
+    return uniq;
   }
-  function marketNow(s) {
-    try {
-      var fmt = new Intl.DateTimeFormat('en-US', {
-        timeZone: s.tz, weekday: 'short', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
-      });
-      var o = {};
-      fmt.formatToParts(new Date()).forEach(function (p) { o[p.type] = p.value; });
-      var dows = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
-      var h = parseInt(o.hour, 10) % 24;
-      return { dow: dows[o.weekday], sec: h * 3600 + (+o.minute) * 60 + (+o.second), tzOk: true };
-    } catch (e) {
-      var n = new Date(Date.now() + (s.tzOffset || 0) * 60000);
-      return { dow: n.getUTCDay(), sec: n.getUTCHours() * 3600 + n.getUTCMinutes() * 60 + n.getUTCSeconds(), tzOk: false };
+  function currentOffset() {
+    if (pick.startAt != null) return pick.startAt;
+    var ao = autoOffset();
+    return ao > 300 ? ao : 0;
+  }
+  /** 지금(KST) 두 시장이 각각 어느 단계인지 */
+  function phaseOf(ss, now) {
+    if (now >= ss.regStart && now < ss.regEnd) return { k: 'reg', t: '정규장' };
+    if (now >= ss.extStart && now < ss.regStart) return { k: 'pre', t: ss.market === 'US' ? '프리마켓' : '장전' };
+    if (now >= ss.regEnd && now < ss.extEnd) return { k: 'post', t: '애프터마켓' };
+    return { k: 'off', t: '휴장' };
+  }
+  /** 그 종목을 지금 매매할 수 있는가 + 안 되는 이유 */
+  function tradeState(e, now) {
+    if (isLive(e, now)) return { ok: true, txt: '' };
+    var ss = e.sess;
+    if (now < e.win.start) {
+      return { ok: false, txt: marketName(e.market) + ' ' + hmText(e.win.start) + ' 개장 전' };
     }
-  }
-  /** 지금이 그 시장 장중이면 '지금 시각'만큼 앞에서 시작, 아니면 장 시작부터 */
-  function startPlan(s) {
-    var span = spanOf(s);
-    var now = marketNow(s);
-    var o = hms(s.open), c = hms(s.close);
-    var live = now.dow >= 1 && now.dow <= 5 && now.sec >= o && now.sec < c;
-    var off = live ? now.sec - o : 0;
-    if (off > span.dur - 120) { off = 0; live = false; }
-    return { offset: Math.max(0, Math.min(off, span.dur - 1)), live: live, now: now, span: span };
+    return { ok: false, txt: marketName(e.market) + ' ' + hmText(e.win.start) + '–' + hmText(e.win.end) + ' 마감' };
   }
 
   /* ---------------- 1주 최소 매수 금액 ---------------- */
-  function feeOf(market) { return (DATA && DATA.fees && DATA.fees[market]) || { buy: 0, sell: 0, tax: 0 }; }
-  function minTicket(session) {
-    var m = Infinity, fee = feeOf(session.market);
-    session.symbols.forEach(function (x) {
-      var c = x.bars[0][1] * session.fx * (1 + fee.buy);
+  function minTicket() {
+    var m = Infinity;
+    U.symbols.forEach(function (e) {
+      var c = priceOf(e, U.span.start) * e.fx * (1 + e.fee.buy);
       if (c < m) m = c;
     });
     return isFinite(m) ? m : Infinity;
@@ -324,158 +412,133 @@
   }
 
   /* ---------------- 로비 ---------------- */
-  function marketCard(s) {
-    var plan = startPlan(s);
-    var on = pick.market === s.market;
-    var flag = s.market === 'KR' ? '🇰🇷' : '🇺🇸';
-    return '<button type="button" class="mr-mktcard' + (on ? ' on' : '') + '" data-mkt="' + s.market + '">' +
-      '<span class="fl">' + flag + '</span>' +
-      '<b>' + (s.market === 'KR' ? '한국장' : '미국장') + '</b>' +
-      '<span class="dt">' + shortDate(s.date) + '(' + weekday(s.date) + ') · 직전 거래일</span>' +
-      '<em>' + (plan.live
-        ? '장중 · 지금 ' + pad2(Math.floor(plan.now.sec / 3600) % 24) + ':' + pad2(Math.floor(plan.now.sec / 60) % 60) + '부터'
-        : '장 시작 ' + s.open + '부터') + '</em></button>';
+  function dayCardHTML() {
+    var rows = U.parts.map(function (ss) {
+      var pre = ss.extStart < ss.regStart - 60
+        ? hmText(ss.extStart) + ' 프리 · ' : '';
+      var post = ss.extEnd > ss.regEnd + 60
+        ? ' · ' + hmText(ss.extEnd) + ' 애프터 종료' : '';
+      return '<div class="mr-dayrow ' + ss.market.toLowerCase() + '">' +
+        '<span class="fl">' + marketFlag(ss.market) + '</span>' +
+        '<div><b>' + marketName(ss.market) + ' ' + shortDate(ss.date) + '(' + weekday(ss.date) + ')</b>' +
+        '<span>' + pre + hmText(ss.regStart) + ' 정규장 시작 · ' + hmText(ss.regEnd) + ' 마감' + post + '</span></div>' +
+        '<em>' + ss.symbols.length + '종목</em></div>';
+    }).join('');
+    return '<div class="mr-dayhead"><b>국장·미장 통합장</b>' +
+      '<span>한국시간(KST) ' + esc(U.rangeText) + '</span></div>' + rows +
+      '<p class="mr-daynote">두 시장의 실제 5분봉을 한국시간 한 줄에 늘어놓았습니다. 봉이 흐르는 종목은 실시간으로 사고팔 수 있고, ' +
+      '장이 아닌 종목은 직전 종가로 평가되며 <b>거래시간 외</b>로 표시됩니다. ' +
+      U.symbols.length + '종목을 한 판에 동시에 보유할 수 있습니다.</p>';
   }
 
   function renderLobby() {
-    if (!DATA) return;
-    var kr = latestSession('KR'), us = latestSession('US');
-    if (!kr && !us) return;
-    if (pick.market === 'KR' && !kr) pick.market = 'US';
-    if (pick.market === 'US' && !us) pick.market = 'KR';
-    var session = pick.market === 'KR' ? kr : us;
-    pick.session = session;
-    if (pick.sym && !findSym(session, pick.sym.sym)) pick.sym = null;
-
-    $('mr-sessions').innerHTML = (kr ? marketCard(kr) : '') + (us ? marketCard(us) : '');
-    Array.prototype.forEach.call($('mr-sessions').querySelectorAll('.mr-mktcard'), function (b) {
-      b.addEventListener('click', function () {
-        pick.market = b.getAttribute('data-mkt');
-        pick.sym = null;
-        renderLobby();
-      });
-    });
-
+    if (!U) return;
+    if (pick.sym && !U.bySym[pick.sym.sym]) pick.sym = null;
+    var card = $('mr-daycard');
+    if (card) card.innerHTML = dayCardHTML();
+    renderStartPick();
     renderTabs();
     renderSymbols();
     updateStart();
-
-    if (!session) return;
-    var note = startPlan(session);
-    var span = spanOf(session);
-    $('mr-data-note').innerHTML = '실제 ' + DATA.interval + '봉 · 종목 ' + session.symbols.length + '개 · 재생 구간 ' +
-      session.open + '–' + hmText(span.end, session.tzOffset) + ' · 갱신 ' +
-      (DATA.generatedAt || '').replace('T', ' ').slice(0, 16) +
-      (note.live ? ' · <b>지금 장중이라 현실 시각에 맞춰 시작합니다</b>' : '');
+    var note = $('mr-data-note');
+    if (note) {
+      note.innerHTML = '실제 ' + (DATA.interval || '5m') + '봉(확장장 포함) · ' + U.symbols.length + '종목 · ' +
+        '한국시간 ' + esc(U.rangeText) + ' · 갱신 ' + String(DATA.generatedAt || '').replace('T', ' ').slice(0, 16) +
+        (autoOffset() > 300 ? ' · <b>지금 시각(' + hmText(Date.now() / 1000) + ')부터 시작할 수 있습니다</b>' : '');
+    }
   }
 
-  function renderTabs() {
-    var box = $('mr-tabs');
+  function renderStartPick() {
+    var box = $('mr-startpick');
     if (!box) return;
-    if (!pick.session) { box.innerHTML = ''; return; }
-    var syms = pick.session.symbols;
-    box.innerHTML = TABS.map(function (t) {
-      if (t.id === 'ALL') {
-        return '<button type="button" data-grp="ALL" class="' + (pick.grp === 'ALL' ? 'on' : '') + '">' + t.label + '</button>';
-      }
-      var n = syms.filter(function (s) { return (s.tags || []).indexOf(t.id) >= 0; }).length;
-      if (!n) return '';
-      return '<button type="button" data-grp="' + t.id + '" class="' + (pick.grp === t.id ? 'on' : '') + '">' + t.label + '</button>';
+    var opts = startOptions();
+    var cur = currentOffset();
+    box.innerHTML = opts.map(function (o) {
+      return '<button type="button" data-off="' + o.off + '" class="' + (Math.abs(o.off - cur) < 1 ? 'on' : '') + '">' +
+        o.label + ' <b>' + o.sub + '</b></button>';
     }).join('');
     Array.prototype.forEach.call(box.querySelectorAll('button'), function (b) {
       b.addEventListener('click', function () {
-        pick.grp = b.getAttribute('data-grp');
+        pick.startAt = +b.getAttribute('data-off');
+        renderStartPick();
         renderSymbols();
-        Array.prototype.forEach.call(box.querySelectorAll('button'), function (x) { x.classList.remove('on'); });
-        b.classList.add('on');
-      });
-    });
-  }
-
-  function filtered() {
-    var q = (pick.q || '').trim().toLowerCase();
-    return pick.session.symbols.filter(function (s) {
-      if (pick.grp !== 'ALL' && (s.tags || []).indexOf(pick.grp) < 0) return false;
-      if (!q) return true;
-      return matchSym(s, q);
-    }).sort(function (a, b) { return a.name.localeCompare(b.name, 'ko'); });
-  }
-  function matchSym(s, q) {
-    return s.name.toLowerCase().indexOf(q) >= 0 || shortSym(s.sym).toLowerCase().indexOf(q) >= 0;
-  }
-  /** 다른 시장에만 있는 종목이면 알려준다 */
-  function elsewhere(q) {
-    var out = [];
-    if (!q) return out;
-    ['KR', 'US'].forEach(function (m) {
-      if (m === pick.market) return;
-      var s = latestSession(m);
-      if (!s) return;
-      s.symbols.forEach(function (sym) {
-        if (out.length < 2 && matchSym(sym, q)) out.push({ market: m, session: s, sym: sym });
-      });
-    });
-    return out;
-  }
-
-  function renderSymbols() {
-    var g = $('mr-symbols');
-    if (!g || !pick.session) return;
-    var list = filtered();
-    g.innerHTML = list.map(function (s) {
-      var on = pick.sym && pick.sym.sym === s.sym;
-      return '<button type="button" class="mr-row mr-lobbyrow' + (on ? ' on' : '') + '" data-sym="' + s.sym + '">' +
-        iconHTML(s, pick.market) +
-        '<span class="mr-rowmid"><b class="nm">' + esc(s.name) + '</b>' +
-        '<span class="sub">' + esc(s.ex || '') + ' · ' + esc(shortSym(s.sym)) + '</span></span>' +
-        '<span class="mr-rowright">' + (on ? '<b class="sel">선택됨</b>' : '') + '</span></button>';
-    }).join('');
-    $('mr-empty').hidden = list.length > 0;
-    if (!list.length) paintEmpty();
-    $('mr-count').textContent = list.length + '개';
-    Array.prototype.forEach.call(g.querySelectorAll('.mr-lobbyrow'), function (b) {
-      b.addEventListener('click', function () {
-        pick.sym = findSym(pick.session, b.getAttribute('data-sym'));
-        Array.prototype.forEach.call(g.querySelectorAll('.mr-lobbyrow'), function (x) { x.classList.remove('on'); });
-        b.classList.add('on');
-        var r = b.querySelector('.mr-rowright');
-        if (r && !r.querySelector('.sel')) r.innerHTML = '<b class="sel">선택됨</b>';
         updateStart();
       });
     });
   }
 
-  function paintEmpty() {
-    var el = $('mr-empty');
-    var alt = elsewhere((pick.q || '').trim().toLowerCase());
-    if (!alt.length) {
-      el.textContent = '검색 결과가 없어요. 다른 이름이나 티커로 찾아보세요.';
-      return;
-    }
-    el.innerHTML = '<span>이 장에는 없어요. 다른 시장에서 찾았습니다:</span>' + alt.map(function (a, i) {
-      return '<button type="button" data-alt="' + i + '">' + (a.market === 'KR' ? '한국장' : '미국장') + ' · ' + esc(a.sym.name) + '</button>';
+  function renderTabs() {
+    var box = $('mr-tabs');
+    if (!box) return;
+    box.innerHTML = TABS.map(function (t) {
+      var n = U.symbols.filter(function (s) { return inTab(s, t.id); }).length;
+      if (t.id !== 'ALL' && !n) return '';
+      return '<button type="button" data-grp="' + t.id + '" class="' + (pick.grp === t.id ? 'on' : '') + '">' + t.label + '</button>';
     }).join('');
-    Array.prototype.forEach.call(el.querySelectorAll('button'), function (b) {
+    Array.prototype.forEach.call(box.querySelectorAll('button'), function (b) {
       b.addEventListener('click', function () {
-        var a = alt[+b.getAttribute('data-alt')];
-        pick.market = a.market;
-        pick.q = '';
-        pick.grp = 'ALL';
-        var qi = $('mr-q');
-        if (qi) qi.value = '';
-        renderLobby();
-        pick.sym = a.sym;
+        pick.grp = b.getAttribute('data-grp');
+        Array.prototype.forEach.call(box.querySelectorAll('button'), function (x) { x.classList.remove('on'); });
+        b.classList.add('on');
         renderSymbols();
+      });
+    });
+  }
+  function inTab(s, id) {
+    if (id === 'ALL') return true;
+    if (id.indexOf('MKT:') === 0) return s.market === id.slice(4);
+    return (s.tags || []).indexOf(id) >= 0;
+  }
+
+  function filtered() {
+    var q = (pick.q || '').trim().toLowerCase();
+    return U.symbols.filter(function (s) {
+      if (!inTab(s, pick.grp)) return false;
+      return !q || matchSym(s, q);
+    });
+  }
+  function matchSym(s, q) {
+    return s.name.toLowerCase().indexOf(q) >= 0 || shortSym(s.sym).toLowerCase().indexOf(q) >= 0;
+  }
+
+  function renderSymbols() {
+    var g = $('mr-symbols');
+    if (!g) return;
+    var list = filtered();
+    var now = U.span.start + currentOffset();
+    var acct = loadAcct();
+    g.innerHTML = list.map(function (s) {
+      var on = pick.sym && pick.sym.sym === s.sym;
+      var h = acct.holdings[s.sym];
+      var right = h && h.qty ? '<b class="hold">보유 ' + comma(h.qty) + '주</b>'
+        : (on ? '<b class="sel">선택됨</b>' : '<b class="go">›</b>');
+      return '<button type="button" class="mr-row mr-lobbyrow' + (on ? ' on' : '') + '" data-sym="' + esc(s.sym) + '">' +
+        iconHTML(s, s.market) +
+        '<span class="mr-rowmid"><b class="nm">' + esc(s.name) + '</b>' +
+        '<span class="sub">' + marketFlag(s.market) + ' ' + esc(s.ex || '') + ' · ' + esc(shortSym(s.sym)) +
+        ' · ' + (isLive(s, now) ? '<i class="on">거래 중</i>' : '<i class="off">거래시간 외</i>') + '</span></span>' +
+        '<span class="mr-rowright">' + right + '</span></button>';
+    }).join('');
+    $('mr-empty').hidden = list.length > 0;
+    $('mr-count').textContent = list.length + '개';
+    Array.prototype.forEach.call(g.querySelectorAll('.mr-lobbyrow'), function (b) {
+      b.addEventListener('click', function () {
+        pick.sym = U.bySym[b.getAttribute('data-sym')];
+        Array.prototype.forEach.call(g.querySelectorAll('.mr-lobbyrow'), function (x) { x.classList.remove('on'); });
+        b.classList.add('on');
+        var r = b.querySelector('.mr-rowright');
+        if (r && !r.querySelector('.sel') && !r.querySelector('.hold')) r.innerHTML = '<b class="sel">선택됨</b>';
         updateStart();
       });
     });
   }
 
   function updateStart() {
+    if (!U) return;
     var a = loadAcct();
     var btn = $('mr-start');
     var eq = acctEquity(a);
-    var bust = pick.session && eq < minTicket(pick.session);
+    var bust = eq < minTicket();
     $('mr-bust').hidden = !bust;
     $('mr-bust-eq').textContent = won(eq);
     if (bust) {
@@ -488,45 +551,42 @@
       btn.textContent = '종목을 고르면 시작할 수 있어요';
       return;
     }
-    if (pick.sym.bars[0][1] * pick.session.fx * (1 + feeOf(pick.session.market).buy) > eq) {
+    var e = U.bySym[pick.sym.sym];
+    var p = priceOf(e, U.span.start + currentOffset());
+    if (p * e.fx * (1 + e.fee.buy) > eq) {
       btn.disabled = true;
       btn.textContent = '이 종목은 1주도 살 수 없어요 · 다른 종목을 고르세요';
       return;
     }
     btn.disabled = false;
-    btn.textContent = '▶ ' + pick.sym.name + ' · ' + won(eq) + '으로 시작';
+    btn.textContent = '▶ ' + e.name + '부터 · ' + won(eq) + '으로 시작';
   }
 
   /* ---------------- 게임 시작 ---------------- */
-  function startGame(session, sym) {
+  function startGame(sym) {
+    if (!U) return;
     var acct = loadAcct();
-    var plan = startPlan(session);
+    var off = currentOffset();
     S = null;                       // 이전 판 기준가가 섞이지 않도록
     if (!(acct.cash > 0 || holdCount(acct) > 0)) { toast('계좌 잔고가 없어요'); return; }
 
-    var bySym = {};
-    session.symbols.forEach(function (x) { bySym[x.sym] = { ref: x, bars: x.bars, day: x.day }; });
-
     S = {
-      session: session, acct: acct, fx: session.fx, fee: feeOf(session.market),
-      span: plan.span,
-      elapsed: plan.offset,
-      startOffset: plan.offset,
-      startMode: plan.live ? 'live' : 'open',
-      speed: 1, playing: true, ended: false,
+      acct: acct,
+      span: U.span,
+      elapsed: Math.max(0, Math.min(off, U.span.dur - 1)),
+      startOffset: Math.max(0, Math.min(off, U.span.dur - 1)),
+      speed: 5, playing: true, ended: false,
       startCash: 0,
-      bySym: bySym, px: {},
+      bySym: U.bySym, px: {},
       view: sym ? 'sym:' + sym.sym : 'pf',
       active: sym ? sym.sym : null,
       open: sym ? [sym.sym] : [],
       pfFilter: 'hold', pfQ: '',
       frac: 0.1,
       trades: [], realized: 0, feesPaid: 0, sells: 0, wins: 0,
-      peak: 0, dd: 0, curve: [], curveAt: 0,
-      startedAt: plan.now.sec
+      peak: 0, dd: 0, curve: [], curveAt: 0
     };
-    pick.session = session;
-    pick.market = session.market;
+    pick.sym = sym || null;
     updatePrices();
     // 시작 총 자산은 '실제 시작 시각의 가격'으로 매긴다
     S.startCash = Math.round(totalEquity());
@@ -544,11 +604,23 @@
 
   function playHTML() {
     var s = S;
+    var chips = U.parts.map(function (ss, i) {
+      return '<span class="mr-mkchip" id="p-mk-' + i + '">' + marketFlag(ss.market) + ' <b>—</b></span>';
+    }).join('');
+    var jumps = U.parts.map(function (ss) {
+      var b = '<button type="button" class="mr-jumpbtn" data-jump="' + (ss.regStart - U.span.start) + '">' +
+        marketFlag(ss.market) + ' 정규장 <b>' + hmText(ss.regStart) + '</b></button>';
+      if (ss.extStart < ss.regStart - 60) {
+        b = '<button type="button" class="mr-jumpbtn" data-jump="' + (ss.extStart - U.span.start) + '">' +
+          marketFlag(ss.market) + ' 프리 <b>' + hmText(ss.extStart) + '</b></button>' + b;
+      }
+      return b;
+    }).join('');
     return '' +
       '<div class="mr-live">' +
-        '<div class="mkt"><span>' + sessionLabel(s.session) + ' · 실제 5분봉</span>' +
-          '<b>어제 장 · ' + (s.startMode === 'live' ? '현실 시각 동기화' : '장 시작부터') + '</b></div>' +
-        '<div class="clk"><b id="p-clock">--:--:--</b><span id="p-phase">재생 중</span></div>' +
+        '<div class="mkt"><span>국장·미장 통합장 · 한국시간 ' + esc(U.rangeText) + '</span>' +
+          '<b class="mr-mkrow">' + chips + '</b></div>' +
+        '<div class="clk"><b id="p-clock">--:--:--</b><span id="p-phase">재생 중 · KST</span></div>' +
       '</div>' +
       '<div class="mr-eqcard" id="p-eqcard">' +
         '<div class="mr-eqmain"><span>총 자산</span><b id="p-eq">—</b><i id="p-eqr" class="flat">0.00%</i></div>' +
@@ -563,9 +635,10 @@
       '<div class="mr-ctl">' +
         '<button type="button" class="mr-pause" id="p-pause">⏸ 일시정지</button>' +
         '<div class="mr-speed" id="p-speed">' +
-          SPEEDS.map(function (v) { return '<button type="button" data-sp="' + v + '" class="' + (v === 1 ? 'on' : '') + '">' + v + 'x</button>'; }).join('') +
+          SPEEDS.map(function (v) { return '<button type="button" data-sp="' + v + '" class="' + (v === s.speed ? 'on' : '') + '">' + v + 'x</button>'; }).join('') +
         '</div>' +
       '</div>' +
+      '<div class="mr-jumps">' + jumps + '</div>' +
       '<div class="mr-vtabs" id="p-vtabs"></div>' +
       '<div id="p-body"></div>';
   }
@@ -595,17 +668,27 @@
       if (v === 'pf') S.pfFilter = 'hold';
       setView(v);
     });
+    var jumps = document.querySelector('.mr-jumps');
+    if (jumps) {
+      jumps.addEventListener('click', function (ev) {
+        var b = ev.target.closest ? ev.target.closest('button[data-jump]') : null;
+        if (!b || !S || S.ended) return;
+        var off = +b.getAttribute('data-jump');
+        if (!isFinite(off)) return;
+        S.elapsed = Math.max(0, Math.min(off, S.span.dur - 1));
+        S.curveAt = Math.floor(S.elapsed / BAR_SEC);
+        lastReal = 0;
+        updatePrices();
+        paint(true);
+        toast('한국시간 ' + hmText(S.span.start + S.elapsed) + '으로 이동했어요');
+      });
+    }
     var body = $('p-body');
     body.addEventListener('click', function (ev) {
       if (!S || S.ended) return;
       var t = ev.target;
       var row = t.closest ? t.closest('.mr-row[data-sym]') : null;
-      if (row) {
-        var id = row.getAttribute('data-sym');
-        if (!S.bySym[id]) { toast('지금 장에서는 평가만 됩니다 · 이 종목은 다른 시장 종목이에요'); return; }
-        openSym(id);
-        return;
-      }
+      if (row) { openSym(row.getAttribute('data-sym')); return; }
       var pf = t.closest ? t.closest('button[data-pf]') : null;
       if (pf) { S.pfFilter = pf.getAttribute('data-pf'); renderBody(); return; }
       if (t.closest && t.closest('#p-add')) { S.pfFilter = 'all'; renderBody(); return; }
@@ -655,7 +738,7 @@
       var h = S.acct.holdings[id];
       var lab = h && h.qty ? pct(holdRet(id)) : '보기';
       html += '<button type="button" class="mr-vtab' + (S.view === 'sym:' + id ? ' on' : '') + '" data-view="sym:' + id + '">' +
-        '<b>' + esc(e.ref.name) + '</b><small class="' + (h && h.qty ? cls(holdRet(id)) : '') + '">' + lab + '</small></button>';
+        '<b>' + esc(e.name) + '</b><small class="' + (h && h.qty ? cls(holdRet(id)) : '') + '">' + lab + '</small></button>';
     });
     html += '<button type="button" class="mr-vtab add" data-view="add"><b>＋ 종목</b><small>추가하기</small></button>';
     box.innerHTML = html;
@@ -671,6 +754,7 @@
     } else {
       box.innerHTML = symHTML();
       renderTopTabs();
+      paintSym(nowEpoch());
     }
     paint(true);
   }
@@ -679,9 +763,7 @@
   function holdIds() {
     var ids = [];
     for (var id in S.acct.holdings) if (S.acct.holdings[id].qty > 0) ids.push(id);
-    return ids.sort(function (a, b) {
-      return holdValue(b) - holdValue(a);
-    });
+    return ids.sort(function (a, b) { return holdValue(b) - holdValue(a); });
   }
   function holdValue(id) {
     var h = S.acct.holdings[id];
@@ -696,9 +778,7 @@
   }
   function allIds() {
     var q = (S.pfQ || '').trim().toLowerCase();
-    return pick.session.symbols.filter(function (s) {
-      return !q || matchSym(s, q);
-    }).sort(function (a, b) { return a.name.localeCompare(b.name, 'ko'); }).map(function (s) { return s.sym; });
+    return U.symbols.filter(function (s) { return !q || matchSym(s, q); }).map(function (s) { return s.sym; });
   }
 
   function pill(v, label, n) {
@@ -708,17 +788,18 @@
 
   function pfHTML() {
     var held = holdIds();
-    var all = pick.session.symbols.length;
+    var kr = held.filter(function (id) { var h = S.acct.holdings[id]; return h && h.market === 'KR'; }).length;
+    var all = U.symbols.length;
     return '' +
       '<div class="mr-pills">' + pill('hold', '내 포트폴리오', held.length) + pill('all', '전체 종목', all) + '</div>' +
       (S.pfFilter === 'all'
         ? '<div class="mr-searchwrap"><input type="search" id="p-q2" placeholder="종목명·티커 검색 (삼성전자, NVDA)" autocomplete="off" value="' + esc(S.pfQ || '') + '"></div>'
         : '') +
       '<div class="mr-pfheadline"><b>' + (S.pfFilter === 'all' ? '전체 종목' : '보유 종목') + '</b>' +
-        '<span>' + (S.pfFilter === 'all' ? '이름을 눌러 차트 열기' : held.length + '종목') + '</span></div>' +
+        '<span>' + (S.pfFilter === 'all' ? '이름을 눌러 차트 열기' : held.length ? '🇰🇷 ' + kr + ' · 🇺🇸 ' + (held.length - kr) : '') + '</span></div>' +
       '<div class="mr-pflist" id="p-rows"></div>' +
       '<button type="button" class="mr-addrow" id="p-add"><i>＋</i>종목 추가하기</button>' +
-      '<p class="mr-fine">보유 종목은 <b>팔기 전까지 다음 날 장에도 그대로</b> 이어집니다. 지금 장에 없는 다른 시장 종목은 가장 최근 종가로 평가합니다. 총 평가손익 = 총 자산 − 투자 원금.</p>';
+      '<p class="mr-fine">보유 종목은 <b>팔기 전까지 다음 날 장에도 그대로</b> 이어집니다. 지금 장이 아닌 종목은 직전 종가로 평가하고 <b>거래시간 외</b>로 표시합니다. 총 평가손익 = 총 자산 − 투자 원금.</p>';
   }
 
   function renderRows() {
@@ -732,30 +813,31 @@
       S.rowRefs = {};
       return;
     }
+    var now = nowEpoch();
     box.innerHTML = ids.map(function (id) {
       var e = S.bySym[id];
+      var h = S.acct.holdings[id];
       if (S.pfFilter === 'all') {
-        var h = S.acct.holdings[id];
-        return '<button type="button" class="mr-row" data-sym="' + id + '">' +
-          iconHTML(e ? e.ref : (h || { name: id }), S.session.market, id) +
-          '<span class="mr-rowmid"><b class="nm">' + esc(e ? e.ref.name : id) + '</b>' +
-          '<span class="sub">' + esc((e && e.ref.ex) || '') + ' · ' + esc(shortSym(id)) + '</span></span>' +
+        return '<button type="button" class="mr-row" data-sym="' + esc(id) + '">' +
+          iconHTML(e, e.market, id) +
+          '<span class="mr-rowmid"><b class="nm">' + esc(e.name) + '</b>' +
+          '<span class="sub">' + marketFlag(e.market) + ' ' + esc(e.ex || '') + ' · ' + esc(shortSym(id)) + '</span></span>' +
           '<span class="mr-rowright">' + (h && h.qty ? '<b class="hold">보유 ' + comma(h.qty) + '주</b>' : '<b class="go">›</b>') + '</span></button>';
       }
-      var h2 = S.acct.holdings[id];
-      var m = markFor(id, h2);
+      var m = markFor(id, h);
+      var val = h.qty * m.px * m.fx;
+      var pnl = val - h.paid;
       var dayPct = m.prevClose ? (m.px / m.prevClose - 1) * 100 : 0;
-      var isOther = !S.bySym[id];
-      var nm = h2 ? h2.name : id;
-      return '<button type="button" class="mr-row" data-sym="' + id + '">' +
-        iconHTML(h2 || { name: nm }, h2 ? h2.market : S.session.market, id) +
-        '<span class="mr-rowmid"><b class="nm">' + esc(nm) + (isOther ? ' <i class="oth">다른 시장</i>' : '') + '</b>' +
-        '<span class="sub">' + comma(h2.qty) + '주 · 평단 ' + avgText(h2) + '</span>' +
-        '<span class="sub2">현재 ' + curText(m, id) + ' · 평가손익 <i class="pnl ' + cls(holdValue(id) - h2.paid) + '">' +
-          (holdValue(id) - h2.paid >= 0 ? '+' : '') + won(holdValue(id) - h2.paid) + '</i>' +
-          ' · 오늘 <i class="day ' + cls(dayPct) + '">' + pct(dayPct) + '</i></span></span>' +
+      var ts = tradeState(e, now);
+      return '<button type="button" class="mr-row" data-sym="' + esc(id) + '">' +
+        iconHTML(e, h.market, id) +
+        '<span class="mr-rowmid"><b class="nm">' + esc(h.name) + '</b>' +
+        '<span class="sub">' + comma(h.qty) + '주 · 평단 ' + avgText(h) + ' · ' + marketFlag(h.market) + ' ' + esc(shortSym(id)) + '</span>' +
+        '<span class="sub2">현재 <i class="cur">' + curText(m, e) + '</i> · 평가손익 <i class="pnl ' + cls(pnl) + '">' +
+          (pnl >= 0 ? '+' : '') + won(pnl) + '</i> · 오늘 <i class="day ' + cls(dayPct) + '">' + pct(dayPct) + '</i>' +
+          (ts.ok ? '' : ' <i class="oth">거래시간 외</i>') + '</span></span>' +
         '<span class="mr-rowright"><b class="rt ' + cls(holdRet(id)) + '">' + pct(holdRet(id)) + '</b>' +
-        '<span class="amt">' + won(holdValue(id)) + '</span></span></button>';
+        '<span class="amt">' + won(val) + '</span></span></button>';
     }).join('');
     S.rowRefs = {};
     Array.prototype.forEach.call(box.querySelectorAll('.mr-row'), function (b) {
@@ -766,7 +848,8 @@
         rt: b.querySelector('.rt'),
         amt: b.querySelector('.amt'),
         pnl: b.querySelector('.pnl'),
-        day: b.querySelector('.day')
+        day: b.querySelector('.day'),
+        cur: b.querySelector('.cur')
       };
     });
   }
@@ -777,10 +860,9 @@
     if (h.market === 'US') return usd(native);
     return won(native);
   }
-  function curText(m, id) {
+  function curText(m, e) {
     if (!m) return '—';
-    var e = S.bySym[id];
-    var usdSym = e && m.live && S.session.currency === 'USD';
+    var usdSym = e && e.cur === 'USD';
     return (usdSym ? usd(m.px) + ' · ' : '') + won(m.px * m.fx);
   }
 
@@ -797,6 +879,7 @@
       var dayPct = m.prevClose ? (m.px / m.prevClose - 1) * 100 : 0;
       if (r.rt) { r.rt.textContent = pct(ret); r.rt.className = 'rt ' + cls(ret); }
       if (r.amt) r.amt.textContent = won(val);
+      if (r.cur) r.cur.textContent = curText(m, S.bySym[id]);
       if (r.pnl) {
         r.pnl.textContent = (pnl >= 0 ? '+' : '') + won(pnl);
         r.pnl.className = 'pnl ' + cls(pnl);
@@ -811,12 +894,14 @@
     if (!e) return pfHTML();
     return '' +
       '<div class="mr-symhead">' +
-        '<div class="id">' + iconHTML(e.ref, S.session.market) +
-          '<div><div class="nm">' + esc(e.ref.name) + '</div>' +
-          '<div class="meta">' + esc(e.ref.ex || '') + ' · ' + esc(shortSym(e.ref.sym)) + ' · ' + sessionLabel(S.session) + '</div></div>' +
+        '<div class="id">' + iconHTML(e, e.market) +
+          '<div><div class="nm">' + esc(e.name) + '</div>' +
+          '<div class="meta">' + marketFlag(e.market) + ' ' + esc(e.ex || '') + ' · ' + esc(shortSym(e.sym)) +
+            ' · ' + marketName(e.market) + ' ' + shortDate(e.sess.date) + '(' + weekday(e.sess.date) + ')</div></div>' +
         '</div>' +
         '<div class="px"><b id="p-price">—</b><span id="p-chg">—</span></div>' +
       '</div>' +
+      '<div class="mr-status" id="p-status">—</div>' +
       '<div class="mr-chartbox"><canvas id="mr-chart" aria-label="실제 5분봉 차트"></canvas></div>' +
       '<div class="mr-chartfoot"><span id="p-barprog">—</span>' +
         '<span class="bar"><i id="p-brief"></i></span><span id="p-countdown">—</span></div>' +
@@ -837,28 +922,12 @@
       '</div>';
   }
 
-  /* ---------------- 가격·시간 ---------------- */
-  function nowEpoch() { return S.span.start + S.elapsed; }
-  function idxAt(e, now) {
-    var bars = e.bars, lo = 0, hi = bars.length - 1, ans = -1;
-    while (lo <= hi) {
-      var m = (lo + hi) >> 1;
-      if (bars[m][0] + BAR_SEC <= now) { ans = m; lo = m + 1; } else hi = m - 1;
-    }
-    return ans;
-  }
-  function priceAt(e, nowAdd) {
-    var i = idxAt(e, nowAdd);
-    return i < 0 ? e.bars[0][1] : e.bars[i][4];
-  }
+  /* ---------------- 가격 ---------------- */
   function updatePrices() {
     if (!S) return;
     var now = nowEpoch();
     var px = {};
-    for (var id in S.bySym) {
-      var e = S.bySym[id];
-      px[id] = priceAt(e, now);
-    }
+    for (var id in S.bySym) px[id] = priceOf(S.bySym[id], now);
     S.px = px;
   }
   function totalEquity() {
@@ -905,18 +974,24 @@
 
     var s = S, span = s.span;
     var now = nowEpoch();
-    var ref = s.bySym[s.open[0]] || s.bySym[s.active] || null;
-    var completed = ref ? Math.max(0, idxAt(ref, now) + 1) : 0;
-    var total = ref ? ref.bars.length : 0;
 
-    $('p-clock').textContent = clockText(now, s.session.tzOffset);
-    var phase = !s.playing ? '일시정지' : (s.startMode === 'live' && s.startOffset > 0 ? '현실 시각 동기화' : '장 시작부터');
-    $('p-phase').textContent = phase;
-    var pctDay = Math.min(100, s.elapsed / span.dur * 100);
-    $('p-dayprog').style.width = pctDay.toFixed(2) + '%';
-    $('p-daypct').textContent = Math.round(pctDay) + '%';
-    $('p-barin').textContent = hmText(span.start, s.session.tzOffset) + '–' + hmText(span.end, s.session.tzOffset) +
-      ' · ' + completed + '/' + total + '봉';
+    $('p-clock').textContent = clockText(now);
+    $('p-phase').textContent = !s.playing ? '일시정지 · KST'
+      : (s.startOffset > 0 ? hmText(span.start + s.startOffset) + '부터 · KST' : '재생 중 · KST');
+
+    // 두 시장의 지금 단계
+    U.parts.forEach(function (ss, i) {
+      var el = $('p-mk-' + i);
+      if (!el) return;
+      var ph = phaseOf(ss, now);
+      el.className = 'mr-mkchip ' + ph.k;
+      el.innerHTML = marketFlag(ss.market) + ' <b>' + ph.t + '</b>';
+    });
+
+    var pr = Math.min(100, s.elapsed / span.dur * 100);
+    $('p-dayprog').style.width = pr.toFixed(2) + '%';
+    $('p-daypct').textContent = Math.round(pr) + '%';
+    $('p-barin').textContent = dayText(span.start) + ' ' + hmText(span.start) + ' → ' + hmText(span.end) + ' (KST)';
 
     var eq = totalEquity();
     if (eq > s.peak) s.peak = eq;
@@ -941,56 +1016,78 @@
     var tabEq = $('tab-eq');
     if (tabEq) tabEq.textContent = won(eq);
 
-    if (s.view === 'pf') {
-      paintRows();
-    } else {
-      paintSym(now);
-    }
+    if (s.view === 'pf') paintRows();
+    else paintSym(now);
   }
 
   function paintSym(now) {
     var s = S, e = s.bySym[s.active];
     if (!e) return;
-    var i = idxAt(e, now);
-    var p = i < 0 ? e.bars[0][1] : e.bars[i][4];
-    var prev = e.day.prevClose;
-    var chPct = prev ? (p / prev - 1) * 100 : 0;
-    var chKrw = prev ? (p - prev) * s.fx : 0;
-    $('p-price').textContent = won(p * s.fx);
+    var i = lastClosedIdx(e, now);
+    var pi = priceInfo(e, now);
+    var p = pi.px;
+    var prev = pi.prevClose;
+    var chPct = pi.chg;
+    var chKrw = prev ? (p - prev) * e.fx : 0;
+    $('p-price').textContent = won(p * e.fx);
     var ce = $('p-chg');
     ce.className = cls(chPct);
     ce.innerHTML = (chKrw >= 0 ? '▲ ' : '▼ ') + won(Math.abs(chKrw)) + ' ' + pct(chPct) +
-      (s.session.currency === 'USD' ? ' · ' + usd(p) : '');
+      (e.cur === 'USD' ? ' · ' + usd(p) : '');
+
+    // 거래 가능 상태
+    var st = tradeState(e, now);
+    var stEl = $('p-status');
+    if (stEl) {
+      if (st.ok) {
+        stEl.className = 'mr-status on';
+        stEl.innerHTML = '● 지금 ' + marketName(e.market) + ' ' + phaseOf(e.sess, now).t + ' · 실시간 매매 가능';
+      } else {
+        stEl.className = 'mr-status';
+        stEl.innerHTML = '○ 지금은 <b>거래시간 외</b> — ' + esc(st.txt) + ' · 직전 종가 ' + won(p * e.fx) + '로 평가';
+      }
+    }
+    var buyBtn = $('p-buy'), sellBtn = $('p-sell');
+    if (buyBtn) buyBtn.disabled = !st.ok;
+    if (sellBtn) sellBtn.disabled = !st.ok;
+
     $('p-barprog').textContent = (i + 1) + '/' + e.bars.length + '봉';
-    var frac = i < 0 ? Math.min(1, (now - e.bars[0][0]) / BAR_SEC) : Math.min(1, (now - (e.bars[i][0] + BAR_SEC)) / BAR_SEC);
-    $('p-brief').style.width = Math.max(0, Math.min(1, frac)) * 100 + '%';
-    var nextAt = (i + 1 < e.bars.length ? e.bars[i + 1][0] + BAR_SEC : s.span.end);
+    var frac = 0;
+    if (i < 0) frac = now < e.win.start ? 0 : 1;
+    else frac = Math.min(1, Math.max(0, (now - (e.bars[i][0] + BAR_SEC)) / BAR_SEC));
+    $('p-brief').style.width = Math.round(frac * 100) + '%';
+    var nextAt = (i + 1 < e.bars.length ? e.bars[i + 1][0] + BAR_SEC : e.win.end);
     var left = Math.max(0, Math.round(nextAt - now));
-    $('p-countdown').textContent = i + 1 >= e.bars.length ? '마지막 봉' : '다음 봉 ' + Math.floor(left / 60) + ':' + pad2(left % 60);
+    var cd = $('p-countdown');
+    if (!st.ok && now < e.win.start) cd.textContent = '개장까지 ' + Math.floor(left / 60) + ':' + pad2(left % 60);
+    else if (!st.ok) cd.textContent = '거래 종료';
+    else if (i + 1 >= e.bars.length) cd.textContent = '마지막 봉';
+    else cd.textContent = '다음 봉 ' + Math.floor(left / 60) + ':' + pad2(left % 60);
 
     var h = s.acct.holdings[s.active];
     var qty = h ? h.qty : 0;
     $('p-own').textContent = comma(qty) + '주';
     $('p-cash').textContent = won(s.acct.cash);
-    var val = qty * p * s.fx;
+    var val = qty * p * e.fx;
     var paid = h ? h.paid : 0;
     var upl = val - paid;
     var ur = paid > 0 ? upl / paid * 100 : 0;
     $('p-hold').innerHTML =
       row('보유 수량', qty ? comma(qty) + '주' : '0주') +
       row('평균 단가', qty ? avgText(h) : '—') +
-      row('현재가', s.session.currency === 'USD' ? won(p * s.fx) + ' (' + usd(p) + ')' : won(p)) +
+      row('현재가', e.cur === 'USD' ? won(p * e.fx) + ' (' + usd(p) + ')' : won(p)) +
       row('평가 금액', won(val)) +
       row('평가 손익', qty ? (upl >= 0 ? '+' : '') + won(upl) + ' (' + pct(ur) + ')' : '—', qty ? cls(upl) : '') +
       row('오늘 등락률', pct(chPct), cls(chPct));
 
-    var bq = 0, uc = p * s.fx * (1 + s.fee.buy);
+    var bq = 0, uc = p * e.fx * (1 + e.fee.buy);
     if (uc > 0) bq = Math.floor((s.acct.cash * Math.min(1, s.frac)) / uc);
     while (bq > 0 && bq * uc > s.acct.cash + 1e-6) bq--;
     var sq = qty ? Math.max(1, Math.floor(qty * Math.min(1, s.frac))) : 0;
     if (sq > qty) sq = qty;
     $('p-preview').innerHTML = '구매 <b>' + comma(bq) + '주</b> ' + won(bq * uc) +
-      ' · 판매 <b>' + comma(sq) + '주</b> ' + won(sq * p * s.fx * (1 - s.fee.sell - (s.fee.tax || 0)));
+      ' · 판매 <b>' + comma(sq) + '주</b> ' + won(sq * p * e.fx * (1 - e.fee.sell - (e.fee.tax || 0))) +
+      (st.ok ? '' : ' · <b>거래시간 외</b>');
 
     drawChart();
   }
@@ -1002,31 +1099,32 @@
   function buy(id, frac) {
     if (!S || S.ended || !id) return;
     var e = S.bySym[id];
-    if (!e) { toast('지금 장에서는 이 종목을 거래할 수 없어요'); return; }
-    var p = S.px[id], uc = p * S.fx * (1 + S.fee.buy);
+    var st = tradeState(e, nowEpoch());
+    if (!st.ok) { toast(e.name + ' · ' + st.txt + ' — 거래시간 외에는 살 수 없어요'); return; }
+    var p = S.px[id], uc = p * e.fx * (1 + e.fee.buy);
     var n = Math.floor((S.acct.cash * Math.min(1, frac)) / uc + 1e-9);
     while (n > 0 && n * uc > S.acct.cash + 1e-6) n--;
     if (n <= 0) { toast('1주도 살 수 없는 금액이에요'); return; }
-    var gross = n * p * S.fx, fee = gross * S.fee.buy;
+    var gross = n * p * e.fx, fee = gross * e.fee.buy;
     S.acct.cash -= gross + fee;
     S.feesPaid += fee;
     var h = S.acct.holdings[id];
     if (!h) {
       h = S.acct.holdings[id] = {
-        qty: 0, paid: 0, avgOrig: 0, market: S.session.market,
-        name: e.ref.name, ex: e.ref.ex || '', lastPx: p, lastFx: S.fx
+        qty: 0, paid: 0, avgOrig: 0, market: e.market,
+        name: e.name, ex: e.ex || '', lastPx: p, lastFx: e.fx
       };
     }
-    var unitNative = p * (1 + S.fee.buy);
+    var unitNative = p * (1 + e.fee.buy);
     h.avgOrig = (h.avgOrig * h.qty + unitNative * n) / (h.qty + n);
     h.qty += n;
     h.paid += gross + fee;
     h.lastPx = p;
-    h.lastFx = S.fx;
-    h.lastDate = S.session.date;
-    S.trades.push({ i: Math.max(0, idxAt(e, nowEpoch())), id: id, side: 'B', n: n, p: p, amt: gross + fee });
+    h.lastFx = e.fx;
+    h.lastDate = e.sess.date;
+    S.trades.push({ i: Math.max(0, lastClosedIdx(e, nowEpoch())), id: id, side: 'B', n: n, p: p, amt: gross + fee });
     saveAcct(S.acct);
-    toast(e.ref.name + ' ' + n + '주 구매 · ' + won(gross + fee));
+    toast(e.name + ' ' + n + '주 구매 · ' + won(gross + fee) + ' (' + marketFlag(e.market) + ')');
     renderBody();
   }
 
@@ -1035,11 +1133,12 @@
     var h = S.acct.holdings[id];
     if (!h || !(h.qty > 0)) { toast('보유한 주식이 없어요'); return; }
     var e = S.bySym[id];
-    if (!e) { toast('지금 장에서는 이 종목을 팔 수 없어요'); return; }
+    var st = tradeState(e, nowEpoch());
+    if (!st.ok) { toast(e.name + ' · ' + st.txt + ' — 거래시간 외에는 팔 수 없어요'); return; }
     var n = frac >= 1 ? h.qty : Math.max(1, Math.floor(h.qty * frac));
     if (n > h.qty) n = h.qty;
-    var p = S.px[id], gross = n * p * S.fx;
-    var fee = gross * S.fee.sell, tax = gross * (S.fee.tax || 0);
+    var p = S.px[id], gross = n * p * e.fx;
+    var fee = gross * e.fee.sell, tax = gross * (e.fee.tax || 0);
     var net = gross - fee - tax;
     var avgPaid = h.paid / h.qty;
     var pnl = net - avgPaid * n;
@@ -1049,12 +1148,12 @@
     h.paid -= avgPaid * n;
     h.qty -= n;
     h.lastPx = p;
-    h.lastFx = S.fx;
-    h.lastDate = S.session.date;
+    h.lastFx = e.fx;
+    h.lastDate = e.sess.date;
     if (h.qty <= 0) delete S.acct.holdings[id];
     S.sells += 1;
     if (pnl > 0) S.wins += 1;
-    S.trades.push({ i: Math.max(0, idxAt(e, nowEpoch())), id: id, side: 'S', n: n, p: p, amt: net });
+    S.trades.push({ i: Math.max(0, lastClosedIdx(e, nowEpoch())), id: id, side: 'S', n: n, p: p, amt: net });
     saveAcct(S.acct);
     toast(n + '주 판매 · ' + won(net) + ' (' + (pnl >= 0 ? '+' : '') + won(pnl) + ')');
     renderBody();
@@ -1079,7 +1178,7 @@
     ctx.textBaseline = 'middle';
 
     var bars = e.bars, n = bars.length, now = nowEpoch();
-    var last = idxAt(e, now);
+    var last = lastClosedIdx(e, now);
     var shown = Math.max(0, last);
     var narrow = W < 480;
     var padT = 14, padB = 20, padR = narrow ? 46 : 76;
@@ -1099,7 +1198,7 @@
     var band = (hi - lo) || hi * 0.01 || 1;
     var prevIn = prev && prev > lo - band * 0.6 && prev < hi + band * 0.6;
     if (prevIn) { lo = Math.min(lo, prev); hi = Math.max(hi, prev); }
-    var h = S.acct.holdings[e.ref.sym];
+    var h = S.acct.holdings[e.sym];
     if (h && h.qty > 0 && h.avgOrig) { lo = Math.min(lo, h.avgOrig); hi = Math.max(hi, h.avgOrig); }
     var pad = (hi - lo) * 0.12 || hi * 0.01 || 1;
     lo -= pad; hi += pad;
@@ -1107,6 +1206,35 @@
     var xAt = function (k) { return padL + slot * (k + 0.5); };
 
     var UP = css('--g-up'), DN = css('--g-dn'), LINE = css('--g-line'), MUT = css('--g-mut');
+
+    // 확장장 구간 음영 (프리 / 애프터)
+    var regS = -1, regE = -1;
+    for (var r = 0; r < n; r++) {
+      if (regS < 0 && bars[r][0] >= e.reg[0]) regS = r;
+      if (bars[r][0] < e.reg[1]) regE = r;
+    }
+    if (regS > 0) {
+      ctx.fillStyle = hexA(MUT, 0.07);
+      ctx.fillRect(padL, padT, slot * regS, priceH + gap + volH);
+      ctx.fillStyle = hexA(MUT, 0.85);
+      ctx.textAlign = 'left';
+      ctx.fillText(e.market === 'US' ? '프리' : '장전', padL + 4, padT + 10);
+    }
+    if (regE >= 0 && regE < n - 1) {
+      var px0 = padL + slot * (regE + 1);
+      ctx.fillStyle = hexA(MUT, 0.07);
+      ctx.fillRect(px0, padT, padL + iw - px0, priceH + gap + volH);
+      ctx.fillStyle = hexA(MUT, 0.85);
+      ctx.textAlign = 'right';
+      ctx.fillText('애프터', padL + iw - 4, padT + 10);
+    }
+    if (regS > 0) {
+      ctx.save();
+      ctx.setLineDash([3, 3]);
+      ctx.strokeStyle = hexA(MUT, 0.6);
+      ctx.beginPath(); ctx.moveTo(padL + slot * regS, padT); ctx.lineTo(padL + slot * regS, padT + priceH + gap + volH); ctx.stroke();
+      ctx.restore();
+    }
 
     ctx.strokeStyle = LINE;
     ctx.lineWidth = 1;
@@ -1118,7 +1246,7 @@
       ctx.globalAlpha = 0.5;
       ctx.beginPath(); ctx.moveTo(padL, yy); ctx.lineTo(padL + iw, yy); ctx.stroke();
       ctx.globalAlpha = 1;
-      ctx.fillText(axisFmt(v * S.fx, narrow), padL + iw + 6, y(v));
+      ctx.fillText(axisFmt(v * e.fx, narrow), padL + iw + 6, y(v));
     }
     if (prevIn) {
       ctx.save();
@@ -1192,10 +1320,10 @@
     ctx.restore();
     ctx.fillStyle = MUT;
     ctx.textAlign = 'center';
-    ctx.fillText(hmText(now, S.session.tzOffset), Math.min(padL + iw - 12, Math.max(padL + 12, xf)), padT - 8);
+    ctx.fillText(hmText(now), Math.min(padL + iw - 12, Math.max(padL + 12, xf)), padT - 8);
 
     var pNow = last < 0 ? bars[0][1] : bars[last][4];
-    var lab = comma(pNow * S.fx);
+    var lab = comma(pNow * e.fx);
     var lw = padR - 6;
     var ly = Math.min(padT + priceH - 9, Math.max(padT + 9, y(pNow)));
     ctx.fillStyle = pNow >= (prev || pNow) ? UP : DN;
@@ -1237,7 +1365,7 @@
     var step = Math.max(1, Math.ceil(n / 5));
     for (var i8 = 0; i8 < n; i8 += step) {
       if (xAt(i8) > xf + 2) break;
-      ctx.fillText(hmText(bars[i8][0], S.session.tzOffset), xAt(i8), H - 8);
+      ctx.fillText(hmText(bars[i8][0]), xAt(i8), H - 8);
     }
   }
   function axisFmt(v, narrow) {
@@ -1273,10 +1401,10 @@
     ids.forEach(function (id) {
       var e = S.bySym[id];
       if (!e) return;
-      var uc = e.day.open * S.fx * (1 + S.fee.buy);
+      var uc = e.day.open * e.fx * (1 + e.fee.buy);
       var n = Math.max(0, Math.floor(each / (uc + 1e-9)));
       if (!n) return;
-      value += -(n * uc) + n * e.day.close * S.fx * (1 - S.fee.sell - (S.fee.tax || 0));
+      value += -(n * uc) + n * e.day.close * e.fx * (1 - e.fee.sell - (e.fee.tax || 0));
     });
     return { ret: (value / S.startCash - 1) * 100, ids: ids };
   }
@@ -1296,7 +1424,6 @@
     S.ended = true;
     S.playing = false;
     stopLoop();
-    updatePrices();
     S.elapsed = S.span.dur;
     updatePrices();
 
@@ -1308,37 +1435,37 @@
 
     // 보유 종목은 그대로 두고, 마지막 평가 기준만 남긴다 (다음 날 이월)
     for (var id in S.acct.holdings) {
-      var h = S.acct.holdings[id];
-      var m = markFor(id, h);
-      h.lastPx = m.px;
-      h.lastFx = m.fx;
-      if (S.bySym[id]) h.lastDate = S.session.date;
+      var hh = S.acct.holdings[id];
+      var m = markFor(id, hh);
+      hh.lastPx = m.px;
+      hh.lastFx = m.fx;
+      hh.lastDate = S.bySym[id] ? S.bySym[id].sess.date : hh.lastDate;
     }
     var acct = S.acct;
     acct.games += 1;
     if (myRet > 0) acct.wins += 1;
     if (myRet > acct.best || acct.games === 1) {
       acct.best = myRet;
-      acct.bestLabel = shortDate(S.session.date) + ' ' + (S.session.market === 'KR' ? '한국장' : '미국장') + ' ' + pct(myRet);
+      acct.bestLabel = '통합장 ' + dayText(S.span.end) + ' ' + pct(myRet);
     }
     acct.history.unshift({
-      d: S.session.date, m: S.session.market, s: S.trades.length ? S.trades.length + '건' : '거래 없음',
+      d: dayText(S.span.end), m: '통합', s: S.trades.length ? S.trades.length + '건' : '거래 없음',
       r: Math.round(myRet * 100) / 100, g: g.g, eq: Math.round(finalEq), h: holdCount(acct)
     });
     acct.history = acct.history.slice(0, 12);
     saveAcct(acct);
 
     var cumRet = (finalEq / baseCash() - 1) * 100;
-    var busted = finalEq < minTicket(S.session);
+    var busted = finalEq < minTicket();
     var held = holdCount(acct);
+    var krHeld = 0;
+    for (var hid in acct.holdings) if (acct.holdings[hid].market === 'KR') krHeld++;
 
     $('mr-result').innerHTML =
       '<div class="mr-rescard">' +
         '<div class="mr-restop"><span class="mr-grade g-' + g.g + '">' + g.g + '</span>' +
           '<div><div class="mr-restitle">' + g.t + '</div>' +
-          '<div class="mr-ressym">' + sessionLabel(S.session) + ' 마감 · ' +
-          (S.startOffset > 0 ? hmText(S.span.start + S.startOffset, S.session.tzOffset) + '부터 ' : '') +
-          hmText(S.span.end, S.session.tzOffset) + '까지</div></div>' +
+          '<div class="mr-ressym">국장·미장 통합장 · ' + esc(U.rangeText) + ' 마감</div></div>' +
         '</div>' +
         '<div class="mr-bigret ' + cls(myRet) + '">' + pct(myRet) + '<span>이번 판 수익률</span></div>' +
         '<div class="mr-vs">존버(내가 산 종목 동일 비중, 시초가→종가) ' + pct(bh.ret) +
@@ -1352,33 +1479,34 @@
           stat('승률', winRate == null ? '—' : winRate.toFixed(0) + '% (' + S.wins + '/' + S.sells + ')') +
           stat('수수료·세금', won(S.feesPaid)) +
           stat('최대 낙폭', pct(S.dd)) +
-          stat('보유 종목', held + '종목') +
+          stat('보유 종목', held + '종목 (🇰🇷 ' + krHeld + ' · 🇺🇸 ' + (held - krHeld) + ')') +
           stat('내 계좌', won(finalEq) + ' (' + pct(cumRet) + ')') +
         '</div>' +
-        '<div class="mr-acctline">보유 ' + held + '종목은 <b>팔지 않았으므로 그대로 계좌에 남습니다</b>. 다음 날 장에서도 이어서 거래할 수 있어요.</div>' +
+        '<div class="mr-acctline">보유 ' + held + '종목은 <b>팔지 않았으므로 그대로 계좌에 남습니다</b>. 다음 통합 장에서도 이어서 거래할 수 있어요.</div>' +
         (busted ? '<div class="mr-bust on"><b>총 자산이 1주 값보다 적어요</b>' +
           '<span>이대로는 어떤 종목도 매수할 수 없습니다. 1,000만 원을 다시 지급받아 새로 시작할 수 있어요. (전적은 유지)</span>' +
           '<button type="button" id="r-bust-reset">1,000만 원으로 재출발</button></div>' : '') +
         '<div class="mr-actions3">' +
           '<button type="button" class="mr-ghost" id="r-again">같은 장 다시</button>' +
           '<button type="button" class="mr-ghost" id="r-other">다른 종목 보기</button>' +
-          '<button type="button" class="mr-primary" id="r-next">다른 시장 장</button>' +
+          '<button type="button" class="mr-primary" id="r-next">포트폴리오 보기</button>' +
         '</div>' +
         '<button type="button" class="mr-share" id="r-share">결과 공유하기</button>' +
       '</div>';
     screen('result');
     var done = S;
     $('r-again').addEventListener('click', function () {
-      var first = done.open[0] ? done.bySym[done.open[0]] : null;
-      startGame(done.session, first ? first.ref : done.session.symbols[0]);
+      pick.startAt = 0;
+      var first = done.open[0] ? done.bySym[done.open[0]] : done.bySym[done.active] || U.symbols[0];
+      startGame(first);
     });
     $('r-other').addEventListener('click', function () { paintAcct(); renderLobby(); screen('lobby'); });
     $('r-next').addEventListener('click', function () {
-      var other = done.session.market === 'KR' ? latestSession('US') : latestSession('KR');
-      if (!other) { toast('다른 시장 데이터가 없어요'); return; }
-      startGame(other, other.symbols[0]);
+      pick.startAt = 0;
+      startGame(done.open[0] ? done.bySym[done.open[0]] : U.symbols[0]);
+      if (S) { S.view = 'pf'; S.pfFilter = 'hold'; renderBody(); }
     });
-    var shareTxt = '[어제 장 실전 트레이딩] ' + sessionLabel(S.session) + ' ' + pct(myRet) + ' · 등급 ' + g.g +
+    var shareTxt = '[국장·미장 통합 트레이딩] ' + U.rangeText + ' ' + pct(myRet) + ' · 등급 ' + g.g +
       ' (존버 대비 ' + (myRet - bh.ret >= 0 ? '+' : '') + (myRet - bh.ret).toFixed(2) + '%p) · ' +
       holdCount(acct) + '종목 보유\n직접 거래해 보기 👉 https://ant-econ.github.io/market-replay.html';
     wireShare($('r-share'), shareTxt);
@@ -1415,7 +1543,7 @@
       renderSymbols();
     });
     $('mr-start').addEventListener('click', function () {
-      if (pick.session) startGame(pick.session, pick.sym);
+      if (U && pick.sym) startGame(pick.sym);
     });
     $('mr-reset').addEventListener('click', function () {
       if (!window.confirm('계좌 기록(현금·보유 종목·전적·최고 수익률)을 모두 초기화할까요? 첫 시드 1,000만 원부터 다시 시작합니다.')) return;
@@ -1432,6 +1560,9 @@
       .then(function (d) {
         DATA = d;
         if (!DATA.sessions || !DATA.sessions.length) throw new Error('no sessions');
+        KST = isFinite(DATA.kstOffset) ? DATA.kstOffset : 540;
+        U = buildUnified();
+        if (!U || !U.symbols.length) throw new Error('no symbols');
         document.documentElement.setAttribute('data-mr', 'ready');
         $('mr-loading').style.display = 'none';
         $('mr-lobby').classList.add('show');
