@@ -233,3 +233,70 @@ footer.site .fine{line-height:1.7;font-size:12.5px;max-width:760px}
   .card{padding:17px;border-radius:15px}
   .guide p,.guide li{font-size:14.5px}
 }
+
+/* ================= 하위 계산기 페이지 ================= */
+.breadcrumb{font-size:12.5px;color:var(--muted);padding:18px 0 0}
+.breadcrumb a{color:var(--muted);font-weight:600}
+.breadcrumb a:hover{color:var(--text)}
+.breadcrumb span{opacity:.55;margin:0 7px}
+.pagehead{padding:22px 0 4px}
+.pagehead h1{font-size:clamp(25px,4.4vw,37px);line-height:1.25;margin:12px 0 10px}
+.pagehead .lede{margin-bottom:16px;font-size:16px}
+.pagehead .hero-stats{margin-bottom:8px}
+.crumbtab{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--accent-2);background:color-mix(in srgb,var(--accent-2) 12%,transparent);border:1px solid color-mix(in srgb,var(--accent-2) 26%,transparent);padding:4px 10px;border-radius:999px}
+
+.calgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(238px,1fr));gap:12px;margin-top:14px}
+.calcard{display:block;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 17px;color:var(--text);transition:.16s}
+.calcard:hover{text-decoration:none;border-color:var(--accent);transform:translateY(-2px);box-shadow:0 16px 30px -26px rgba(0,0,0,.9)}
+.calcard .ic{font-size:19px;line-height:1}
+.calcard h3{font-size:15px;margin:9px 0 5px;letter-spacing:-.02em}
+.calcard p{font-size:12.8px;color:var(--muted);margin:0;line-height:1.55}
+.calcard .tag{display:inline-block;margin-top:9px;font-size:11.5px;font-weight:800;color:var(--accent-2);letter-spacing:.02em}
+
+.tldr{background:linear-gradient(160deg,var(--card-2),var(--card));border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin:14px 0 18px}
+.tldr h2{font-size:14px;margin:0 0 8px;color:var(--accent-2);letter-spacing:.02em}
+.tldr ul{margin:0;padding-left:18px}
+.tldr li{font-size:14px;color:color-mix(in srgb,var(--text) 86%,var(--muted));margin:4px 0}
+
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px}
+.pill{border:1px solid var(--line);background:var(--bg-soft);color:var(--muted);border-radius:999px;padding:6px 11px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;transition:.14s}
+.pill:hover{color:var(--text);border-color:color-mix(in srgb,var(--accent) 55%,var(--line))}
+.pill.on{color:#fff;background:linear-gradient(135deg,var(--accent),#3a6fe0);border-color:transparent}
+
+.badge{display:inline-block;font-size:12px;font-weight:800;border-radius:999px;padding:3px 10px;background:var(--card-2);border:1px solid var(--line);color:var(--muted)}
+.badge.ok{color:var(--up);border-color:color-mix(in srgb,var(--up) 40%,transparent);background:color-mix(in srgb,var(--up) 12%,transparent)}
+.badge.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 42%,transparent);background:color-mix(in srgb,var(--warn) 12%,transparent)}
+.badge.bad{color:var(--down);border-color:color-mix(in srgb,var(--down) 42%,transparent);background:color-mix(in srgb,var(--down) 12%,transparent)}
+
+.hr{height:1px;background:var(--line);margin:18px 0;border:0}
+.mini{font-size:12px;color:var(--muted);line-height:1.6}
+.num{font-variant-numeric:tabular-nums}
+
+.prose{margin-top:18px}
+.prose h2{font-size:20px;margin:28px 0 10px;letter-spacing:-.025em}
+.prose h2:first-child{margin-top:0}
+.prose h3{font-size:16px;margin:22px 0 8px;letter-spacing:-.02em}
+.prose h4{font-size:14.5px;margin:18px 0 6px}
+.prose p,.prose li{font-size:15px;line-height:1.75;color:color-mix(in srgb,var(--text) 86%,var(--muted))}
+.prose ul,.prose ol{padding-left:20px}
+.prose li{margin:6px 0}
+.prose strong{color:var(--text);font-weight:750}
+.prose table{width:100%;border-collapse:collapse;font-size:13.8px;margin:14px 0}
+.prose th,.prose td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+.prose th{background:var(--card-2);font-weight:750;white-space:nowrap}
+.prose td.num,.prose th.num{text-align:right;font-variant-numeric:tabular-nums}
+.prose .callout{background:var(--card-2);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:12px;padding:13px 15px;margin:16px 0}
+.prose .callout.warn{border-left-color:var(--warn)}
+.prose .callout p{margin:0;font-size:14px}
+.prose .callout b{color:var(--text)}
+
+.related{margin-top:26px}
+.related h2{font-size:17px;margin:0 0 4px;letter-spacing:-.02em}
+.related .mini{margin:0 0 2px}
+
+.calcbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
+.result .sub2{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.6}
+.tagrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.split{grid-template-columns:1fr}}
+

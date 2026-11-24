@@ -128,7 +128,7 @@
       msg.innerHTML = '양도소득이 없거나 손실입니다. 이 경우 세금은 0원이고, 같은 해 다른 해외주식 이익과 통산할 수 있습니다.';
     } else if (income <= 2500000) {
       msg.className = 'note';
-      msg.innerHTML = '양도소득 <strong>' + won(income) + '</strong>은 기본공제 250만 원 이하라 <strong>세금 0원</strong>입니다. 신고 의무도 없습니다.';
+      msg.innerHTML = '양도소득 <strong>' + won(income) + '</strong>은 기본공제 250만 원 이하라 <strong>세금 0원</strong>입니다. 다만 해외주식은 차익이 있으면 금액과 관계없이 확정신고 대상이니, 신고 여부는 홈택스 안내를 확인하세요.';
     } else {
       msg.className = 'note warn';
       msg.innerHTML = '과세표준 <strong>' + won(base) + '</strong>에 22%(소득세 20% + 지방소득세 2%)가 적용됩니다. 다음 해 <strong>5월 1~31일</strong> 홈택스에서 신고·납부하세요.';

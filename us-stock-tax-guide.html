@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>미국주식 양도소득세 계산기 2026 — 250만원 공제·손익통산·절세 매도 타이밍 | 개미일지 계산기</title>
+<meta name="description" content="미국주식 양도소득세를 250만 원 기본공제와 손익통산까지 반영해 바로 계산합니다. 22% 세율, 세금 0원 한도, 12월 매도와 1월 이월의 차이, 5월 신고 절차와 절세 방법을 정리했습니다.">
+<meta name="keywords" content="미국주식 양도소득세 계산기, 해외주식 양도세, 양도소득세 250만원, 손익통산, 해외주식 절세, 양도세 신고 5월, 해외주식 매도 타이밍">
+<meta name="author" content="개미일지 계산기">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="naver-site-verification" content="cdb28886cc67b8325db51e7ed2cb076ad8123aeb">
+<meta name="naver-site-verification" content="ad395d8f5a244191d970977240f0743daef43cdb">
+<link rel="canonical" href="https://ant-econ.github.io/us-stock-tax-guide.html">
+<link rel="alternate" type="application/rss+xml" title="개미일지 계산기 RSS" href="https://ant-econ.github.io/rss.xml">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="개미일지 계산기">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="미국주식 양도소득세 계산기 — 250만 원 공제·손익통산">
+<meta property="og:description" content="올해 실현 손익을 넣으면 22% 양도세와 세후 수익, 세금 0원 한도까지 바로 나옵니다. 12월 매도와 1월 이월 중 무엇이 유리한지도 비교해 드립니다.">
+<meta property="og:url" content="https://ant-econ.github.io/us-stock-tax-guide.html">
+<meta property="og:image" content="https://ant-econ.github.io/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="미국주식 양도소득세 계산기 — 250만 원 공제·손익통산">
+<meta name="twitter:description" content="올해 실현 손익을 넣으면 22% 양도세와 세후 수익, 세금 0원 한도까지 바로 나옵니다. 12월 매도와 1월 이월 중 무엇이 유리한지도 비교해 드립니다.">
+<meta name="theme-color" content="#070b14">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "WebApplication",
+   "name": "미국주식 양도세 계산기",
+   "url": "https://ant-econ.github.io/us-stock-tax-guide.html",
+   "applicationCategory": "FinanceApplication",
+   "operatingSystem": "Web",
+   "inLanguage": "ko-KR",
+   "isAccessibleForFree": true,
+   "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "KRW"
+   },
+   "description": "미국주식 양도소득세를 250만 원 기본공제와 손익통산까지 반영해 바로 계산합니다. 22% 세율, 세금 0원 한도, 12월 매도와 1월 이월의 차이, 5월 신고 절차와 절세 방법을 정리했습니다.",
+   "publisher": {
+    "@type": "Organization",
+    "name": "개미일지 계산기",
+    "url": "https://ant-econ.github.io/"
+   }
+  },
+  {
+   "@type": "BreadcrumbList",
+   "itemListElement": [
+    {
+     "@type": "ListItem",
+     "position": 1,
+     "name": "계산기 홈",
+     "item": "https://ant-econ.github.io/"
+    },
+    {
+     "@type": "ListItem",
+     "position": 2,
+     "name": "미국주식 양도세",
+     "item": "https://ant-econ.github.io/us-stock-tax-guide.html"
+    }
+   ]
+  },
+  {
+   "@type": "FAQPage",
+   "mainEntity": [
+    {
+     "@type": "Question",
+     "name": "250만 원 공제는 증권사마다 따로 받을 수 있나요?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "아닙니다. 키움·미래에셋·토스증권 등 여러 증권사에 계좌가 있어도 모든 해외주식 양도차익을 합쳐 250만 원을 한 번만 공제합니다. 증권사별로 따로 신고하면 과소신고가 되어 가산세가 붙을 수 있으니, 연말에 증권사별 양도차익 내역을 모아 직접 합산해야 합니다."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "차익이 250만 원 이하인데 신고해야 하나요?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "해외주식은 양도차익이 발생하면 금액과 관계없이 확정신고 대상입니다. 250만 원 이하라 낼 세금은 0원이지만 신고 의무 자체는 남아 있습니다. 신고하지 않아도 되는지는 개인 상황에 따라 판단이 다를 수 있으므로, 홈택스의 신고 안내나 국세청 상담(126)으로 확인하는 편이 안전합니다."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "환율은 어느 날짜 기준으로 계산하나요?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "취득가액은 취득일, 양도가액은 양도일의 매매기준율(외국환은행 최초 고시 환율)로 각각 환산합니다. 증권사가 발급하는 양도소득 내역서에 원화 환산 금액이 정리돼 있으니 그 값을 그대로 쓰면 됩니다. 환율이 크게 움직인 해에는 달러 기준 손익과 원화 기준 손익이 달라질 수 있습니다."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "해외 상장 ETF도 똑같이 22%인가요?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "해외 상장 ETF는 주식과 같은 양도소득세 22% 체계입니다. 반면 국내 상장 해외형 ETF의 매매차익은 배당소득으로 분류되어 15.4%가 원천징수되고, 금융소득 2,000만 원을 넘으면 종합과세에 합산됩니다. 세율과 합산 여부가 다르므로 상품을 고를 때 꼭 확인해야 합니다."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "양도차익이 크면 건강보험료도 오르나요?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "양도차익 자체는 건강보험 피부양자 소득요건의 합산 항목(이자·배당·사업·근로·연금·기타소득)에 직접 들어가지 않습니다. 다만 매도 대금이 예금·배당으로 이어져 금융소득이 연 1,000만 원을 넘으면 전액이 합산되고, 재산·사업소득 요건도 함께 봅니다. 금액이 큰 매도를 앞두고 있다면 공단(1577-1000)에 본인 케이스를 확인해 두는 것이 안전합니다."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "세금을 안 내고 넘어가면 어떻게 되나요?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "무신고 시 납부세액의 20% 가산세에 납부지연 가산세가 붙습니다. 국세청은 해외 금융계좌·거래 정보를 수집하고 있어 250만 원 초과 차익은 증권사 자료로 확인됩니다. 금액이 작아도 신고하는 편이 안전합니다."
+     }
+    }
+   ]
+  }
+ ]
+}
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5969786760477948" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="aura" aria-hidden="true"></div>
+<header class="site">
+  <div class="wrap bar">
+    <a class="brand" href="index.html"><span class="dot">🐜</span> 개미일지 계산기</a>
+    <nav class="top">
+      <a href="index.html">계산기 홈</a>
+      <a href="us-stock-tax-guide.html" class="on">미국주식 세금</a>
+      <a href="dividend-health-insurance.html">배당·건보</a>
+      <a href="isa-pension-tax.html">ISA·연금</a>
+      <a href="etf-fee-drag.html">ETF 비용</a>
+      <a href="about.html">소개</a>
+    </nav>
+    <button class="themebtn" id="themebtn" aria-label="화면 테마 바꾸기" title="다크/라이트 전환">☾</button>
+  </div>
+</header>
+
+<main class="wrap">
+<nav class="breadcrumb" aria-label="현재 위치"><a href="index.html">계산기 홈</a><span>›</span>미국주식 양도세</nav>
+<section class="pagehead">
+  <div class="crumbtab">💰 세금 · 미국주식</div>
+  <h1>미국주식 양도소득세,<br><em>250만 원 공제</em>까지 넣어 계산하세요</h1>
+  <p class="lede">올해 실제로 판 종목의 차익과 손실을 넣으면 22% 양도세, 세후 수익, 세금이 0원이 되는 한도까지 바로 나옵니다. 아직 안 판 종목을 12월에 팔 때와 1월로 넘길 때 얼마나 차이 나는지도 함께 비교합니다.</p>
+  <div class="hero-stats">
+    <div class="chipstat"><b>250만원</b>연간 기본공제</div>
+    <div class="chipstat"><b>22%</b>소득세 20% + 지방세 2%</div>
+    <div class="chipstat"><b>5월</b>다음 해 확정신고</div>
+    <div class="chipstat"><b>분리과세</b>금융소득 합산 없음</div>
+  </div>
+</section>
+
+<div class="card">
+  <h2>미국주식 양도소득세·매도 타이밍 계산기</h2>
+  <p class="sub">매도금액이 아니라 <strong>매입가를 뺀 차익</strong>을 넣으세요. 손실은 마이너스가 아니라 양수로 입력하면 통산됩니다.</p>
+  <div class="grid2">
+    <div>
+      <div class="rowline">
+        <label class="f"><span>올해 실현 차익</span><div class="inp"><input type="text" id="t-gain" class="money" value="8,000,000" inputmode="numeric" autocomplete="off"><span class="unit">원</span></div></label>
+        <label class="f"><span>올해 실현 손실</span><div class="inp"><input type="text" id="t-loss" class="money" value="1,500,000" inputmode="numeric" autocomplete="off"><span class="unit">원</span></div></label>
+      </div>
+      <div class="rowline">
+        <label class="f"><span>필요경비 <span class="hint">(수수료 등)</span></span><div class="inp"><input type="text" id="t-fee" class="money" value="300,000" inputmode="numeric" autocomplete="off"><span class="unit">원</span></div></label>
+        <label class="f"><span>아직 안 판 평가차익</span><div class="inp"><input type="text" id="t-plan" class="money" value="5,000,000" inputmode="numeric" autocomplete="off"><span class="unit">원</span></div></label>
+      </div>
+      <div class="rowline">
+        <label class="f"><span>그 종목 매도 시점</span><div class="inp sel"><select id="t-when"><option value="dec">올해 12월 (올해 과세)</option><option value="jan">내년 1월 (다음 해 과세)</option></select></div></label>
+        <label class="f"><span>연말 추가 손실 확정 <span class="hint">(선택)</span></span><div class="inp"><input type="text" id="t-addloss" class="money" value="0" inputmode="numeric" autocomplete="off"><span class="unit">원</span></div></label>
+      </div>
+      <div class="note">해외주식은 국내 주식과 달리 소액주주라도 매매차익 전액이 과세 대상입니다. 기본공제 250만 원은 모든 증권사·모든 해외주식을 합쳐 <strong>한 해에 한 번</strong>만 적용됩니다.</div>
+    </div>
+    <div>
+      <div class="result">
+        <div class="big">예상 납부세액 <b id="t-tax">0원</b></div>
+        <div class="kv"><span>순양도소득(차익−손실−경비)</span><b id="t-net">0원</b></div>
+        <div class="kv"><span>기본공제</span><b id="t-ded">-2,500,000원</b></div>
+        <div class="kv"><span>과세표준</span><b id="t-base">0원</b></div>
+        <div class="kv"><span>소득세 20%</span><b id="t-inc">0원</b></div>
+        <div class="kv"><span>지방소득세 2%</span><b id="t-loc">0원</b></div>
+        <div class="kv"><span>세후 실현수익</span><b id="t-after" class="pos">0원</b></div>
+        <div class="kv"><span>실효세율(순이익 대비)</span><b id="t-rate">0%</b></div>
+        <div class="kv total"><span>세금 0원까지 남은 차익</span><b id="t-room">0원</b></div>
+      </div>
+      <div class="note" id="t-msg">값을 입력하면 계산됩니다.</div>
+    </div>
+  </div>
+
+  <div class="chartbox"><canvas id="t-chart" role="img" aria-label="순양도소득에 따른 양도소득세 곡선"></canvas></div>
+  <div class="legend"><span><i class="line" style="background:var(--accent)"></i>양도소득세</span><span><i class="bar"></i>현재 위치</span><span><i class="bar2"></i>12월 매도 위치</span></div>
+
+  <div class="scroll">
+    <table class="tbl" id="t-table">
+      <thead><tr><th>시나리오</th><th>과세표준</th><th>세액</th><th>세후 수익</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <div class="note">표의 세액은 지방소득세를 포함한 22% 기준입니다. 실제 신고에서는 취득일·양도일의 기준환율로 원화 환산하고, 증권사별 내역을 합산해야 합니다.</div>
+</div>
+
+<article class="card prose">
+  <h2>미국주식 양도소득세, 이 구조만 알면 계산이 끝납니다</h2>
+  <p>국내 상장주식은 대주주가 아닌 이상 개인이 장내에서 팔아 얻은 차익에 세금이 없습니다. 반면 미국·일본·중국 등 <strong>해외 시장에 상장된 주식</strong>을 팔아 차익이 나면 금액과 관계없이 양도소득세 대상입니다. 2025년 1월 금융투자소득세(금투세)가 폐지되면서 해외주식은 지금의 양도소득세 체계를 그대로 유지하고 있습니다.</p>
+  <p>계산 순서는 네 단계입니다. ① 종목별로 매도금액에서 취득가액과 필요경비(매매수수료 등)를 빼 차익을 구하고, ② 같은 해에 판 종목들의 이익과 손실을 합쳐 순양도소득을 만들고, ③ 여기서 기본공제 250만 원을 빼 과세표준을 구한 뒤, ④ 20% 소득세와 그 10%인 지방소득세를 더해 22%를 적용합니다. 배당금은 양도소득이 아니라 배당소득으로 따로 과세되므로 이 계산에 섞이지 않습니다.</p>
+
+  <table>
+    <tr><th>순양도소득</th><th class="num">과세표준</th><th class="num">세액(22%)</th><th class="num">세후 수익</th></tr>
+    <tr><td>200만 원</td><td class="num">0원</td><td class="num">0원</td><td class="num">200만 원</td></tr>
+    <tr><td>610만 원</td><td class="num">360만 원</td><td class="num">792,000원</td><td class="num">5,308,000원</td></tr>
+    <tr><td>1,380만 원</td><td class="num">1,130만 원</td><td class="num">2,486,000원</td><td class="num">11,314,000원</td></tr>
+    <tr><td>4,200만 원</td><td class="num">3,950만 원</td><td class="num">8,690,000원</td><td class="num">33,310,000원</td></tr>
+  </table>
+  <p>표에서 보듯 세 부담은 차익에 정확히 비례하지 않습니다. 250만 원까지는 0원이고, 그 위부터 22%가 붙습니다. 그래서 <strong>250만 원을 조금 넘느냐 마느냐</strong>가 실질적인 절세 분기점이 됩니다.</p>
+
+  <h3>손익통산, 아는 만큼 세금이 줄어듭니다</h3>
+  <ul>
+    <li><strong>같은 해 안에서만</strong> 통산됩니다. 2026년에 낸 손실을 2027년 이익과 합칠 수 없고, 남은 손실을 다음 해로 넘기는 이월공제도 없습니다.</li>
+    <li><strong>해외주식끼리는 전부</strong> 합산됩니다. 미국·일본·홍콩 어디서 났든, 증권사가 달라도 한 묶음입니다.</li>
+    <li><strong>국내 과세 주식과도 통산</strong>됩니다. 다만 국내 쪽은 대주주 양도분과 비상장주식처럼 과세되는 거래에 한하고, 소액주주가 장내에서 판 손익은 통산 대상이 아닙니다.</li>
+    <li><strong>부동산과는 섞이지 않습니다.</strong> 부동산 양도세에서 기본공제 250만 원을 받았더라도 주식에서 별도로 250만 원을 공제받습니다.</li>
+    <li><strong>양도 시점은 결제일</strong>입니다. 12월 마지막 거래일에 주문해 결제가 1월에 이뤄지면 다음 해 양도분으로 잡힐 수 있습니다.</li>
+  </ul>
+
+  <h3>12월에 팔까, 1월로 넘길까</h3>
+  <p>기본공제가 <strong>매년 새로 주어지는 250만 원</strong>이라는 점이 타이밍의 핵심입니다. 올해 이미 차익을 800만 원 냈다면, 추가로 500만 원어치를 12월에 팔면 그 500만 원 전액에 22%가 붙습니다. 같은 매도를 1월로 넘기면 내년 공제 250만 원을 새로 받아 절반만 과세됩니다. 위 계산기의 '12월 매도'와 '1월 이월' 비교가 이 차이를 그대로 보여 줍니다.</p>
+  <p>반대 방향도 있습니다. <strong>평가손실이 큰 종목을 연말에 정리</strong>하면 올해 이익과 통산되어 세금이 줄어듭니다. 미국은 한국과 달리 같은 종목을 곧바로 다시 사도 손실 인정이 취소되지 않으므로( wash sale 규정은 미국 거주자에게 적용), 팔았다가 다시 사는 방식으로 손실만 확정할 수 있습니다. 다만 이때는 새 취득가액이 낮아져 나중에 팔 때 차익이 커지므로, 세금이 사라지는 것이 아니라 <strong>뒤로 미뤄지는</strong> 경우가 많습니다.</p>
+
+  <div class="callout">
+    <p><b>2026년 한시 제도 — 국내시장복귀계좌</b><br>2025년 12월 23일 이전부터 보유한 국외상장주식을 2026년 12월 31일까지 국내시장복귀계좌로 매도하면 양도소득금액의 일부를 공제받는 특례가 2026년에 도입됐습니다. 매도 시기에 따라 공제 비율이 달라집니다(1~5월 100%, 6~7월 80%, 8~12월 50%). 대상 요건·신청 방식은 계좌를 만든 증권사와 국세청 안내로 확인해야 하며, 모든 매도가 자동 적용되는 것은 아닙니다.</p>
+  </div>
+
+  <h3>신고 기한과 가산세</h3>
+  <p>해외주식은 예정신고 없이 <strong>다음 해 5월 1일부터 31일까지</strong> 홈택스에서 확정신고·납부합니다. 2026년에 판 분은 2027년 5월에 신고합니다. 증권사가 제공하는 양도세 대행 서비스를 이용하면 매매 내역과 환율이 자동으로 채워져 편합니다. 기한을 넘기면 무신고 가산세 20%와 납부지연 가산세(하루 0.022%)가 붙고, 세액이 1,000만 원을 넘으면 2개월 안에 나눠 낼 수 있습니다.</p>
+  <p>해외주식은 <strong>양도차익이 발생하면 금액과 관계없이 확정신고 대상</strong>입니다. 250만 원 이하라 낼 세금이 없어도 신고 의무는 남아 있으니, 공제 이하라고 해서 신고를 생략하는 습관은 권하지 않습니다. 반대로 손실만 난 해에는 신고해도 환급되는 세금이 없습니다(손실 이월 없음).</p>
+
+  <h3>절세에 실제로 쓰이는 방법</h3>
+  <ul>
+    <li><strong>연간 매도 계획 세우기</strong> — 12월에 몰아 팔지 말고, 250만 원 공제를 매년 소진하는 속도로 매도를 나눕니다.</li>
+    <li><strong>연말 손실 확정</strong> — 이익이 큰 해에는 손실 종목을 같은 해에 정리해 과세표준을 낮춥니다.</li>
+    <li><strong>ISA·연금저축 활용</strong> — 국내 상장 해외형 ETF(예: TIGER 미국S&amp;P500)를 ISA에 담으면 매매차익이 비과세 또는 9.9% 분리과세되고, 연금계좌에서는 과세가 이연됩니다. 해외 직접 투자 대신 국내 상장 ETF를 고르는 것만으로 22% 양도세를 피할 수 있습니다.</li>
+    <li><strong>배당은 배당소득으로</strong> — 배당은 양도차익과 별도로 15%대 원천징수됩니다. 양도차익 250만 원 공제와 무관하니 따로 관리하세요.</li>
+    <li><strong>환율 확인</strong> — 취득일과 양도일의 기준환율이 달라 원화 차익이 달라집니다. 달러로는 이익인데 원화로는 손실이 되는 경우도 있습니다.</li>
+  </ul>
+
+  <h3>자주 묻는 질문</h3>
+  <details class="faq"><summary>250만 원 공제는 증권사마다 따로 받을 수 있나요?</summary><p>아닙니다. 키움·미래에셋·토스증권 등 여러 증권사에 계좌가 있어도 모든 해외주식 양도차익을 합쳐 250만 원을 한 번만 공제합니다. 증권사별로 따로 신고하면 과소신고가 되어 가산세가 붙을 수 있으니, 연말에 증권사별 양도차익 내역을 모아 직접 합산해야 합니다.</p></details>
+  <details class="faq"><summary>차익이 250만 원 이하인데 신고해야 하나요?</summary><p>해외주식은 양도차익이 발생하면 금액과 관계없이 확정신고 대상입니다. 250만 원 이하라 낼 세금은 0원이지만 신고 의무 자체는 남아 있습니다. 신고하지 않아도 되는지는 개인 상황에 따라 판단이 다를 수 있으므로, 홈택스의 신고 안내나 국세청 상담(126)으로 확인하는 편이 안전합니다.</p></details>
+  <details class="faq"><summary>환율은 어느 날짜 기준으로 계산하나요?</summary><p>취득가액은 취득일, 양도가액은 양도일의 매매기준율(외국환은행 최초 고시 환율)로 각각 환산합니다. 증권사가 발급하는 양도소득 내역서에 원화 환산 금액이 정리돼 있으니 그 값을 그대로 쓰면 됩니다. 환율이 크게 움직인 해에는 달러 기준 손익과 원화 기준 손익이 달라질 수 있습니다.</p></details>
+  <details class="faq"><summary>해외 상장 ETF도 똑같이 22%인가요?</summary><p>해외 상장 ETF는 주식과 같은 양도소득세 22% 체계입니다. 반면 국내 상장 해외형 ETF의 매매차익은 배당소득으로 분류되어 15.4%가 원천징수되고, 금융소득 2,000만 원을 넘으면 종합과세에 합산됩니다. 세율과 합산 여부가 다르므로 상품을 고를 때 꼭 확인해야 합니다.</p></details>
+  <details class="faq"><summary>양도차익이 크면 건강보험료도 오르나요?</summary><p>양도차익 자체는 건강보험 피부양자 소득요건의 합산 항목(이자·배당·사업·근로·연금·기타소득)에 직접 들어가지 않습니다. 다만 매도 대금이 예금·배당으로 이어져 금융소득이 연 1,000만 원을 넘으면 전액이 합산되고, 재산·사업소득 요건도 함께 봅니다. 금액이 큰 매도를 앞두고 있다면 공단(1577-1000)에 본인 케이스를 확인해 두는 것이 안전합니다.</p></details>
+  <details class="faq"><summary>세금을 안 내고 넘어가면 어떻게 되나요?</summary><p>무신고 시 납부세액의 20% 가산세에 납부지연 가산세가 붙습니다. 국세청은 해외 금융계좌·거래 정보를 수집하고 있어 250만 원 초과 차익은 증권사 자료로 확인됩니다. 금액이 작아도 신고하는 편이 안전합니다.</p></details>
+
+  <p class="mini" style="margin-top:22px">기준 시점: 2026년 11월. 소득세법 제94조·제102조·제103조·제110조, 국세청 「2026년 신고안내 해외주식과 세금」을 참고했습니다. 세법은 개정될 수 있으므로 신고 전 최신 안내를 확인하세요.</p>
+</article>
+<section class="related">
+  <h2>다른 계산기</h2>
+  <p class="mini">같은 입력값으로 이어서 확인해 보세요. 모든 계산은 브라우저 안에서만 처리됩니다.</p>
+  <div class="calgrid">
+      <a class="calcard" href="dividend-health-insurance.html">
+        <div class="ic">🏥</div>
+        <h3>배당소득세·건보료 계산기</h3>
+        <p>배당 실수령액과 금융소득종합과세, 건강보험 피부양자 탈락 위험을 한 화면에서 확인하세요. 고배당 분리과세와 비교도 됩니다.</p>
+        <span class="tag">🏥 배당·건강보험 →</span>
+      </a>
+      <a class="calcard" href="sp500-vs-nasdaq100.html">
+        <div class="ic">📈</div>
+        <h3>S&P500 vs 나스닥100 계산기</h3>
+        <p>같은 적립금으로 두 지수를 20년 굴리면 얼마나 차이 날까요. 최대 낙폭 시나리오까지 넣어 비교합니다.</p>
+        <span class="tag">📈 지수 비교 →</span>
+      </a>
+      <a class="calcard" href="isa-pension-tax.html">
+        <div class="ic">🧾</div>
+        <h3>ISA·연금저축 계산기</h3>
+        <p>ISA 비과세 한도와 연금저축·IRP 세액공제를 합쳐 올해 절세액을 계산합니다. 한도까지 남은 금액도 알려 드립니다.</p>
+        <span class="tag">🧾 절세 계좌 →</span>
+      </a>
+      <a class="calcard" href="fx-breakeven.html">
+        <div class="ic">💱</div>
+        <h3>환율·손익분기 계산기</h3>
+        <p>주가가 올라도 환율이 떨어지면 손해입니다. 비용과 환율을 넣어 원화 실수익률과 본전 환율을 확인하세요.</p>
+        <span class="tag">💱 환율 →</span>
+      </a>
+      <a class="calcard" href="avg-price-water.html">
+        <div class="ic">📉</div>
+        <h3>물타기·평단가 계산기</h3>
+        <p>평단가와 본전 수익률을 계산하고, 물타기 전후를 비교합니다. 손실률별 회복 필요 상승률 표도 함께.</p>
+        <span class="tag">📉 평단가 →</span>
+      </a>
+      <a class="calcard" href="etf-fee-drag.html">
+        <div class="ic">🧮</div>
+        <h3>국내 vs 미국 ETF 계산기</h3>
+        <p>보수 0.03%p 차이와 세금 15.4% vs 22%, 환전 비용을 모두 넣어 장기 세후 수익을 비교합니다.</p>
+        <span class="tag">🧮 ETF →</span>
+      </a>
+  </div>
+  <p class="mini" style="margin-top:12px"><a href="index.html#calculators">계산기 7종 전체 보기 →</a></p>
+</section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="fnav">
+      <a href="us-stock-tax-guide.html">미국주식 양도세</a>
+      <a href="dividend-health-insurance.html">배당소득세·건보료</a>
+      <a href="sp500-vs-nasdaq100.html">S&P500 vs 나스닥100</a>
+      <a href="isa-pension-tax.html">ISA·연금저축</a>
+      <a href="fx-breakeven.html">환율·손익분기</a>
+      <a href="avg-price-water.html">물타기·평단가</a>
+      <a href="etf-fee-drag.html">국내 vs 미국 ETF</a>
+    </div>
+    <div class="fnav">
+      <a href="about.html">사이트 소개</a>
+      <a href="privacy.html">개인정보처리방침</a>
+      <a href="terms.html">이용약관·면책</a>
+      <a href="rss.xml">RSS</a>
+    </div>
+    <p class="fine">개미일지 계산기는 2026년 기준 세법을 바탕으로 한 참고용 계산 도구입니다. 실제 세액·보험료는 개인별 소득·재산·환율·금융사 처리에 따라 달라질 수 있으며, 세무·투자 판단의 최종 책임은 이용자에게 있습니다. © 2026 개미일지 계산기.</p>
+  </div>
+</footer>
+<script src="assets/kit.js"></script>
+<script>
+(function () {
+  'use strict';
+  var K = window.KIT, DED = 2500000, RATE = 0.22;
+  var gainEl = K.el('t-gain'), lossEl = K.el('t-loss'), feeEl = K.el('t-fee'),
+      planEl = K.el('t-plan'), whenEl = K.el('t-when'), addEl = K.el('t-addloss');
+  var chart = K.el('t-chart');
+
+  function taxOf(income) { return Math.max(0, income - DED) * RATE; }
+
+  function calc() {
+    var g = K.num(gainEl), l = K.num(lossEl), fee = K.num(feeEl);
+    var plan = Math.max(0, K.num(planEl)), addLoss = Math.max(0, K.num(addEl));
+    var dec = whenEl.value === 'dec';
+    var net = g - l - fee;
+    var base = Math.max(0, net - DED);
+    var tax = taxOf(net);
+    var after = net - tax;
+    var room = Math.max(0, DED - net);
+
+    K.el('t-net').textContent = K.won(net);
+    K.el('t-ded').textContent = '-' + K.won(Math.min(DED, Math.max(0, net)));
+    K.el('t-base').textContent = K.won(base);
+    K.el('t-inc').textContent = K.won(base * 0.20);
+    K.el('t-loc').textContent = K.won(base * 0.02);
+    K.el('t-tax').textContent = K.won(tax);
+    K.el('t-after').textContent = K.won(after);
+    K.el('t-after').className = after >= 0 ? 'pos' : 'neg';
+    K.el('t-rate').textContent = net > 0 ? K.pct(tax / net * 100, 1) : '0%';
+    K.el('t-room').textContent = K.won(room);
+
+    var msg = K.el('t-msg');
+    var decTax = taxOf(net + plan), janTax = taxOf(plan);
+    var diff = decTax - (tax + janTax);
+    var parts = [];
+    if (net > DED) {
+      msg.className = 'note warn';
+      parts.push('순양도소득 <strong>' + K.won(net) + '</strong>에서 250만 원을 빼고 22%를 적용했습니다. 다음 해 <strong>5월 1~31일</strong> 홈택스에서 신고·납부하세요.');
+    } else if (net > 0) {
+      msg.className = 'note';
+      parts.push('순양도소득 <strong>' + K.won(net) + '</strong>은 기본공제 250만 원 이하라 <strong>세금 0원</strong>입니다. 공제 여유는 ' + K.won(room) + ' 남았습니다.');
+    } else {
+      msg.className = 'note';
+      parts.push('올해는 손실 구간이라 낼 세금이 없습니다. 같은 해 다른 해외주식 이익이 있으면 통산되고, 남은 손실은 다음 해로 넘어가지 않습니다.');
+    }
+    if (plan > 0) {
+      parts.push('평가차익 <strong>' + K.won(plan) + '</strong>을 ' + (dec ? '12월에 팔면 올해 세액이 <strong>' + K.won(decTax) + '</strong>로 늘고, 1월로 넘기면 올해 ' + K.won(tax) + ' + 내년 ' + K.won(janTax) + '으로 <strong>' + K.won(diff) + '</strong> 줄어듭니다.' : '1월로 넘기면 올해는 ' + K.won(tax) + ' 그대로이고 내년에 ' + K.won(janTax) + '을 냅니다. 12월에 팔았다면 올해 ' + K.won(decTax) + '이 되어 <strong>' + K.won(diff) + '</strong> 더 냈을 것입니다.'));
+    }
+    msg.innerHTML = parts.join(' ');
+
+    var body = [];
+    function row(name, b, t, n) {
+      body.push('<tr><td>' + name + '</td><td>' + K.won(b) + '</td><td>' + t + '</td><td class="' + (n >= 0 ? 'pos' : 'neg') + '">' + K.won(n) + '</td></tr>');
+    }
+    row('지금까지 실현 (기준)', base, K.won(tax), after);
+    row('12월에 계획분까지 매도', Math.max(0, net + plan - DED), K.won(decTax), net + plan - decTax);
+    row('내년 1월로 이월', base, '올해 ' + K.won(tax) + ' / 내년 ' + K.won(janTax), after);
+    if (addLoss > 0) {
+      var nat = maxN(net - addLoss);
+      row('연말 손실 ' + K.won(addLoss) + ' 추가 확정', Math.max(0, nat - DED), K.won(taxOf(nat)), nat - taxOf(nat));
+    }
+    K.el('t-table').querySelector('tbody').innerHTML = body.join('');
+
+    draw(net, dec ? net + plan : null);
+  }
+  function maxN(v) { return v; }
+
+  function draw(net, markDec) {
+    if (!chart) return;
+    var top = Math.max(40000000, Math.ceil(Math.max(net, markDec || 0) * 1.35 / 1000000) * 1000000);
+    var steps = 40, data = [], labels = [];
+    for (var i = 0; i <= steps; i++) {
+      var v = top * i / steps;
+      data.push(taxOf(v));
+      labels.push(i % 5 === 0 ? K.shortWon(v) : '');
+    }
+    var series = [{ data: data, color: K.color('accent'), fill: true, width: 2.4 }];
+    var markers = [];
+    var iNet = Math.round(net / top * steps);
+    if (iNet >= 0 && iNet <= steps) markers.push({ i: iNet, label: '현재', color: K.color('warn') });
+    if (markDec != null) {
+      var iDec = Math.round(markDec / top * steps);
+      if (iDec >= 0 && iDec <= steps && iDec !== iNet) markers.push({ i: iDec, label: '12월 매도', color: K.color('down') });
+    }
+    K.plot(chart, { series: series, labels: labels, xTicks: 8, markers: markers });
+  }
+
+  [gainEl, lossEl, feeEl, planEl, addEl].forEach(function (el) { K.on(el, calc); });
+  K.onChange(whenEl, calc);
+  K.theme(calc);
+  K.eachResize(calc);
+  window.addEventListener('load', calc);
+  calc();
+})();
+</script>
+</body>
+</html>

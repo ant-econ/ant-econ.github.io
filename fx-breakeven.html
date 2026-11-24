@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>미국주식 환율 손익분기 계산기 — 환전 수수료·환차익 포함 원화 실수익률 | 개미일지 계산기</title>
+<meta name="description" content="달러로 미국주식을 사고팔 때 환전 스프레드와 수수료, 환율 변동까지 반영한 원화 실수익률과 손익분기 환율을 계산합니다. 주가 효과와 환율 효과를 분리해 보여 드립니다.">
+<meta name="keywords" content="환율 손익분기, 미국주식 환차익, 환전 수수료 계산, 원화 수익률 계산기, 달러 투자 수익률, 환율 효과, 해외주식 환전">
+<meta name="author" content="개미일지 계산기">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="naver-site-verification" content="cdb28886cc67b8325db51e7ed2cb076ad8123aeb">
+<meta name="naver-site-verification" content="ad395d8f5a244191d970977240f0743daef43cdb">
+<link rel="canonical" href="https://ant-econ.github.io/fx-breakeven.html">
+<link rel="alternate" type="application/rss+xml" title="개미일지 계산기 RSS" href="https://ant-econ.github.io/rss.xml">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="개미일지 계산기">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="환율 손익분기 계산기 — 환전 수수료까지 반영한 원화 수익">
+<meta property="og:description" content="주가가 올라도 환율이 떨어지면 손해입니다. 비용과 환율을 넣어 원화 실수익률과 본전 환율을 확인하세요.">
+<meta property="og:url" content="https://ant-econ.github.io/fx-breakeven.html">
+<meta property="og:image" content="https://ant-econ.github.io/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="환율 손익분기 계산기 — 환전 수수료까지 반영한 원화 수익">
+<meta name="twitter:description" content="주가가 올라도 환율이 떨어지면 손해입니다. 비용과 환율을 넣어 원화 실수익률과 본전 환율을 확인하세요.">
+<meta name="theme-color" content="#070b14">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "WebApplication",
+   "name": "환율·손익분기 계산기",
+   "url": "https://ant-econ.github.io/fx-breakeven.html",
+   "applicationCategory": "FinanceApplication",
+   "operatingSystem": "Web",
+   "inLanguage": "ko-KR",
+   "isAccessibleForFree": true,
+   "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "KRW"
+   },
+   "description": "달러로 미국주식을 사고팔 때 환전 스프레드와 수수료, 환율 변동까지 반영한 원화 실수익률과 손익분기 환율을 계산합니다. 주가 효과와 환율 효과를 분리해 보여 드립니다.",
+   "publisher": {
+    "@type": "Organization",
+    "name": "개미일지 계산기",
+    "url": "https://ant-econ.github.io/"
+   }
+  },
+  {
+   "@type": "BreadcrumbList",
+   "itemListElement": [
+    {
+     "@type": "ListItem",
+     "position": 1,
+     "name": "계산기 홈",
+     "item": "https://ant-econ.github.io/"
+    },
+    {
+     "@type": "ListItem",
+     "position": 2,
+     "name": "환율·손익분기",
+     "item": "https://ant-econ.github.io/fx-breakeven.html"
+    }
+   ]
+  },
+  {
+   "@type": "FAQPage",
+   "mainEntity": [
+    {
+     "@type": "Question",
+     "name": "환전은 언제 하는 게 유리한가요?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "환율을 맞히는 것은 주가를 맞히는 것만큼 어렵습니다. 목돈을 한 번에 바꾸기보다 적립식으로 나누어 바꾸면 평균 환율에 가까워집니다. 장기 투자라면 환율을 예측하기보다 자산의 일부로 받아들이는 편이 현실적입니다."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "환차익에 세금이 붙나요?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "붙습니다. 해외주식 양도차익을 원화로 환산해 계산하므로 환율 상승분도 차익에 포함됩니다. 연 250만 원 기본공제를 넘으면 22%가 과세되고, 다음 해 5월에 신고합니다."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "달러 예금 이자도 과세되나요?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "네. 달러 예금 이자는 이자소득으로 15.4%가 원천징수되고, 다른 금융소득과 합쳐 연 2,000만 원을 넘으면 종합과세에 합산됩니다. 환율이 오르면 원화 평가 이익이 생기지만 예금 이자에는 환차익 과세가 따로 없습니다."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "환율이 오르면 무조건 이득인가요?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "이미 달러 자산을 보유한 경우에는 원화 평가액이 늘어납니다. 반대로 앞으로 살 사람에게는 달러가 비싸진 것이므로 매수 단가가 올라갑니다. 손익은 매수 시점 환율과 매도 시점 환율의 차이로 결정됩니다."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "국내 상장 ETF는 환전 수수료가 없나요?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "투자자가 직접 환전하지 않아도 운용사가 기초자산을 사들이는 과정에서 환전 비용이 발생하고, 이는 NAV와 추적오차에 반영됩니다. 다만 개인이 은행에서 달러를 바꾸는 것보다 유리한 경우가 많습니다."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "수익률은 달러 기준과 원화 기준 중 무엇으로 봐야 하나요?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "생활비를 원화로 쓰는 한국 거주자라면 원화 기준이 실제 체감 수익률입니다. 달러 기준 수익률은 지수나 종목의 성과를 비교할 때 유용하고, 원화 기준은 환율 효과까지 포함한 최종 결과를 보여 줍니다."
+     }
+    }
+   ]
+  }
+ ]
+}
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5969786760477948" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="aura" aria-hidden="true"></div>
+<header class="site">
+  <div class="wrap bar">
+    <a class="brand" href="index.html"><span class="dot">🐜</span> 개미일지 계산기</a>
+    <nav class="top">
+      <a href="index.html">계산기 홈</a>
+      <a href="us-stock-tax-guide.html">미국주식 세금</a>
+      <a href="dividend-health-insurance.html">배당·건보</a>
+      <a href="isa-pension-tax.html">ISA·연금</a>
+      <a href="etf-fee-drag.html">ETF 비용</a>
+      <a href="about.html">소개</a>
+    </nav>
+    <button class="themebtn" id="themebtn" aria-label="화면 테마 바꾸기" title="다크/라이트 전환">☾</button>
+  </div>
+</header>
+
+<main class="wrap">
+<nav class="breadcrumb" aria-label="현재 위치"><a href="index.html">계산기 홈</a><span>›</span>환율·손익분기</nav>
+<section class="pagehead">
+  <div class="crumbtab">💱 환율</div>
+  <h1>주가가 올라도 손해,<br><em>환율까지 넣은</em> 실수익률</h1>
+  <p class="lede">환전 스프레드와 수수료, 환율 변동을 모두 반영한 원화 실수익률과 손익분기 환율을 계산합니다. 주가에서 번 돈과 환율에서 번 돈이 각각 얼마인지도 나눠서 보여 드립니다.</p>
+  <div class="hero-stats">
+    <div class="chipstat"><b>2번</b>환전할 때마다 비용</div>
+    <div class="chipstat"><b>0.1~1.75%</b>환전 스프레드 폭</div>
+    <div class="chipstat"><b>원화</b>과세·평가 기준</div>
+    <div class="chipstat"><b>22%</b>환차익 포함 양도세</div>
+  </div>
+</section>
+
+<div class="card">
+  <h2>환율 손익분기 계산기</h2>
+  <p class="sub">달러로 사고팔았을 때 <strong>원화로 실제 얼마를 벌었는지</strong> 계산합니다. 환전 스프레드는 편도 기준으로 양쪽에 적용됩니다.</p>
+  <div class="grid2">
+    <div>
+      <div class="rowline">
+        <label class="f"><span>매수 환율</span><div class="inp"><input type="number" id="f-buyrate" value="1380" min="500" max="3000" step="0.1" inputmode="decimal"><span class="unit">원</span></div></label>
+        <label class="f"><span>매도 환율(예상)</span><div class="inp"><input type="number" id="f-sellrate" value="1380" min="500" max="3000" step="0.1" inputmode="decimal"><span class="unit">원</span></div></label>
+      </div>
+      <div class="rowline">
+        <label class="f"><span>투자 금액</span><div class="inp"><input type="text" id="f-usd" class="money" value="10,000" inputmode="numeric" autocomplete="off"><span class="unit">달러</span></div></label>
+        <label class="f"><span>주식 수 <span class="hint">(자동 계산)</span></span><div class="inp"><input type="text" id="f-shares" value="" readonly tabindex="-1"><span class="unit">주</span></div></label>
+      </div>
+      <div class="rowline">
+        <label class="f"><span>매수 주가</span><div class="inp"><input type="number" id="f-buyprice" value="100" min="0.01" step="0.01" inputmode="decimal"><span class="unit">$</span></div></label>
+        <label class="f"><span>매도 주가</span><div class="inp"><input type="number" id="f-sellprice" value="110" min="0.01" step="0.01" inputmode="decimal"><span class="unit">$</span></div></label>
+      </div>
+      <div class="rowline">
+        <label class="f"><span>환전 스프레드 <span class="hint">(편도)</span></span><div class="inp"><input type="number" id="f-spread" value="0.1" min="0" max="5" step="0.01" inputmode="decimal"><span class="unit">%</span></div></label>
+        <label class="f"><span>매매 수수료 <span class="hint">(편도)</span></span><div class="inp"><input type="number" id="f-comm" value="0.25" min="0" max="3" step="0.01" inputmode="decimal"><span class="unit">%</span></div></label>
+      </div>
+      <label class="check"><input type="checkbox" id="f-tax"> 양도소득세 22% 반영 (기본공제 250만 원 별도)</label>
+      <div class="note">은행 창구 환전은 스프레드가 1.5~1.75%에 이르고, 증권사 자동 환전은 우대율에 따라 0.1% 안팎입니다. 두 번 환전하면 비용도 두 번 붙습니다.</div>
+    </div>
+    <div>
+      <div class="result">
+        <div class="big">원화 실수익률 <b id="f-ret" class="pos">0%</b></div>
+        <div class="kv"><span>원화 매수원가(비용 포함)</span><b id="f-cost">0원</b></div>
+        <div class="kv"><span>원화 매도금액(비용 차감)</span><b id="f-proceeds">0원</b></div>
+        <div class="kv"><span>세전 원화 손익</span><b id="f-profit">0원</b></div>
+        <div class="kv"><span>비용 합계(환전+수수료)</span><b id="f-fees" class="neg">0원</b></div>
+        <div class="kv"><span>주가 효과</span><b id="f-pricefx">0원</b></div>
+        <div class="kv"><span>환율 효과</span><b id="f-fxfx">0원</b></div>
+        <div class="kv"><span>양도세(22%)</span><b id="f-taxamt">—</b></div>
+        <div class="kv total"><span>세후 원화 손익</span><b id="f-after">0원</b></div>
+      </div>
+      <div class="result" style="margin-top:12px">
+        <div class="big">손익분기점</div>
+        <div class="kv"><span>본전 매도 환율</span><b id="f-berate">0원</b></div>
+        <div class="kv"><span>본전 매도 주가</span><b id="f-beprice">$0</b></div>
+        <div class="kv"><span>필요 주가 상승률</span><b id="f-berequired">0%</b></div>
+        <div class="sub2" id="f-msg">값을 입력하면 계산됩니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chartbox"><canvas id="f-chart" role="img" aria-label="매도 환율에 따른 원화 수익률"></canvas></div>
+  <div class="legend"><span><i class="line" style="background:var(--accent)"></i>원화 수익률</span><span><i class="bar"></i>현재 예상 환율</span></div>
+
+  <div class="scroll">
+    <table class="tbl" id="f-table">
+      <thead><tr><th>매도 환율 변화</th><th>주가 효과</th><th>환율 효과</th><th>원화 손익</th><th>수익률</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<article class="card prose">
+  <h2>미국주식 수익률은 세 겹입니다</h2>
+  <p>미국 주식을 사서 원화로 돌려받기까지는 세 가지가 겹칩니다. 첫째 <strong>주가</strong>, 둘째 <strong>환율</strong>, 셋째 <strong>비용</strong>입니다. 많은 투자자가 주가만 보고 수익률을 계산하지만, 실제 통장에 들어오는 원화는 이 셋이 모두 반영된 결과입니다. 주가가 10% 올라도 환율이 5% 떨어지고 환전·수수료로 0.7%를 쓰면 실수익률은 4%대로 줄어듭니다.</p>
+  <p>계산 구조는 단순합니다. 달러를 살 때는 <strong>환율 × (1 + 스프레드)</strong>만큼 원화가 나가고, 팔 때는 <strong>환율 × (1 − 스프레드)</strong>만큼 들어옵니다. 여기에 매수·매도 수수료가 각각 붙습니다. 이 비용을 모두 더하면 왕복 0.5~1% 수준이고, 은행 창구에서 환전하면 3%를 넘기도 합니다.</p>
+
+  <h3>환전 수수료, 어디서 바꾸느냐가 절반입니다</h3>
+  <table>
+    <tr><th>환전 경로</th><th>스프레드(편도)</th><th>왕복 부담</th></tr>
+    <tr><td>은행 창구</td><td>약 1.75%</td><td>3.5% 이상</td></tr>
+    <tr><td>은행 앱·인터넷 환전</td><td>약 0.5~1.0%</td><td>1~2%</td></tr>
+    <tr><td>증권사 자동 환전(우대)</td><td>약 0.1~0.25%</td><td>0.2~0.5%</td></tr>
+  </table>
+  <p>같은 1만 달러를 바꿔도 경로에 따라 30만 원 이상 차이가 납니다. 증권사에서 미국 주식을 직접 사면 매수·매도 시 자동 환전이 이뤄지므로, 계좌의 환전 우대율을 미리 확인해 두는 것이 좋습니다. 달러를 미리 사 두는 방식(환전 후 대기)은 환율이 유리할 때 바꿀 수 있다는 장점이 있지만, 그 사이 원화 이자를 포기하는 비용도 있습니다.</p>
+
+  <h3>환차익에도 세금이 붙습니다</h3>
+  <p>해외주식 양도소득세는 <strong>원화 기준</strong>으로 계산합니다. 취득가액은 취득일의 기준환율, 양도가액은 양도일의 기준환율로 각각 환산하므로, 주가가 그대로여도 환율이 오르면 원화 차익이 생겨 세금이 붙습니다. 반대로 달러로는 이익인데 원화로는 손실이면 과세 대상이 아닙니다. 그래서 위 계산기에서 양도세를 켜면 <strong>원화 손익</strong>에 22%를 적용합니다. 기본공제 250만 원은 다른 해외주식 손익과 합산해 한 번만 적용되므로 여기서는 빼지 않았습니다.</p>
+  <p>배당에도 환율이 작용합니다. 달러 배당을 받을 때의 환율로 원화 환산해 과세되고, 원화로 바꾸는 시점의 환율에 따라 실수령액이 달라집니다.</p>
+
+  <h3>손익분기 계산법</h3>
+  <p>본전이 되는 매도 환율은 <strong>원화 매수원가 ÷ (매도 달러금액 × (1 − 스프레드) × (1 − 수수료))</strong>입니다. 본전이 되는 매도 주가는 <strong>원화 매수원가 ÷ (보유 주식 수 × 매도 환율 × (1 − 스프레드) × (1 − 수수료))</strong>입니다. 위 계산기의 '본전 매도 환율'과 '본전 매도 주가'가 이 값입니다.</p>
+  <table>
+    <tr><th>매도 환율 변화</th><th>본전이 되려면 주가는</th></tr>
+    <tr><td>-10%</td><td>+11.1%</td></tr>
+    <tr><td>-5%</td><td>+5.3%</td></tr>
+    <tr><td>0%</td><td>0%</td></tr>
+    <tr><td>+5%</td><td>-4.8% (주가가 조금 빠져도 본전)</td></tr>
+    <tr><td>+10%</td><td>-9.1%</td></tr>
+  </table>
+  <p>표는 비용을 0으로 둔 단순 계산입니다. 환율 하락은 주가 상승으로 정확히 상쇄되지 않습니다. 10% 떨어지면 11.1%가 올라야 본전이고, 20% 떨어지면 25%가 필요합니다. 하락이 깊어질수록 회복 부담이 커지는 구조입니다.</p>
+
+  <h3>환노출과 환헤지</h3>
+  <ul>
+    <li><strong>환노출</strong> — 달러 자산을 그대로 보유합니다. 달러 강세면 원화 수익률이 좋아지고, 약세면 나빠집니다. 미국 주식 직접 투자와 대부분의 국내 상장 미국지수 ETF가 여기에 해당합니다.</li>
+    <li><strong>환헤지</strong> — 환율 변동을 상쇄하는 계약을 함께 씁니다. 환율이 오르내려도 원화 수익률이 안정되지만, 헤지 비용(금리 차이)이 발생하고 달러 강세의 이익도 포기합니다.</li>
+    <li><strong>국내 상장 ETF</strong>는 원화로 거래되지만 기초자산이 달러라 환율 영향이 NAV에 반영됩니다. 종목명에 '환헤지' 또는 '(H)'가 붙은 상품만 환율을 상쇄합니다.</li>
+  </ul>
+
+  <h3>자주 묻는 질문</h3>
+  <details class="faq"><summary>환전은 언제 하는 게 유리한가요?</summary><p>환율을 맞히는 것은 주가를 맞히는 것만큼 어렵습니다. 목돈을 한 번에 바꾸기보다 적립식으로 나누어 바꾸면 평균 환율에 가까워집니다. 장기 투자라면 환율을 예측하기보다 자산의 일부로 받아들이는 편이 현실적입니다.</p></details>
+  <details class="faq"><summary>환차익에 세금이 붙나요?</summary><p>붙습니다. 해외주식 양도차익을 원화로 환산해 계산하므로 환율 상승분도 차익에 포함됩니다. 연 250만 원 기본공제를 넘으면 22%가 과세되고, 다음 해 5월에 신고합니다.</p></details>
+  <details class="faq"><summary>달러 예금 이자도 과세되나요?</summary><p>네. 달러 예금 이자는 이자소득으로 15.4%가 원천징수되고, 다른 금융소득과 합쳐 연 2,000만 원을 넘으면 종합과세에 합산됩니다. 환율이 오르면 원화 평가 이익이 생기지만 예금 이자에는 환차익 과세가 따로 없습니다.</p></details>
+  <details class="faq"><summary>환율이 오르면 무조건 이득인가요?</summary><p>이미 달러 자산을 보유한 경우에는 원화 평가액이 늘어납니다. 반대로 앞으로 살 사람에게는 달러가 비싸진 것이므로 매수 단가가 올라갑니다. 손익은 매수 시점 환율과 매도 시점 환율의 차이로 결정됩니다.</p></details>
+  <details class="faq"><summary>국내 상장 ETF는 환전 수수료가 없나요?</summary><p>투자자가 직접 환전하지 않아도 운용사가 기초자산을 사들이는 과정에서 환전 비용이 발생하고, 이는 NAV와 추적오차에 반영됩니다. 다만 개인이 은행에서 달러를 바꾸는 것보다 유리한 경우가 많습니다.</p></details>
+  <details class="faq"><summary>수익률은 달러 기준과 원화 기준 중 무엇으로 봐야 하나요?</summary><p>생활비를 원화로 쓰는 한국 거주자라면 원화 기준이 실제 체감 수익률입니다. 달러 기준 수익률은 지수나 종목의 성과를 비교할 때 유용하고, 원화 기준은 환율 효과까지 포함한 최종 결과를 보여 줍니다.</p></details>
+
+  <p class="mini" style="margin-top:22px">기준 시점: 2026년 11월. 환전 스프레드와 수수료는 금융사·계좌별로 다르므로 실제 조건을 입력해야 정확합니다. 본 계산기는 참고용이며 투자 권유가 아닙니다.</p>
+</article>
+<section class="related">
+  <h2>다른 계산기</h2>
+  <p class="mini">같은 입력값으로 이어서 확인해 보세요. 모든 계산은 브라우저 안에서만 처리됩니다.</p>
+  <div class="calgrid">
+      <a class="calcard" href="us-stock-tax-guide.html">
+        <div class="ic">💰</div>
+        <h3>미국주식 양도세 계산기</h3>
+        <p>올해 실현 손익을 넣으면 22% 양도세와 세후 수익, 세금 0원 한도까지 바로 나옵니다. 12월 매도와 1월 이월 중 무엇이 유리한지도 비교해 드립니다.</p>
+        <span class="tag">💰 세금 →</span>
+      </a>
+      <a class="calcard" href="dividend-health-insurance.html">
+        <div class="ic">🏥</div>
+        <h3>배당소득세·건보료 계산기</h3>
+        <p>배당 실수령액과 금융소득종합과세, 건강보험 피부양자 탈락 위험을 한 화면에서 확인하세요. 고배당 분리과세와 비교도 됩니다.</p>
+        <span class="tag">🏥 배당·건강보험 →</span>
+      </a>
+      <a class="calcard" href="sp500-vs-nasdaq100.html">
+        <div class="ic">📈</div>
+        <h3>S&P500 vs 나스닥100 계산기</h3>
+        <p>같은 적립금으로 두 지수를 20년 굴리면 얼마나 차이 날까요. 최대 낙폭 시나리오까지 넣어 비교합니다.</p>
+        <span class="tag">📈 지수 비교 →</span>
+      </a>
+      <a class="calcard" href="isa-pension-tax.html">
+        <div class="ic">🧾</div>
+        <h3>ISA·연금저축 계산기</h3>
+        <p>ISA 비과세 한도와 연금저축·IRP 세액공제를 합쳐 올해 절세액을 계산합니다. 한도까지 남은 금액도 알려 드립니다.</p>
+        <span class="tag">🧾 절세 계좌 →</span>
+      </a>
+      <a class="calcard" href="avg-price-water.html">
+        <div class="ic">📉</div>
+        <h3>물타기·평단가 계산기</h3>
+        <p>평단가와 본전 수익률을 계산하고, 물타기 전후를 비교합니다. 손실률별 회복 필요 상승률 표도 함께.</p>
+        <span class="tag">📉 평단가 →</span>
+      </a>
+      <a class="calcard" href="etf-fee-drag.html">
+        <div class="ic">🧮</div>
+        <h3>국내 vs 미국 ETF 계산기</h3>
+        <p>보수 0.03%p 차이와 세금 15.4% vs 22%, 환전 비용을 모두 넣어 장기 세후 수익을 비교합니다.</p>
+        <span class="tag">🧮 ETF →</span>
+      </a>
+  </div>
+  <p class="mini" style="margin-top:12px"><a href="index.html#calculators">계산기 7종 전체 보기 →</a></p>
+</section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="fnav">
+      <a href="us-stock-tax-guide.html">미국주식 양도세</a>
+      <a href="dividend-health-insurance.html">배당소득세·건보료</a>
+      <a href="sp500-vs-nasdaq100.html">S&P500 vs 나스닥100</a>
+      <a href="isa-pension-tax.html">ISA·연금저축</a>
+      <a href="fx-breakeven.html">환율·손익분기</a>
+      <a href="avg-price-water.html">물타기·평단가</a>
+      <a href="etf-fee-drag.html">국내 vs 미국 ETF</a>
+    </div>
+    <div class="fnav">
+      <a href="about.html">사이트 소개</a>
+      <a href="privacy.html">개인정보처리방침</a>
+      <a href="terms.html">이용약관·면책</a>
+      <a href="rss.xml">RSS</a>
+    </div>
+    <p class="fine">개미일지 계산기는 2026년 기준 세법을 바탕으로 한 참고용 계산 도구입니다. 실제 세액·보험료는 개인별 소득·재산·환율·금융사 처리에 따라 달라질 수 있으며, 세무·투자 판단의 최종 책임은 이용자에게 있습니다. © 2026 개미일지 계산기.</p>
+  </div>
+</footer>
+<script src="assets/kit.js"></script>
+<script>
+(function () {
+  'use strict';
+  var K = window.KIT;
+  var buyRateEl = K.el('f-buyrate'), sellRateEl = K.el('f-sellrate'), usdEl = K.el('f-usd'),
+      buyPriceEl = K.el('f-buyprice'), sellPriceEl = K.el('f-sellprice'),
+      spreadEl = K.el('f-spread'), commEl = K.el('f-comm'), taxEl = K.el('f-tax'), sharesEl = K.el('f-shares');
+  var chart = K.el('f-chart');
+
+  function calc() {
+    var br = Math.max(1, K.num(buyRateEl)), sr = Math.max(1, K.num(sellRateEl));
+    var usd = Math.max(0, K.num(usdEl));
+    var bp = Math.max(0.01, K.num(buyPriceEl)), sp2 = Math.max(0.01, K.num(sellPriceEl));
+    var sp = Math.max(0, K.num(spreadEl)) / 100, cm = Math.max(0, K.num(commEl)) / 100;
+
+    var shares = usd / bp;
+    var usdSell = shares * sp2;
+    var krwBuy = usd * br * (1 + sp) * (1 + cm);
+    var krwSell = usdSell * sr * (1 - sp) * (1 - cm);
+    var profit = krwSell - krwBuy;
+    var ret = krwBuy > 0 ? profit / krwBuy * 100 : 0;
+    var plainBuy = usd * br, plainSell = usdSell * sr;
+    var fees = Math.max(0, plainBuy - krwBuy + plainSell - krwSell);
+    var priceEffect = (usdSell - usd) * br;
+    var fxEffect = usdSell * (sr - br);
+    var tax = taxEl.checked ? Math.max(0, profit) * 0.22 : 0;
+    var after = profit - tax;
+
+    sharesEl.value = (Math.round(shares * 100) / 100).toLocaleString('ko-KR');
+
+    K.el('f-cost').textContent = K.won(krwBuy);
+    K.el('f-proceeds').textContent = K.won(krwSell);
+    K.el('f-profit').textContent = K.won(profit);
+    K.el('f-profit').className = profit >= 0 ? 'pos' : 'neg';
+    K.el('f-fees').textContent = '-' + K.won(fees);
+    K.el('f-pricefx').textContent = K.won(priceEffect);
+    K.el('f-pricefx').className = priceEffect >= 0 ? 'pos' : 'neg';
+    K.el('f-fxfx').textContent = K.won(fxEffect);
+    K.el('f-fxfx').className = fxEffect >= 0 ? 'pos' : 'neg';
+    K.el('f-ret').textContent = K.pct(ret, 2);
+    K.el('f-ret').className = ret >= 0 ? 'pos' : 'neg';
+    K.el('f-taxamt').textContent = taxEl.checked ? K.won(tax) : '미반영';
+    K.el('f-after').textContent = K.won(after);
+    K.el('f-after').className = after >= 0 ? 'pos' : 'neg';
+
+    var beRate = usdSell > 0 ? krwBuy / (usdSell * (1 - sp) * (1 - cm)) : 0;
+    var bePrice = (shares > 0 && sr > 0) ? krwBuy / (shares * sr * (1 - sp) * (1 - cm)) : 0;
+    var beRet = bp > 0 ? (bePrice / bp - 1) * 100 : 0;
+    K.el('f-berate').textContent = K.num3(beRate) + '원';
+    K.el('f-beprice').textContent = K.usd(bePrice);
+    K.el('f-berequired').textContent = K.pct(beRet, 2);
+
+    var msg = K.el('f-msg');
+    if (ret >= 0) {
+      msg.className = 'sub2';
+      msg.innerHTML = '주가 ' + K.pct((sp2 / bp - 1) * 100, 1) + ' 변동과 환율 ' + K.pct((sr / br - 1) * 100, 2) + ' 변동, 비용 ' + K.won(fees) + '을 반영한 결과입니다.';
+    } else {
+      msg.className = 'sub2';
+      msg.innerHTML = '주가가 올라도 비용과 환율 때문에 원화로는 손실입니다. 본전이 되려면 주가가 ' + K.pct(beRet, 1) + ' 더 올라야 합니다.';
+    }
+
+    var rows = [];
+    [-10, -5, 0, 5, 10].forEach(function (p) {
+      var r = br * (1 + p / 100);
+      var kSell = usdSell * r * (1 - sp) * (1 - cm);
+      var pr = kSell - krwBuy;
+      rows.push('<tr><td>' + (p > 0 ? '+' : '') + p + '% (' + Math.round(r) + '원)</td><td>' + K.won(priceEffect) +
+        '</td><td class="' + (fxEffect >= 0 ? 'pos' : 'neg') + '">' + K.won((usdSell * (r - br))) +
+        '</td><td class="' + (pr >= 0 ? 'pos' : 'neg') + '">' + K.won(pr) +
+        '</td><td class="' + (pr >= 0 ? 'pos' : 'neg') + '">' + K.pct(pr / krwBuy * 100, 1) + '</td></tr>');
+    });
+    K.el('f-table').querySelector('tbody').innerHTML = rows.join('');
+
+    draw(br, sr, krwBuy, usdSell, sp, cm);
+  }
+
+  function draw(br, sr, krwBuy, usdSell, sp, cm) {
+    if (!chart) return;
+    var lo = br * 0.85, hi = br * 1.15, steps = 60, data = [], labels = [];
+    for (var i = 0; i <= steps; i++) {
+      var r = lo + (hi - lo) * i / steps;
+      var p = usdSell * r * (1 - sp) * (1 - cm) - krwBuy;
+      data.push(krwBuy > 0 ? p / krwBuy * 100 : 0);
+      labels.push(i % 10 === 0 ? Math.round(r) + '원' : '');
+    }
+    K.plot(chart, {
+      series: [{ data: data, color: K.color('accent'), fill: true }],
+      labels: labels, xTicks: 6, yFmt: function (v) { return v.toFixed(0) + '%'; },
+      markers: [{ i: Math.round((sr - lo) / (hi - lo) * steps), label: K.num3(sr) + '원', color: K.color('warn') }]
+    });
+  }
+
+  [buyRateEl, sellRateEl, usdEl, buyPriceEl, sellPriceEl, spreadEl, commEl].forEach(function (el) { K.on(el, calc); });
+  K.onChange(taxEl, calc);
+  K.theme(calc);
+  K.eachResize(calc);
+  window.addEventListener('load', calc);
+  calc();
+})();
+</script>
+</body>
+</html>
