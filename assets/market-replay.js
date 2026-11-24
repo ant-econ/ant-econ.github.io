@@ -707,6 +707,7 @@
 
   /* ---------------- 초기화 ---------------- */
   function boot() {
+    document.documentElement.setAttribute('data-mr', 'boot');
     K.theme(function () { if (S && !S.ended) drawChart(); });
     paintAcct();
     $('mr-blind').addEventListener('click', function () {
@@ -730,11 +731,13 @@
       .then(function (d) {
         DATA = d;
         if (!DATA.sessions || !DATA.sessions.length) throw new Error('no sessions');
+        document.documentElement.setAttribute('data-mr', 'ready');
         $('mr-loading').style.display = 'none';
         $('mr-lobby').classList.add('show');
         renderLobby();
       })
       .catch(function (e) {
+        document.documentElement.setAttribute('data-mr', 'fetchfail:' + e.message);
         $('mr-loading').innerHTML = '<b>시세 데이터를 불러오지 못했어요.</b><span>잠시 뒤 새로고침해 주세요. (' + e.message + ')</span>';
       });
     K.eachResize(function () { if (S && !S.ended) drawChart(); });
