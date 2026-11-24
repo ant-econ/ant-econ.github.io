@@ -554,7 +554,7 @@
         '<div class="mr-eqmain"><span>총 자산</span><b id="p-eq">—</b><i id="p-eqr" class="flat">0.00%</i></div>' +
         '<div class="mr-eqgrid">' +
           '<div><span>투자 원금</span><b id="p-prin">—</b></div>' +
-          '<div><span>총 평가손익</span><b id="p-pnl">—</b></div>' +
+          '<div><span>총 평가손익</span><b id="p-pnl">—</b><i id="p-pnlpct">—</i></div>' +
           '<div><span>주문 가능 현금</span><b id="p-cashh">—</b></div>' +
         '</div>' +
       '</div>' +
@@ -930,6 +930,8 @@
     var pnl = eq - s.startCash;
     $('p-pnl').textContent = (pnl >= 0 ? '+' : '') + won(pnl);
     $('p-pnl').className = cls(pnl);
+    var pp = $('p-pnlpct');
+    if (pp) { pp.textContent = pct(ret); pp.className = cls(ret); }
     $('p-cashh').textContent = won(s.acct.cash);
     $('p-eqcard').className = 'mr-eqcard' + (s.view === 'pf' ? '' : ' compact');
 
