@@ -87,7 +87,7 @@
     $('acct-record').textContent = a.games ? a.games + '전 ' + a.wins + '승' : '첫 도전 전';
     $('acct-best').textContent = a.games ? pct(a.best) : '—';
     $('acct-best').className = a.games ? cls(a.best) : '';
-    $('acct-best-label').textContent = a.games ? (a.bestLabel || '최고 수익률') : '최고 수익률';
+    $('acct-best').title = a.games ? (a.bestLabel || '') : '';
   }
 
   /* ---------------- 화면 ---------------- */
@@ -740,6 +740,27 @@
     K.eachResize(function () { if (S && !S.ended) drawChart(); });
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
-  else boot();
+  function showFatal(msg) {
+    var l = $('mr-loading');
+    if (!l) return;
+    l.style.display = '';
+    l.innerHTML = '';
+    var b = document.createElement('b');
+    b.textContent = '게임을 불러오지 못했어요';
+    var sp = document.createElement('span');
+    sp.textContent = String(msg || '') + ' — 새로고침하면 다시 시도합니다.';
+    var d = document.createElement('div');
+    d.appendChild(b); d.appendChild(sp);
+    l.appendChild(d);
+  }
+  window.addEventListener('error', function (e) { showFatal(e.message); });
+  window.addEventListener('unhandledrejection', function (e) {
+    showFatal((e.reason && e.reason.message) || e.reason);
+  });
+
+  function safeBoot() {
+    try { boot(); } catch (e) { showFatal(e && e.message); }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', safeBoot);
+  else safeBoot();
 })();
