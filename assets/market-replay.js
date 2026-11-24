@@ -177,6 +177,7 @@
       h.ex = h.ex || (h.market === 'KR' ? '한국' : '미국');
       if (!isFinite(h.lastPx)) h.lastPx = null;
       if (!isFinite(h.lastFx)) h.lastFx = null;
+      h.lastDate = typeof h.lastDate === 'string' ? h.lastDate : '';
     }
     delete a.eq;
     delete a.equity;
@@ -204,17 +205,28 @@
     }
     return null;
   }
-  /** 보유 종목의 현재 평가 기준: 진행 중 판에 있으면 실시간, 아니면 그 시장 최근 세션 종가 */
+  /** 보유 종목의 현재 평가 기준
+      · 지금 판의 종목이면 실시간 재생 가격
+      · 아니면 마지막으로 본 가격(내가 산 값·마감 값)
+      · 그보다 새 날짜 세션이 들어왔으면 그 날 종가와 환율로 다시 매긴다 */
   function markFor(id, h) {
     if (S && S.bySym[id] && S.px && isFinite(S.px[id])) {
       return { px: S.px[id], fx: S.fx, live: true, prevClose: S.bySym[id].day.prevClose };
     }
     var sess = latestSession(h.market || 'KR');
     var sy = sess ? findSym(sess, id) : null;
-    if (sy) {
+    var newer = sess && (!h.lastDate || sess.date > h.lastDate);
+    if (sy && (newer || !isFinite(h.lastPx))) {
       return { px: sy.bars[sy.bars.length - 1][4], fx: sess.fx, live: false, prevClose: sy.day.prevClose };
     }
-    return { px: isFinite(h.lastPx) ? h.lastPx : (h.avgOrig || 0), fx: isFinite(h.lastFx) ? h.lastFx : 1, live: false, prevClose: null };
+    if (isFinite(h.lastPx)) {
+      return {
+        px: h.lastPx,
+        fx: isFinite(h.lastFx) ? h.lastFx : (sess ? sess.fx : 1),
+        live: false, prevClose: sy ? sy.day.prevClose : null
+      };
+    }
+    return { px: h.avgOrig || 0, fx: 1, live: false, prevClose: null };
   }
   function acctEquity(a) {
     var eq = a.cash;
@@ -1009,6 +1021,7 @@
     h.paid += gross + fee;
     h.lastPx = p;
     h.lastFx = S.fx;
+    h.lastDate = S.session.date;
     S.trades.push({ i: Math.max(0, idxAt(e, nowEpoch())), id: id, side: 'B', n: n, p: p, amt: gross + fee });
     saveAcct(S.acct);
     toast(e.ref.name + ' ' + n + '주 구매 · ' + won(gross + fee));
@@ -1033,6 +1046,9 @@
     S.realized += pnl;
     h.paid -= avgPaid * n;
     h.qty -= n;
+    h.lastPx = p;
+    h.lastFx = S.fx;
+    h.lastDate = S.session.date;
     if (h.qty <= 0) delete S.acct.holdings[id];
     S.sells += 1;
     if (pnl > 0) S.wins += 1;
@@ -1294,6 +1310,7 @@
       var m = markFor(id, h);
       h.lastPx = m.px;
       h.lastFx = m.fx;
+      if (S.bySym[id]) h.lastDate = S.session.date;
     }
     var acct = S.acct;
     acct.games += 1;
