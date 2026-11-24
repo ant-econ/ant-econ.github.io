@@ -196,8 +196,25 @@
     return pick.session.symbols.filter(function (s) {
       if (pick.grp !== 'ALL' && (s.tags || []).indexOf(pick.grp) < 0) return false;
       if (!q) return true;
-      return s.name.toLowerCase().indexOf(q) >= 0 || shortSym(s.sym).toLowerCase().indexOf(q) >= 0;
+      return matchSym(s, q);
     }).sort(function (a, b) { return a.name.localeCompare(b.name, 'ko'); });
+  }
+
+  function matchSym(s, q) {
+    return s.name.toLowerCase().indexOf(q) >= 0 || shortSym(s.sym).toLowerCase().indexOf(q) >= 0;
+  }
+
+  /** 이 세션에 없을 때, 다른 거래일에 같은 종목이 있으면 알려준다. */
+  function elsewhere(q) {
+    var out = [];
+    if (!q) return out;
+    DATA.sessions.forEach(function (s) {
+      if (s.id === pick.session.id) return;
+      s.symbols.forEach(function (sym) {
+        if (out.length < 3 && matchSym(sym, q)) out.push({ session: s, sym: sym });
+      });
+    });
+    return out;
   }
 
   function renderSymbols() {
@@ -219,6 +236,7 @@
       }).join('');
     }
     $('mr-empty').hidden = list.length > 0;
+    if (!list.length) paintEmpty();
     $('mr-count').textContent = list.length + '개';
     Array.prototype.forEach.call(g.querySelectorAll('.mr-sym'), function (b) {
       if (pick.sym && b.getAttribute('data-sym') === pick.sym.sym) b.classList.add('on');
@@ -230,6 +248,30 @@
       });
     });
     if (pick.sym && !list.some(function (s) { return s.sym === pick.sym.sym; })) pick.sym = null;
+  }
+
+  function paintEmpty() {
+    var el = $('mr-empty');
+    var alt = elsewhere((pick.q || '').trim().toLowerCase());
+    if (!alt.length) {
+      el.textContent = '검색 결과가 없어요. 다른 이름이나 티커로 찾아보세요.';
+      return;
+    }
+    el.innerHTML = '<span>이 장에는 없어요. 다른 장에서 찾았습니다:</span>' + alt.map(function (a, i) {
+      return '<button type="button" data-alt="' + i + '">' + sessionLabel(a.session) + ' · ' + a.sym.name + '</button>';
+    }).join('');
+    Array.prototype.forEach.call(el.querySelectorAll('button'), function (b) {
+      b.addEventListener('click', function () {
+        var a = alt[+b.getAttribute('data-alt')];
+        pick.session = a.session;
+        pick.sym = a.sym;
+        pick.q = '';
+        pick.grp = 'ALL';
+        var qi = $('mr-q');
+        if (qi) qi.value = '';
+        renderLobby();
+      });
+    });
   }
 
   function updateStart() {
