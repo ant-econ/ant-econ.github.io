@@ -7,32 +7,183 @@
   - Yahoo Finance 공개 차트 API (query1 / query2), 5분봉 + 일봉
   - 미국 주식은 해당 거래일 원/달러 환율(USDKRW=X) 일봉 종가로 원화 환산
 
+대상: 코스피·코스닥·나스닥·뉴욕증권거래소(NYSE)·ETF 주요 종목 145개 (다우존스 30종목 전부 포함)
+
 출력: data/market-replay.json
 실행: python3 scripts/update_replay.py  [--keep 3] [--out data/market-replay.json]
 """
 import argparse
 import json
 import os
+import random
 import sys
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 
 KST = timezone(timedelta(hours=9))
 
+# (시장, 야후 티커, 표시 이름, 거래소 표시, 지수 태그)
+#   시장: KR = 한국장 / US = 미국장 (게임 세션 구분)
+#   태그: KOSPI·KOSDAQ·NASDAQ·NYSE·ETF / SP500·DJIA (지수 구성 종목)
+KOSPI_TAGS = ["KOSPI"]
+KOSDAQ_TAGS = ["KOSDAQ"]
+
 SYMBOLS = [
-    # market, yahoo ticker, 표시 이름, 거래소
-    ("US", "NVDA", "엔비디아", "NASDAQ"),
-    ("US", "TSLA", "테슬라", "NASDAQ"),
-    ("US", "AAPL", "애플", "NASDAQ"),
-    ("US", "MSFT", "마이크로소프트", "NASDAQ"),
-    ("US", "QQQ", "나스닥100 ETF", "NASDAQ"),
-    ("KR", "005930.KS", "삼성전자", "KOSPI"),
-    ("KR", "000660.KS", "SK하이닉스", "KOSPI"),
-    ("KR", "035420.KS", "NAVER", "KOSPI"),
-    ("KR", "005380.KS", "현대차", "KOSPI"),
+    # ---- 코스피 ----
+    ("KR", "005930.KS", "삼성전자", "코스피", KOSPI_TAGS),
+    ("KR", "000660.KS", "SK하이닉스", "코스피", KOSPI_TAGS),
+    ("KR", "373220.KS", "LG에너지솔루션", "코스피", KOSPI_TAGS),
+    ("KR", "207940.KS", "삼성바이오로직스", "코스피", KOSPI_TAGS),
+    ("KR", "005380.KS", "현대차", "코스피", KOSPI_TAGS),
+    ("KR", "000270.KS", "기아", "코스피", KOSPI_TAGS),
+    ("KR", "068270.KS", "셀트리온", "코스피", KOSPI_TAGS),
+    ("KR", "035420.KS", "NAVER", "코스피", KOSPI_TAGS),
+    ("KR", "035720.KS", "카카오", "코스피", KOSPI_TAGS),
+    ("KR", "105560.KS", "KB금융", "코스피", KOSPI_TAGS),
+    ("KR", "055550.KS", "신한지주", "코스피", KOSPI_TAGS),
+    ("KR", "086790.KS", "하나금융지주", "코스피", KOSPI_TAGS),
+    ("KR", "316140.KS", "우리금융지주", "코스피", KOSPI_TAGS),
+    ("KR", "138040.KS", "메리츠금융지주", "코스피", KOSPI_TAGS),
+    ("KR", "012330.KS", "현대모비스", "코스피", KOSPI_TAGS),
+    ("KR", "005490.KS", "POSCO홀딩스", "코스피", KOSPI_TAGS),
+    ("KR", "051910.KS", "LG화학", "코스피", KOSPI_TAGS),
+    ("KR", "006400.KS", "삼성SDI", "코스피", KOSPI_TAGS),
+    ("KR", "028260.KS", "삼성물산", "코스피", KOSPI_TAGS),
+    ("KR", "032830.KS", "삼성생명", "코스피", KOSPI_TAGS),
+    ("KR", "017670.KS", "SK텔레콤", "코스피", KOSPI_TAGS),
+    ("KR", "030200.KS", "KT", "코스피", KOSPI_TAGS),
+    ("KR", "015760.KS", "한국전력", "코스피", KOSPI_TAGS),
+    ("KR", "033780.KS", "KT&G", "코스피", KOSPI_TAGS),
+    ("KR", "003670.KS", "포스코퓨처엠", "코스피", KOSPI_TAGS),
+    ("KR", "011200.KS", "HMM", "코스피", KOSPI_TAGS),
+    ("KR", "096770.KS", "SK이노베이션", "코스피", KOSPI_TAGS),
+    ("KR", "010130.KS", "고려아연", "코스피", KOSPI_TAGS),
+    ("KR", "018260.KS", "삼성에스디에스", "코스피", KOSPI_TAGS),
+    ("KR", "009150.KS", "삼성전기", "코스피", KOSPI_TAGS),
+    ("KR", "066570.KS", "LG전자", "코스피", KOSPI_TAGS),
+    ("KR", "036460.KS", "한국가스공사", "코스피", KOSPI_TAGS),
+    ("KR", "000810.KS", "삼성화재", "코스피", KOSPI_TAGS),
+    ("KR", "259960.KS", "크래프톤", "코스피", KOSPI_TAGS),
+    ("KR", "352820.KS", "하이브", "코스피", KOSPI_TAGS),
+    ("KR", "326030.KS", "SK바이오팜", "코스피", KOSPI_TAGS),
+    ("KR", "000100.KS", "유한양행", "코스피", KOSPI_TAGS),
+    ("KR", "128940.KS", "한미약품", "코스피", KOSPI_TAGS),
+    ("KR", "271560.KS", "오리온", "코스피", KOSPI_TAGS),
+    ("KR", "097950.KS", "CJ제일제당", "코스피", KOSPI_TAGS),
+    ("KR", "004020.KS", "현대제철", "코스피", KOSPI_TAGS),
+    ("KR", "011070.KS", "LG이노텍", "코스피", KOSPI_TAGS),
+    ("KR", "010140.KS", "삼성중공업", "코스피", KOSPI_TAGS),
+    ("KR", "009540.KS", "HD한국조선해양", "코스피", KOSPI_TAGS),
+    ("KR", "042660.KS", "한화오션", "코스피", KOSPI_TAGS),
+    ("KR", "012450.KS", "한화에어로스페이스", "코스피", KOSPI_TAGS),
+    ("KR", "064350.KS", "현대로템", "코스피", KOSPI_TAGS),
+    ("KR", "047810.KS", "한국항공우주", "코스피", KOSPI_TAGS),
+    ("KR", "034020.KS", "두산에너빌리티", "코스피", KOSPI_TAGS),
+    ("KR", "267260.KS", "HD현대일렉트릭", "코스피", KOSPI_TAGS),
+    ("KR", "090430.KS", "아모레퍼시픽", "코스피", KOSPI_TAGS),
+    ("KR", "051900.KS", "LG생활건강", "코스피", KOSPI_TAGS),
+    ("KR", "161390.KS", "한국타이어앤테크놀로지", "코스피", KOSPI_TAGS),
+    ("KR", "011170.KS", "롯데케미칼", "코스피", KOSPI_TAGS),
+    ("KR", "004370.KS", "농심", "코스피", KOSPI_TAGS),
+    ("KR", "023530.KS", "롯데쇼핑", "코스피", KOSPI_TAGS),
+    ("KR", "034730.KS", "SK", "코스피", KOSPI_TAGS),
+    ("KR", "272210.KS", "한화시스템", "코스피", KOSPI_TAGS),
+    # ---- 코스닥 ----
+    ("KR", "247540.KQ", "에코프로비엠", "코스닥", KOSDAQ_TAGS),
+    ("KR", "086520.KQ", "에코프로", "코스닥", KOSDAQ_TAGS),
+    ("KR", "196170.KQ", "알테오젠", "코스닥", KOSDAQ_TAGS),
+    ("KR", "028300.KQ", "HLB", "코스닥", KOSDAQ_TAGS),
+    ("KR", "058470.KQ", "리노공업", "코스닥", KOSDAQ_TAGS),
+    ("KR", "095340.KQ", "ISC", "코스닥", KOSDAQ_TAGS),
+    ("KR", "039030.KQ", "이오테크닉스", "코스닥", KOSDAQ_TAGS),
+    ("KR", "240810.KQ", "원익IPS", "코스닥", KOSDAQ_TAGS),
+    ("KR", "357780.KQ", "솔브레인", "코스닥", KOSDAQ_TAGS),
+    ("KR", "036930.KQ", "주성엔지니어링", "코스닥", KOSDAQ_TAGS),
+    ("KR", "145020.KQ", "휴젤", "코스닥", KOSDAQ_TAGS),
+    ("KR", "214150.KQ", "클래시스", "코스닥", KOSDAQ_TAGS),
+    ("KR", "041510.KQ", "에스엠", "코스닥", KOSDAQ_TAGS),
+    ("KR", "035900.KQ", "JYP Ent.", "코스닥", KOSDAQ_TAGS),
+    ("KR", "122870.KQ", "와이지엔터테인먼트", "코스닥", KOSDAQ_TAGS),
+    ("KR", "293490.KQ", "카카오게임즈", "코스닥", KOSDAQ_TAGS),
+    ("KR", "263750.KQ", "펄어비스", "코스닥", KOSDAQ_TAGS),
+    ("KR", "112040.KQ", "위메이드", "코스닥", KOSDAQ_TAGS),
+    ("KR", "030520.KQ", "한글과컴퓨터", "코스닥", KOSDAQ_TAGS),
+    ("KR", "060720.KQ", "KH바텍", "코스닥", KOSDAQ_TAGS),
+    # ---- 미국 (나스닥) ----
+    ("US", "NVDA", "엔비디아", "나스닥", ["NASDAQ", "SP500", "DJIA"]),
+    ("US", "TSLA", "테슬라", "나스닥", ["NASDAQ", "SP500"]),
+    ("US", "AAPL", "애플", "나스닥", ["NASDAQ", "SP500", "DJIA"]),
+    ("US", "MSFT", "마이크로소프트", "나스닥", ["NASDAQ", "SP500", "DJIA"]),
+    ("US", "AMZN", "아마존", "나스닥", ["NASDAQ", "SP500", "DJIA"]),
+    ("US", "META", "메타", "나스닥", ["NASDAQ", "SP500"]),
+    ("US", "GOOGL", "알파벳(구글)", "나스닥", ["NASDAQ", "SP500", "DJIA"]),
+    ("US", "AVGO", "브로드컴", "나스닥", ["NASDAQ", "SP500"]),
+    ("US", "AMD", "AMD", "나스닥", ["NASDAQ", "SP500"]),
+    ("US", "NFLX", "넷플릭스", "나스닥", ["NASDAQ", "SP500"]),
+    ("US", "COST", "코스트코", "나스닥", ["NASDAQ", "SP500"]),
+    ("US", "PLTR", "팔란티어", "나스닥", ["NASDAQ", "SP500"]),
+    ("US", "MU", "마이크론", "나스닥", ["NASDAQ", "SP500"]),
+    ("US", "INTC", "인텔", "나스닥", ["NASDAQ", "SP500"]),
+    ("US", "QCOM", "퀄컴", "나스닥", ["NASDAQ", "SP500"]),
+    ("US", "ADBE", "어도비", "나스닥", ["NASDAQ", "SP500"]),
+    ("US", "CSCO", "시스코", "나스닥", ["NASDAQ", "SP500", "DJIA"]),
+    ("US", "PEP", "펩시코", "나스닥", ["NASDAQ", "SP500"]),
+    ("US", "TMUS", "T모바일", "나스닥", ["NASDAQ", "SP500"]),
+    ("US", "AMGN", "암젠", "나스닥", ["NASDAQ", "SP500", "DJIA"]),
+    ("US", "ISRG", "인튜이티브서지컬", "나스닥", ["NASDAQ", "SP500"]),
+    ("US", "BKNG", "부킹홀딩스", "나스닥", ["NASDAQ", "SP500"]),
+    ("US", "LRCX", "램리서치", "나스닥", ["NASDAQ", "SP500"]),
+    ("US", "AMAT", "어플라이드머티어리얼즈", "나스닥", ["NASDAQ", "SP500"]),
+    ("US", "PANW", "팔로알토네트웍스", "나스닥", ["NASDAQ", "SP500"]),
+    ("US", "SMCI", "슈퍼마이크로", "나스닥", ["NASDAQ", "SP500"]),
+    ("US", "ARM", "ARM", "나스닥", ["NASDAQ"]),
+    ("US", "ASML", "ASML", "나스닥", ["NASDAQ"]),
+    ("US", "MSTR", "스트래티지", "나스닥", ["NASDAQ"]),
+    ("US", "SBUX", "스타벅스", "나스닥", ["NASDAQ", "SP500"]),
+    ("US", "WMT", "월마트", "나스닥", ["NASDAQ", "SP500", "DJIA"]),
+    # ---- 미국 (뉴욕증권거래소) ----
+    ("US", "TSM", "TSMC", "뉴욕", ["NYSE"]),
+    ("US", "IONQ", "아이온큐", "뉴욕", ["NYSE"]),
+    ("US", "BABA", "알리바바", "뉴욕", ["NYSE"]),
+    ("US", "JPM", "JP모건", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "V", "비자", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "MA", "마스터카드", "뉴욕", ["NYSE", "SP500"]),
+    ("US", "XOM", "엑슨모빌", "뉴욕", ["NYSE", "SP500"]),
+    ("US", "CVX", "셰브론", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "JNJ", "존슨앤존슨", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "PG", "P&G", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "KO", "코카콜라", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "HD", "홈디포", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "DIS", "디즈니", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "BA", "보잉", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "CAT", "캐터필러", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "GS", "골드만삭스", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "MCD", "맥도날드", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "NKE", "나이키", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "PFE", "화이자", "뉴욕", ["NYSE", "SP500"]),
+    ("US", "UNH", "유나이티드헬스", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "LLY", "일라이릴리", "뉴욕", ["NYSE", "SP500"]),
+    ("US", "T", "AT&T", "뉴욕", ["NYSE", "SP500"]),
+    ("US", "VZ", "버라이즌", "뉴욕", ["NYSE", "SP500"]),
+    ("US", "ORCL", "오라클", "뉴욕", ["NYSE", "SP500"]),
+    ("US", "IBM", "IBM", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "AXP", "아메리칸익스프레스", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "SHW", "셔윈윌리엄스", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "TRV", "트래블러스", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "MMM", "3M", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "MRK", "머크", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "CRM", "세일즈포스", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "HON", "허니웰", "뉴욕", ["NYSE", "SP500", "DJIA"]),
+    ("US", "UPS", "UPS", "뉴욕", ["NYSE", "SP500"]),
+    ("US", "RTX", "RTX", "뉴욕", ["NYSE", "SP500"]),
+    # ---- ETF (지수 추종) ----
+    ("US", "SPY", "S&P500 ETF", "ETF", ["ETF", "SP500ETF"]),
+    ("US", "QQQ", "나스닥100 ETF", "ETF", ["ETF"]),
+    ("US", "DIA", "다우존스 ETF", "ETF", ["ETF", "DJIAETF"]),
 ]
 
 MARKET_META = {
@@ -61,9 +212,10 @@ FEES = {
 }
 
 UA = "Mozilla/5.0 (compatible; ant-econ-market-replay/1.0; +https://ant-econ.github.io/)"
+WORKERS = 6
 
 
-def fetch_json(path, tries=4):
+def fetch_json(path, tries=3):
     last = None
     for host in ("query1.finance.yahoo.com", "query2.finance.yahoo.com"):
         url = "https://%s%s" % (host, path)
@@ -74,7 +226,7 @@ def fetch_json(path, tries=4):
                     return json.loads(r.read().decode("utf-8"))
             except Exception as e:  # noqa: BLE001
                 last = "%s: %s" % (url, e)
-                time.sleep(1.5 * (attempt + 1))
+                time.sleep(1.0 + 0.9 * attempt + random.random() * 0.6)
     raise RuntimeError("fetch failed: %s" % last)
 
 
@@ -177,56 +329,67 @@ def session_complete(market, day, bars):
     return True, "ok"
 
 
+def one_symbol(item):
+    """종목 하나의 5분봉·일봉을 받아 (market, day, row) 목록과 note 목록을 만든다."""
+    market, ticker, name, ex, tags = item
+    notes, rows = [], []
+    try:
+        meta, days = parse_bars(ticker)
+    except Exception as e:  # noqa: BLE001
+        return [], ["%s(%s) 5분봉 조회 실패: %s" % (name, ticker, e)]
+    try:
+        daily = daily_map(ticker)
+    except Exception as e:  # noqa: BLE001
+        daily = {}
+        notes.append("%s(%s) 일봉 조회 실패 — 시초가·종가 기준은 첫/마지막 봉 사용" % (name, ticker))
+        print("[warn] daily %s failed: %s" % (ticker, e), file=sys.stderr)
+
+    for day, info in days.items():
+        ok, why = session_complete(market, info, info["bars"])
+        if not ok:
+            continue
+        dayrow = daily.get(day)
+        if dayrow is None:
+            # 야후 일봉이 아직 게시되지 않은 날 → 같은 날 실제 5분봉으로 시가·고가·저가·종가 구성
+            bars = info["bars"]
+            dayrow = {
+                "open": bars[0][1],
+                "high": max(b[2] for b in bars),
+                "low": min(b[3] for b in bars),
+                "close": bars[-1][4],
+                "volume": sum(b[5] for b in bars),
+                "fromBars": True,
+            }
+            notes.append("%s %s 일봉 미게시 → 5분봉으로 시가·종가 구성" % (ticker, day))
+        else:
+            dayrow = dict(dayrow)
+        prev_days = [x for x in sorted(daily) if x < day]
+        dayrow["prevClose"] = daily[prev_days[-1]]["close"] if prev_days else None
+        row = {
+            "sym": ticker,
+            "name": name,
+            "ex": ex,
+            "tags": tags,
+            "bars": info["bars"],
+            "day": dayrow,
+        }
+        rows.append((market, day, info["offset"], row))
+    return rows, notes
+
+
 def build(keep):
     fx, fx_source = fx_daily()
     notes = []
     by_market = {"US": {}, "KR": {}}
 
-    for market, ticker, name, ex in SYMBOLS:
-        try:
-            meta, days = parse_bars(ticker)
-        except Exception as e:  # noqa: BLE001
-            notes.append("%s(%s) 5분봉 조회 실패: %s" % (name, ticker, e))
-            print("[warn] intraday %s failed: %s" % (ticker, e), file=sys.stderr)
-            continue
-        try:
-            daily = daily_map(ticker)
-        except Exception as e:  # noqa: BLE001
-            daily = {}
-            notes.append("%s(%s) 일봉 조회 실패 — 시초가·종가 기준은 첫/마지막 봉 사용" % (name, ticker))
-            print("[warn] daily %s failed: %s" % (ticker, e), file=sys.stderr)
+    with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+        results = list(pool.map(one_symbol, SYMBOLS))
 
-        for day, info in days.items():
-            ok, why = session_complete(market, info, info["bars"])
-            if not ok:
-                continue
-            dayrow = daily.get(day)
-            if dayrow is None:
-                # 야후 일봉이 아직 게시되지 않은 날 → 같은 날 실제 5분봉으로 시가·고가·저가·종가 구성
-                bars = info["bars"]
-                dayrow = {
-                    "open": bars[0][1],
-                    "high": max(b[2] for b in bars),
-                    "low": min(b[3] for b in bars),
-                    "close": bars[-1][4],
-                    "volume": sum(b[5] for b in bars),
-                    "fromBars": True,
-                }
-                notes.append("%s %s 일봉 미게시 → 5분봉으로 시가·종가 구성" % (ticker, day))
-            prev_days = [x for x in sorted(daily) if x < day]
-            if dayrow is not None and not dayrow.get("fromBars"):
-                dayrow["prevClose"] = daily[prev_days[-1]]["close"] if prev_days else None
-            else:
-                dayrow["prevClose"] = daily[prev_days[-1]]["close"] if prev_days else None
-                dayrow["fromBars"] = True
-            row = {
-                "sym": ticker,
-                "name": name,
-                "ex": ex,
-                "bars": info["bars"],
-                "day": dayrow,
-            }
-            by_market[market].setdefault(day, {"offset": info["offset"], "symbols": [], "skipped": []})["symbols"].append(row)
+    for rows, n in results:
+        notes.extend(n)
+        for market, day, offset, row in rows:
+            bucket = by_market[market].setdefault(day, {"offset": offset, "symbols": []})
+            bucket["symbols"].append(row)
 
     sessions = []
     for market in ("KR", "US"):
@@ -262,7 +425,7 @@ def build(keep):
             })
 
     out = {
-        "version": 1,
+        "version": 2,
         "generatedAt": datetime.now(KST).isoformat(timespec="seconds"),
         "generatedBy": "scripts/update_replay.py",
         "source": "Yahoo Finance Chart API (v8/finance/chart), 정규장 5분봉·일봉",
@@ -270,6 +433,10 @@ def build(keep):
         "startCash": 10000000,
         "fees": FEES,
         "fxSource": fx_source,
+        "universe": {
+            "symbols": len(SYMBOLS),
+            "note": "코스피·코스닥·나스닥·뉴욕증권거래소·ETF 주요 종목, 다우존스 30종목 전부 포함",
+        },
         "sessions": sessions,
         "notes": notes,
     }
@@ -297,8 +464,10 @@ def main():
             s["id"], s["currency"], len(s["symbols"]),
             min(len(x["bars"]) for x in s["symbols"]), max(len(x["bars"]) for x in s["symbols"])))
     print("wrote %s (%.1f KB)" % (args.out, os.path.getsize(args.out) / 1024))
-    for n in data["notes"]:
+    for n in data["notes"][:40]:
         print("note:", n)
+    if len(data["notes"]) > 40:
+        print("note: ... 외 %d건" % (len(data["notes"]) - 40))
     return 0
 
 

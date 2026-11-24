@@ -1,6 +1,7 @@
 /* 개미일지 — 어제 장 실전 트레이딩 게임 (실제 5분봉 리플레이)
    데이터: data/market-replay.json (Yahoo Finance 실제 시세, 100% 실데이터)
-   계좌: 원화 1,000만 원 시작 · 정수 주 매매 · 실제 수수료·증권거래세 반영 */
+   계좌: 첫 시드 원화 1,000만 원을 한 번만 지급 · 이후에는 내 계좌 잔고 그대로 이어서 매매
+         정수 주 매매 · 실제 수수료·증권거래세 반영 · 배속 최대 5x */
 (function () {
   'use strict';
   var K = window.KIT;
@@ -8,11 +9,22 @@
 
   var DATA = null;
   var S = null;          // 진행 중 게임 상태
-  var pick = { session: null, sym: null, blind: false };
+  var pick = { session: null, sym: null, blind: false, q: '', grp: 'ALL' };
   var raf = 0, acc = 0, lastTs = 0, toastTimer = 0;
 
-  var SPEEDS = [1, 5, 15, 30];
+  var SPEEDS = [1, 2, 3, 5];
   var BASE_MS = 1000; // 1배속 = 봉당 1초
+
+  var TABS = [
+    { id: 'ALL', label: '전체' },
+    { id: 'KOSPI', label: '코스피' },
+    { id: 'KOSDAQ', label: '코스닥' },
+    { id: 'NASDAQ', label: '나스닥' },
+    { id: 'NYSE', label: '뉴욕' },
+    { id: 'SP500', label: 'S&P500' },
+    { id: 'DJIA', label: '다우존스' },
+    { id: 'ETF', label: 'ETF' }
+  ];
 
   /* ---------------- 숫자·문자 ---------------- */
   function comma(n) {
@@ -26,6 +38,7 @@
     var s = Math.abs(n).toFixed(d == null ? 2 : d);
     return (n > 0 ? '+' : n < 0 ? '-' : '') + s + '%';
   }
+  function priceTxt(v, cur) { return cur === 'USD' ? usd(v) : won(v); }
   function volTxt(v) {
     if (v >= 1e8) return (v / 1e8).toFixed(2) + '억';
     if (v >= 1e4) return (v / 1e4).toFixed(0) + '만';
@@ -49,6 +62,7 @@
   function sessionLabel(s) {
     return (s.market === 'KR' ? '한국장' : '미국장') + ' · ' + shortDate(s.date) + '(' + weekday(s.date) + ')';
   }
+  function tick(sym) { return sym.replace(/\.(KS|KQ)$/, ''); }
   function toast(msg) {
     var t = $('mr-toast');
     if (!t) return;
@@ -59,19 +73,25 @@
   }
   function css(name) { return K.cssVar(name) || '#888'; }
 
-  /* ---------------- 계좌(localStorage) ---------------- */
+  /* ---------------- 계좌(localStorage) ----------------
+     eq = 지금 내 계좌 잔고(원). 첫 시드 1,000만 원은 최초 1회만 지급되고,
+     이후 모든 판의 시작 자금은 이 잔고 그대로다. */
   var ACCT_KEY = 'ant-market-replay-v1';
   var BASE_CASH = 10000000;
   function loadAcct() {
     var a = null;
     try { a = JSON.parse(localStorage.getItem(ACCT_KEY) || 'null'); } catch (e) { a = null; }
     if (!a || typeof a !== 'object') a = {};
-    a.start = BASE_CASH;
-    a.equity = isFinite(a.equity) ? a.equity : BASE_CASH;
+    var eq = isFinite(a.eq) ? a.eq : (isFinite(a.equity) ? a.equity : BASE_CASH);
+    if (!isFinite(eq) || eq < 0) eq = 0;
+    a.eq = Math.round(eq);
+    delete a.equity;
+    delete a.start;
     a.games = a.games || 0;
     a.wins = a.wins || 0;
     a.best = isFinite(a.best) ? a.best : 0;
     a.bestLabel = a.bestLabel || '';
+    a.busts = a.busts || 0;
     a.history = Array.isArray(a.history) ? a.history : [];
     return a;
   }
@@ -80,15 +100,29 @@
   }
   function paintAcct() {
     var a = loadAcct();
-    var ret = (a.equity / a.start - 1) * 100;
-    $('acct-equity').textContent = won(a.equity);
+    var ret = (a.eq / BASE_CASH - 1) * 100;
+    $('acct-equity').textContent = won(a.eq);
     $('acct-ret').textContent = pct(ret);
     $('acct-ret').className = cls(ret);
+    $('acct-ret').title = '첫 시드 1,000만 원 대비';
     $('acct-record').textContent = a.games ? a.games + '전 ' + a.wins + '승' : '첫 도전 전';
     $('acct-best').textContent = a.games ? pct(a.best) : '—';
     $('acct-best').className = a.games ? cls(a.best) : '';
     $('acct-best').title = a.games ? (a.bestLabel || '') : '';
   }
+
+  /* ---------------- 1주 최소 매수 금액 ---------------- */
+  function feeOf(market) { return (DATA && DATA.fees && DATA.fees[market]) || { buy: 0, sell: 0, tax: 0 }; }
+  function entryCost(session, price) { return price * session.fx * (1 + feeOf(session.market).buy); }
+  function minTicket(session) {
+    var m = Infinity;
+    session.symbols.forEach(function (s) {
+      var c = entryCost(session, s.bars[0][4]);
+      if (c < m) m = c;
+    });
+    return isFinite(m) ? m : Infinity;
+  }
+  function isBust(session, eq) { return eq < minTicket(session); }
 
   /* ---------------- 화면 ---------------- */
   function screen(name) {
@@ -107,8 +141,8 @@
       if (a.date !== b.date) return a.date < b.date ? 1 : -1;
       return a.market === 'KR' ? -1 : 1;
     });
-    pick.session = pick.session || sess[0];
-    pick.sym = null;
+    if (!pick.session) pick.session = sess[0];
+    if (sess.indexOf(pick.session) < 0) pick.session = sess[0];
 
     var box = $('mr-sessions');
     box.innerHTML = sess.map(function (s, i) {
@@ -125,50 +159,118 @@
       });
     });
 
-    var syms = pick.session.symbols.slice().sort(function (a, b) {
-      var ca = (a.day.close / a.day.prevClose - 1), cb = (b.day.close / b.day.prevClose - 1);
-      return Math.abs(cb) - Math.abs(ca);
+    $('mr-searchwrap').hidden = pick.blind;
+    $('mr-tabs').hidden = pick.blind;
+    renderTabs();
+    renderSymbols();
+    updateStart();
+    var uni = (DATA.universe && DATA.universe.symbols) || pick.session.symbols.length;
+    $('mr-data-note').textContent = DATA.sessions.length + '개 실제 거래일 · ' + DATA.interval + '봉 · 종목 ' + uni +
+      '개 · 갱신 ' + (DATA.generatedAt || '').replace('T', ' ').slice(0, 16);
+  }
+
+  function renderTabs() {
+    var box = $('mr-tabs');
+    if (!box) return;
+    var syms = pick.session.symbols;
+    box.innerHTML = TABS.map(function (t) {
+      if (t.id === 'ALL') {
+        return '<button type="button" data-grp="ALL" class="' + (pick.grp === 'ALL' ? 'on' : '') + '">' + t.label + '</button>';
+      }
+      var n = syms.filter(function (s) { return (s.tags || []).indexOf(t.id) >= 0; }).length;
+      if (!n) return '';
+      return '<button type="button" data-grp="' + t.id + '" class="' + (pick.grp === t.id ? 'on' : '') + '">' + t.label + '</button>';
+    }).join('');
+    Array.prototype.forEach.call(box.querySelectorAll('button'), function (b) {
+      b.addEventListener('click', function () {
+        pick.grp = b.getAttribute('data-grp');
+        renderSymbols();
+        Array.prototype.forEach.call(box.querySelectorAll('button'), function (x) { x.classList.remove('on'); });
+        b.classList.add('on');
+      });
     });
+  }
+
+  function filtered() {
+    var q = (pick.q || '').trim().toLowerCase();
+    return pick.session.symbols.filter(function (s) {
+      if (pick.grp !== 'ALL' && (s.tags || []).indexOf(pick.grp) < 0) return false;
+      if (!q) return true;
+      return s.name.toLowerCase().indexOf(q) >= 0 || tick(s.sym).toLowerCase().indexOf(q) >= 0;
+    }).sort(function (a, b) { return a.name.localeCompare(b.name, 'ko'); });
+  }
+
+  function renderSymbols() {
     var g = $('mr-symbols');
-    g.innerHTML = syms.map(function (s, i) {
-      var chg = s.day.prevClose ? (s.day.close / s.day.prevClose - 1) * 100 : 0;
-      var priceK = s.day.close * pick.session.fx;
-      if (pick.blind) {
+    var list = filtered();
+    if (pick.blind) {
+      // 블라인드: 이름·티커·시장을 모두 감추고, 순서로도 힌트를 주지 않는다.
+      list = pick.session.symbols.slice().sort(function (a, b) { return a.sym < b.sym ? -1 : 1; });
+      g.innerHTML = list.map(function (s, i) {
         return '<button type="button" class="mr-sym blind" data-sym="' + s.sym + '">' +
           '<span class="si">🕶</span><b>비공개 종목 ' + (i + 1) + '</b>' +
           '<span class="sp">종목·날짜는 장 마감 후 공개</span></button>';
-      }
-      return '<button type="button" class="mr-sym" data-sym="' + s.sym + '">' +
-        '<b>' + s.name + '</b>' +
-        '<span class="sk">' + (s.ex || '') + ' · ' + s.sym.replace(/\.(KS|KQ)$/, '') + '</span>' +
-        '<span class="sp">' + won(priceK) + '</span>' +
-        '<span class="sc ' + cls(chg) + '">' + pct(chg) + '</span></button>';
-    }).join('');
+      }).join('');
+    } else {
+      g.innerHTML = list.map(function (s) {
+        return '<button type="button" class="mr-sym" data-sym="' + s.sym + '">' +
+          '<b>' + s.name + '</b>' +
+          '<span class="sk">' + (s.ex || '') + ' · ' + tick(s.sym) + '</span></button>';
+      }).join('');
+    }
+    $('mr-empty').hidden = list.length > 0;
+    $('mr-count').textContent = list.length + '개';
     Array.prototype.forEach.call(g.querySelectorAll('.mr-sym'), function (b) {
+      if (pick.sym && b.getAttribute('data-sym') === pick.sym.sym) b.classList.add('on');
       b.addEventListener('click', function () {
         pick.sym = pick.session.symbols.filter(function (s) { return s.sym === b.getAttribute('data-sym'); })[0];
         Array.prototype.forEach.call(g.querySelectorAll('.mr-sym'), function (x) { x.classList.remove('on'); });
         b.classList.add('on');
-        $('mr-start').disabled = false;
-        $('mr-start').textContent = pick.blind ? '🕶 블라인드로 1,000만 원 시작' :
-          '▶ ' + pick.sym.name + ' · 1,000만 원으로 시작';
+        updateStart();
       });
     });
-    $('mr-start').disabled = !pick.sym;
-    if (!pick.sym) $('mr-start').textContent = '종목을 고르면 시작할 수 있어요';
-    $('mr-data-note').textContent = DATA.sessions.length + '개 실제 거래일 · ' +
-      DATA.interval + '봉 · 갱신 ' + (DATA.generatedAt || '').replace('T', ' ').slice(0, 16);
+    if (pick.sym && !list.some(function (s) { return s.sym === pick.sym.sym; })) pick.sym = null;
+  }
+
+  function updateStart() {
+    var a = loadAcct();
+    var btn = $('mr-start');
+    var bust = isBust(pick.session, a.eq);
+    $('mr-bust').hidden = !bust;
+    $('mr-bust-eq').textContent = won(a.eq);
+    if (bust) {
+      btn.disabled = true;
+      btn.textContent = '잔고가 1주 값보다 적어요 — 계좌를 초기화하세요';
+      return;
+    }
+    if (!pick.sym) {
+      btn.disabled = true;
+      btn.textContent = '종목을 고르면 시작할 수 있어요';
+      return;
+    }
+    if (entryCost(pick.session, pick.sym.bars[0][4]) > a.eq) {
+      btn.disabled = true;
+      btn.textContent = '이 종목은 1주도 살 수 없어요 · 다른 종목을 고르세요';
+      return;
+    }
+    btn.disabled = false;
+    btn.textContent = pick.blind
+      ? '🕶 블라인드로 ' + won(a.eq) + ' 시작'
+      : '▶ ' + pick.sym.name + ' · ' + won(a.eq) + '으로 시작';
   }
 
   /* ---------------- 게임 시작 ---------------- */
   function startGame(session, sym) {
-    var fee = DATA.fees[session.market] || { buy: 0, sell: 0, tax: 0 };
+    var acct = loadAcct();
+    var startCash = Math.round(acct.eq);
+    if (!(startCash > 0)) { toast('계좌 잔고가 없어요'); return; }
+    var fee = feeOf(session.market);
     S = {
       session: session, sym: sym, fee: fee, fx: session.fx,
       bars: sym.bars, idx: 0, total: sym.bars.length,
-      cash: BASE_CASH, shares: 0, cost: 0, realized: 0, feesPaid: 0,
-      sells: 0, wins: 0, trades: [], eq: [BASE_CASH], playing: true,
-      speed: 1, ended: false, frac: 0.1, startCash: BASE_CASH
+      cash: startCash, shares: 0, cost: 0, realized: 0, feesPaid: 0,
+      sells: 0, wins: 0, trades: [], eq: [startCash], playing: true,
+      speed: 1, ended: false, frac: 0.1, startCash: startCash
     };
     $('mr-play').innerHTML = playHTML();
     bindPlay();
@@ -186,7 +288,7 @@
         '<div class="mr-headtop">' +
           '<div class="mr-id">' +
             '<div class="mr-name">' + (pick.blind ? '🕶 비공개 종목' : sym.name) + '</div>' +
-            '<div class="mr-ticker">' + (pick.blind ? '장 마감 후 공개' : (sym.ex || '') + ' · ' + sym.sym.replace(/\.(KS|KQ)$/, '') + ' · ' + sessionLabel(s.session)) + '</div>' +
+            '<div class="mr-ticker">' + (pick.blind ? '장 마감 후 공개' : (sym.ex || '') + ' · ' + tick(sym.sym) + ' · ' + sessionLabel(s.session)) + '</div>' +
           '</div>' +
           '<div class="mr-time"><b id="p-clock">--:--</b><span id="p-session">' + s.session.open + '–' + s.session.close + '</span></div>' +
         '</div>' +
@@ -202,6 +304,7 @@
         '</div>' +
       '</div>' +
       '<div class="mr-panel">' +
+        '<div class="mr-panelhead">이번 판 시작 잔고 <b>' + won(s.startCash) + '</b> <span>(내 계좌 그대로)</span></div>' +
         '<div class="mr-cashrow"><span>주문 가능 금액</span><b id="p-cash">' + won(s.cash) + '</b></div>' +
         '<div class="mr-hold" id="p-hold"></div>' +
         '<div class="mr-frac" id="p-frac">' +
@@ -367,7 +470,8 @@
       row('평가 금액', won(val)) +
       row('평가 손익', s.shares ? (unreal >= 0 ? '+' : '') + won(unreal) + ' (' + pct(hpr) + ')' : '—', s.shares ? cls(unreal) : '') +
       row('실현 손익', (s.realized >= 0 ? '+' : '') + won(s.realized), cls(s.realized)) +
-      row('총 자산', won(equity()), 'strong', 'total');
+      row('총 자산', won(equity()), 'strong', 'total') +
+      row('계좌 수익률', pct((equity() / s.startCash - 1) * 100), cls(equity() - s.startCash));
 
     var bq = buyQty(p, s.frac), sq = sellQty(s.frac);
     $('p-preview').innerHTML = '구매 <b>' + comma(bq) + '주</b> ' + won(bq * unitCost(p)) +
@@ -559,6 +663,7 @@
   }
 
   /* ---------------- 종료·결과 ---------------- */
+  /** 존버: 이번 판 시작 잔고(내 계좌)로 시초가에 살 수 있는 만큼 사서 종가에 팔았다면 */
   function bench() {
     var s = S, open = s.sym.day.open, close = s.sym.day.close;
     var uc = open * s.fx * (1 + s.fee.buy);
@@ -603,11 +708,11 @@
     var dd = mdd(S.eq.length ? S.eq : [S.startCash]);
 
     var acct = loadAcct();
-    acct.equity = acct.equity * (1 + myRet / 100);
+    acct.eq = Math.max(0, Math.round(finalEq));
     acct.games += 1;
     if (myRet > 0) acct.wins += 1;
     if (myRet > acct.best || acct.games === 1) { acct.best = myRet; acct.bestLabel = shortDate(S.session.date) + ' ' + S.sym.name + ' ' + pct(myRet); }
-    acct.history.unshift({ d: S.session.date, s: S.sym.name, m: S.session.market, r: Math.round(myRet * 100) / 100, g: g.g, blind: pick.blind });
+    acct.history.unshift({ d: S.session.date, s: S.sym.name, m: S.session.market, r: Math.round(myRet * 100) / 100, g: g.g, blind: pick.blind, eq: acct.eq });
     acct.history = acct.history.slice(0, 12);
     saveAcct(acct);
 
@@ -616,25 +721,37 @@
     var bleft = S.startCash - bshares * bopen * S.fx * (1 + S.fee.buy);
     for (var i = 0; i < bs.length; i++) bhCurve.push(bleft + bshares * bs[i][4] * S.fx);
 
+    var cumRet = (acct.eq / BASE_CASH - 1) * 100;
+    var busted = isBust(S.session, acct.eq);
+    var soldOut = S.sym.day.close;
+    var dayRet = S.sym.day.prevClose ? (soldOut / S.sym.day.prevClose - 1) * 100 : 0;
+
     $('mr-result').innerHTML =
       '<div class="mr-rescard">' +
         '<div class="mr-restop"><span class="mr-grade g-' + g.g + '">' + g.g + '</span>' +
           '<div><div class="mr-restitle">' + g.t + '</div>' +
           '<div class="mr-ressym">' + (pick.blind ? '🕶 공개 · ' : '') + S.sym.name + ' · ' + sessionLabel(S.session) + ' 마감</div></div>' +
         '</div>' +
-        '<div class="mr-bigret ' + cls(myRet) + '">' + pct(myRet) + '<span>수익률</span></div>' +
-        '<div class="mr-vs">존버(시초가 매수→종가 매도) ' + pct(bh.ret) + ' · <b class="' + cls(myRet - bh.ret) + '">' + (myRet - bh.ret >= 0 ? '+' : '') + (myRet - bh.ret).toFixed(2) + '%p</b></div>' +
+        '<div class="mr-bigret ' + cls(myRet) + '">' + pct(myRet) + '<span>이번 판 수익률</span></div>' +
+        '<div class="mr-vs">존버(내 잔고로 시초가 매수→종가 매도) ' + pct(bh.ret) + ' · <b class="' + cls(myRet - bh.ret) + '">' + (myRet - bh.ret >= 0 ? '+' : '') + (myRet - bh.ret).toFixed(2) + '%p</b></div>' +
         '<div class="mr-chartbox small"><canvas id="mr-rchart" aria-label="내 자산 곡선과 존버 곡선"></canvas></div>' +
         '<div class="mr-legend"><span><i style="background:var(--g-up)"></i>내 자산</span><span><i style="background:var(--g-mut)"></i>존버</span></div>' +
         '<div class="mr-grid2">' +
+          stat('시작 잔고', won(S.startCash)) +
           stat('최종 자산', won(finalEq)) +
+          stat('그날 주가 등락', pct(dayRet)) +
+          stat('시초가 → 종가', priceTxt(S.sym.day.open, S.session.currency) + ' → ' + priceTxt(soldOut, S.session.currency)) +
           stat('존버 최종', won(bh.value)) +
           stat('승률', winRate == null ? '—' : winRate.toFixed(0) + '% (' + S.wins + '/' + S.sells + ')') +
           stat('최대 낙폭', pct(dd)) +
           stat('매매', (S.trades.filter(function (t) { return t.side === 'B'; }).length) + '매수 · ' + S.sells + '매도') +
           stat('수수료·세금', won(S.feesPaid)) +
+          stat('내 계좌', won(acct.eq) + ' (' + pct(cumRet) + ')') +
         '</div>' +
-        '<div class="mr-acctline">내 계좌 <b>' + won(acct.equity) + '</b> · ' + acct.games + '전 ' + acct.wins + '승 · 최고 ' + pct(acct.best) + '</div>' +
+        '<div class="mr-acctline">내 계좌 <b>' + won(acct.eq) + '</b> · 첫 시드 대비 <b class="' + cls(cumRet) + '">' + pct(cumRet) + '</b> · ' + acct.games + '전 ' + acct.wins + '승</div>' +
+        (busted ? '<div class="mr-bust on"><b>계좌가 1주도 살 수 없는 금액이에요</b>' +
+          '<span>이대로는 어떤 종목도 매수할 수 없습니다. 1,000만 원을 다시 지급받아 새로 시작할 수 있어요. (전적은 유지)</span>' +
+          '<button type="button" id="r-bust-reset">1,000만 원으로 재출발</button></div>' : '') +
         '<div class="mr-actions3">' +
           '<button type="button" class="mr-ghost" id="r-again">같은 종목 다시</button>' +
           '<button type="button" class="mr-ghost" id="r-other">다른 종목</button>' +
@@ -654,11 +771,27 @@
       var s2 = next.symbols[Math.floor(Math.random() * next.symbols.length)];
       startGame(next, s2);
     });
+    var rb = $('r-bust-reset');
+    if (rb) rb.addEventListener('click', function () { resetToSeed(); });
     paintAcct();
     window.scrollTo({ top: Math.max(0, $('mr-app').offsetTop - 70), behavior: 'smooth' });
   }
 
   function stat(k, v) { return '<div class="mr-stat"><span>' + k + '</span><b>' + v + '</b></div>'; }
+
+  function resetToSeed(silent) {
+    var a = loadAcct();
+    if (!silent && a.eq >= BASE_CASH) {
+      if (!window.confirm('계좌를 1,000만 원으로 다시 시작할까요? 지금 잔고(' + won(a.eq) + ')는 사라집니다.')) return;
+    }
+    a.eq = BASE_CASH;
+    a.busts = (a.busts || 0) + 1;
+    saveAcct(a);
+    paintAcct();
+    if (S && S.ended) { screen('lobby'); }
+    renderLobby();
+    toast('1,000만 원을 다시 지급했어요 · 전적은 그대로');
+  }
 
   function drawResultChart(bhCurve) {
     var cv = $('mr-rchart');
@@ -721,12 +854,17 @@
       pick.sym = null;
       renderLobby();
     });
+    $('mr-q').addEventListener('input', function () {
+      pick.q = this.value;
+      renderSymbols();
+    });
     $('mr-start').addEventListener('click', function () { if (pick.sym) startGame(pick.session, pick.sym); });
     $('mr-reset').addEventListener('click', function () {
-      if (!window.confirm('내 계좌 기록(누적 자산·전적)을 초기화할까요?')) return;
+      if (!window.confirm('계좌 기록(잔고·전적·최고 수익률)을 모두 초기화할까요? 첫 시드 1,000만 원부터 다시 시작합니다.')) return;
       try { localStorage.removeItem(ACCT_KEY); } catch (e) {}
-      paintAcct(); toast('계좌를 1,000만 원으로 초기화했어요');
+      paintAcct(); renderLobby(); toast('계좌를 1,000만 원으로 초기화했어요');
     });
+    $('mr-bust-reset').addEventListener('click', function () { resetToSeed(); });
     var v = new Date();
     var stamp = v.getUTCFullYear() + ('0' + (v.getUTCMonth() + 1)).slice(-2) + ('0' + v.getUTCDate()).slice(-2) + ('0' + v.getUTCHours()).slice(-2);
     fetch('data/market-replay.json?v=' + stamp, { cache: 'no-cache' })

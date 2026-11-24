@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>어제 장 실전 트레이딩 게임 — 실제 5분봉 리플레이, 1,000만 원으로 | 개미일지 계산기</title>
-<meta name="description" content="어제 실제 주식시장의 5분봉을 그대로 재생하며 1,000만 원으로 매매하는 무료 트레이딩 게임. 삼성전자·SK하이닉스·엔비디아·테슬라·나스닥100 실제 시세에 수수료·증권거래세·환율까지 반영하고, 존버(시초가 매수→종가 매도) 수익률과 비교합니다. 회원가입 없이 바로 시작.">
+<meta name="description" content="어제 실제 주식시장의 5분봉을 그대로 재생하며 매매하는 무료 트레이딩 게임. 코스피·코스닥·나스닥·S&P500·다우존스 146종목 중 골라, 첫 시드 1,000만 원을 한 번 받고 그다음부터는 내 계좌 잔고 그대로 이어서 거래합니다. 수수료·증권거래세·환율과 존버 비교까지.">
 <meta name="keywords" content="트레이딩 게임, 모의투자 게임, 주식 리플레이, 단타 연습, 5분봉 리플레이, 삼성전자 차트, 엔비디아 차트, 존버 비교, 주식 초보 연습, 무료 모의투자">
 <meta name="author" content="개미일지 계산기">
 <meta name="robots" content="index,follow,max-image-preview:large">
@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="개미일지 계산기">
 <meta property="og:locale" content="ko_KR">
 <meta property="og:title" content="어제 장 실전 트레이딩 게임 — 실제 5분봉으로 다시 거래하기">
-<meta property="og:description" content="어제 실제 시장의 5분봉이 시간순으로 그려집니다. 1,000만 원으로 매수·매도하고 장 마감 후 존버와 비교해 보세요. 수수료·세금·환율까지 실제와 같게.">
+<meta property="og:description" content="어제 실제 시장의 5분봉이 시간순으로 그려집니다. 첫 시드 1,000만 원을 한 번 받고 그다음부터는 내 계좌 잔고 그대로 이어서 매수·매도해 보세요. 종목 카드의 등락률은 장이 끝나야 공개됩니다.">
 <meta property="og:url" content="https://ant-econ.github.io/market-replay.html">
 <meta property="og:image" content="https://ant-econ.github.io/assets/og.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -42,13 +42,15 @@
     "price": "0",
     "priceCurrency": "KRW"
    },
-   "description": "직전 거래일 실제 주식시장의 정규장 5분봉을 시간순으로 재생하며 1,000만 원으로 매매하는 트레이딩 게임. 실제 수수료·증권거래세·원달러 환율을 반영하고 장 마감 후 단순 보유(존버) 수익률과 비교합니다.",
+   "description": "직전 거래일 실제 주식시장의 정규장 5분봉을 시간순으로 재생하며 매매하는 트레이딩 게임. 첫 시드 1,000만 원을 한 번만 받고, 이후에는 내 계좌 잔고 그대로 다음 판에 투자합니다. 실제 수수료·증권거래세·원달러 환율을 반영하고 장 마감 후 단순 보유(존버) 수익률과 비교합니다.",
    "featureList": [
     "실제 거래일 5분봉 가격·거래량 리플레이",
-    "1,000만 원 동일 초기 자금, 정수 주 매매",
+    "첫 시드 1,000만 원 지급 후 누적 계좌로 이어서 거래",
+    "코스피·코스닥·나스닥·S&P500·다우존스 등 146종목 검색",
+    "종목 목록에서 그날 등락률·가격을 가린 상태로 선택",
+    "1x·2x·3x·5x 배속 재생(최대 5배속)",
     "증권거래세·위탁수수료·환율 반영",
-    "장 마감 결과 리포트와 존버 수익률 비교",
-    "종목·날짜를 가리는 블라인드 모드"
+    "장 마감 결과 리포트와 존버 수익률 비교"
    ],
    "publisher": {
     "@type": "Organization",
@@ -114,6 +116,38 @@
      "acceptedAnswer": {
       "@type": "Answer",
       "text": "화면에 방금 그려진 5분봉의 종가에 체결됩니다. 버튼을 누른 순간의 실제 가격이 아니라 그 봉이 끝난 시점의 가격이며, 실전에서 다음 봉 시가에 체결되는 것과 비슷하게 맞춘 것입니다."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "매판 1,000만 원으로 돌아가나요?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "아니요. 1,000만 원은 처음 한 번만 지급됩니다. 한 판이 끝나면 번 돈과 잃은 돈이 그대로 계좌에 남고, 다음 판은 그 잔고로 시작합니다. 다만 계좌가 1주도 살 수 없는 금액까지 줄면 안내와 함께 1,000만 원을 다시 지급받아 새로 시작할 수 있습니다. 이때 전적은 유지됩니다."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "종목 고를 때 등락률이 안 보이는데요?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "일부러 가렸습니다. 종목 목록에는 이름·티커·시장만 나오고 그날의 등락률과 가격은 나오지 않습니다. 오른 종목만 골라 담는 습관을 막기 위해서이고, 그날의 등락률과 시초가·종가·존버 수익률은 정규장 재생이 끝난 결과 화면에서 처음 공개됩니다."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "배속은 얼마나 빨라지나요?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "1x·2x·3x·5x 네 단계이고 최대 5배속입니다. 1배속이면 5분봉 한 개가 1초에 지나가고, 5배속이면 하루 장이 15초 안에 끝납니다."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "어떤 종목을 거래할 수 있나요?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "코스피·코스닥·나스닥·뉴욕증권거래소 상장 종목과 지수 ETF까지 146종목입니다. 다우존스 30종목은 전부 포함되어 있고, 검색창에 종목명이나 티커를 넣어 바로 고를 수 있습니다."
      }
     },
     {
@@ -184,7 +218,29 @@
 .mr-chip span{font-size:11.5px;color:var(--g-mut)}
 .mr-chip.on{border-color:var(--g-blue);background:color-mix(in srgb,var(--g-blue) 12%,var(--g-card))}
 .mr-chip.on b{color:var(--g-blue)}
-.mr-symbols{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:8px;margin-bottom:16px}
+.mr-symbols{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:8px;margin-bottom:10px;
+  max-height:min(46vh,420px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:2px 2px 6px}
+.mr-searchwrap{display:flex;gap:8px;margin:0 0 10px}
+.mr-searchwrap input{flex:1;min-width:0;font:inherit;font-size:13.5px;font-weight:650;color:var(--g-text);
+  background:var(--g-card);border:1.5px solid var(--g-line);border-radius:13px;padding:11px 14px;outline:none}
+.mr-searchwrap input:focus{border-color:var(--g-blue)}
+.mr-searchwrap input::placeholder{color:var(--g-dim);font-weight:600}
+.mr-tabs{display:flex;gap:6px;overflow-x:auto;padding:0 0 10px;-webkit-overflow-scrolling:touch}
+.mr-tabs button{flex:0 0 auto;font-size:12px;font-weight:750;color:var(--g-mut);background:var(--g-card);
+  border-radius:999px;padding:7px 12px;transition:.14s;white-space:nowrap}
+.mr-tabs button.on{background:var(--g-text);color:var(--g-bg)}
+.mr-stepnote{font-style:normal;font-weight:700;font-size:11.5px;color:var(--g-mut);margin-left:2px}
+.mr-empty{font-size:12.5px;color:var(--g-mut);font-weight:650;margin:0 0 14px}
+.mr-acct-note{font-size:11.5px;color:var(--g-mut);font-weight:600;margin:10px 0 0;line-height:1.55}
+.mr-bust{display:none;flex-direction:column;align-items:flex-start;gap:6px;background:color-mix(in srgb,var(--g-up) 10%,var(--g-card));
+  border:1.5px solid color-mix(in srgb,var(--g-up) 40%,transparent);border-radius:16px;padding:14px 15px;margin:0 0 12px}
+.mr-bust.on,.mr-bust:not([hidden]){display:flex}
+.mr-bust b{font-size:13.5px;font-weight:800}
+.mr-bust span{font-size:12px;color:var(--g-mut);font-weight:600;line-height:1.55}
+.mr-bust button{margin-top:4px;background:var(--g-up);color:#fff;border-radius:11px;padding:10px 14px;font-size:12.5px;font-weight:800}
+.mr-panelhead{font-size:11.5px;color:var(--g-mut);font-weight:700;margin:0 0 8px}
+.mr-panelhead b{color:var(--g-text);font-weight:800;font-variant-numeric:tabular-nums}
+.mr-panelhead span{color:var(--g-dim);font-weight:600}
 .mr-sym{display:flex;flex-direction:column;gap:3px;align-items:flex-start;text-align:left;
   background:var(--g-card);border:1.5px solid transparent;border-radius:16px;padding:13px 15px;transition:.14s}
 .mr-sym:hover{border-color:color-mix(in srgb,var(--g-blue) 45%,transparent)}
@@ -321,13 +377,13 @@
 <nav class="breadcrumb" aria-label="현재 위치"><a href="index.html">계산기 홈</a><span>›</span>어제 장 트레이딩 게임</nav>
 <section class="pagehead">
   <div class="crumbtab">🎮 실전 리플레이</div>
-  <h1>어제 장을 <em>다시 거래</em>합니다,<br>1,000만 원으로</h1>
-  <p class="lede">직전 거래일의 실제 5분봉이 시간순으로 그려집니다. 삼성전자·SK하이닉스부터 엔비디아·테슬라까지, 그날 실제로 오간 가격과 거래량 그대로. 매수·매도 버튼을 누르면 수수료와 증권거래세가 실제처럼 빠져나갑니다.</p>
+  <h1>어제 장을 <em>다시 거래</em>합니다,<br>내 계좌로</h1>
+  <p class="lede">직전 거래일의 실제 5분봉이 시간순으로 그려집니다. 코스피·코스닥·나스닥·S&amp;P500·다우존스 주요 종목 146개 중 하나를 골라, 그날 실제로 오간 가격과 거래량 그대로 매매하세요. 첫 시드는 1,000만 원을 한 번만 받고, 그다음부터는 내 계좌 잔고 그대로 이어서 합니다.</p>
   <div class="hero-stats">
     <div class="chipstat"><b>실제 5분봉</b>가격·거래량 그대로</div>
-    <div class="chipstat"><b>1,000만원</b>국내·미국 동일 자금</div>
-    <div class="chipstat"><b>0.215%</b>국내 매도 비용 반영</div>
-    <div class="chipstat"><b>존버 비교</b>시초가 매수→종가 매도</div>
+    <div class="chipstat"><b>누적 계좌</b>첫 시드 1,000만 원, 이후엔 잔고 그대로</div>
+    <div class="chipstat"><b>종목 146개</b>코스피·코스닥·나스닥·S&amp;P500·다우</div>
+    <div class="chipstat"><b>최대 5배속</b>존버도 내 잔고 기준</div>
   </div>
 </section>
 
@@ -338,11 +394,11 @@
   <div class="mr-screen" id="mr-lobby">
     <div class="mr-eyebrow">실제 시세 · 5분봉 리플레이</div>
     <h2 class="mr-h2">어제 장, 다시 거래해 볼까요?</h2>
-    <p class="mr-lead">1,000만 원으로 시작합니다. 정수 주로만 매매되고, 수수료·증권거래세·환율이 실제와 같게 적용됩니다.</p>
+    <p class="mr-lead">첫 시드 1,000만 원을 한 번 받고, 그다음부터는 내 계좌 잔고 그대로 이어서 매매합니다. 정수 주로만 거래되고, 수수료·증권거래세·환율이 실제와 같게 적용됩니다. 종목 카드에는 그날의 등락률을 가려 두었습니다.</p>
 
     <div class="mr-acct">
       <div class="mr-acct-main">
-        <span>내 계좌</span>
+        <span>내 계좌 · 다음 판 시작금</span>
         <b id="acct-equity">10,000,000원</b>
         <i id="acct-ret" class="flat">0.00%</i>
       </div>
@@ -351,17 +407,29 @@
         <div><span>최고 수익률</span><b id="acct-best">—</b></div>
         <button type="button" id="mr-reset">기록 초기화</button>
       </div>
+      <p class="mr-acct-note">첫 시드 1,000만 원은 처음 한 번만 지급됩니다. 이후에는 지금 잔고 그대로 다음 판을 시작하고, 번 돈도 잃은 돈도 그 계좌에 그대로 남습니다.</p>
     </div>
 
     <div class="mr-step"><span>1</span>어느 장을 거래할까요?</div>
     <div class="mr-sessions" id="mr-sessions"></div>
 
-    <div class="mr-step"><span>2</span>종목을 고르세요</div>
+    <div class="mr-step"><span>2</span>종목을 고르세요 <i class="mr-stepnote" id="mr-count">—</i></div>
+    <div class="mr-searchwrap" id="mr-searchwrap">
+      <input type="search" id="mr-q" placeholder="종목명·티커 검색 (삼성전자, NVDA)" autocomplete="off" aria-label="종목 검색">
+    </div>
+    <div class="mr-tabs" id="mr-tabs"></div>
     <div class="mr-symbols" id="mr-symbols"></div>
+    <p class="mr-empty" id="mr-empty" hidden>검색 결과가 없어요. 다른 이름이나 티커로 찾아보세요.</p>
 
     <button type="button" class="mr-blindrow" id="mr-blind" aria-pressed="false">
       <span class="ic">🕶</span><span id="mr-blind-txt">블라인드 모드 — 종목·날짜를 가리고 거래</span><i></i>
     </button>
+
+    <div class="mr-bust" id="mr-bust" hidden>
+      <b>계좌가 1주도 살 수 없는 금액이에요</b>
+      <span>지금 잔고 <b id="mr-bust-eq">0원</b>으로는 어떤 종목도 1주를 살 수 없습니다. 1,000만 원을 다시 지급받아 새로 시작할 수 있어요. (전적은 유지)</span>
+      <button type="button" id="mr-bust-reset">1,000만 원으로 재출발</button>
+    </div>
 
     <button type="button" class="mr-primary" id="mr-start" disabled>종목을 고르면 시작할 수 있어요</button>
     <p class="mr-fine" id="mr-data-note">실제 시세 데이터를 불러오는 중입니다.</p>
@@ -376,8 +444,11 @@
   <p>지난 거래일의 <strong>정규장 5분봉</strong>을 처음부터 재생하면서, 그날의 가격 흐름만 보고 매매합니다. 종목이 무엇인지, 어떤 뉴스가 있었는지는 알려주지 않습니다. 미래를 모르는 상태에서 눌러 본 버튼의 결과가 그대로 손익이 됩니다.</p>
   <p>흔한 모의투자 게임은 랜덤 워크나 과거 데이터를 각색해 씁니다. 여기서는 다릅니다. Yahoo Finance 공개 차트 API에서 받은 <strong>실제 5분봉의 시가·고가·저가·종가·거래량</strong>을 값 하나 바꾸지 않고 그대로 씁니다. 화면에 그려지는 캔들은 그날 실제로 오간 가격이고, 거래량 막대도 실제 체결량입니다.</p>
 
-  <h2>1,000만 원, 정수 주, 실제 비용</h2>
-  <p>초기 자금은 국내·미국 모두 <strong>1,000만 원</strong>으로 같습니다. 국내 종목은 원화로, 미국 종목은 그 거래일의 원/달러 환율(USDKRW 종가)로 환산해 원화로 매매합니다. 100만 원어치를 사고 싶어도 1주 가격이 넘지 않으면 살 수 없고, 소수점 주식은 취급하지 않습니다. 실제 증권사와 같은 방식입니다.</p>
+  <h2>1,000만 원은 한 번만, 그다음은 내 계좌로</h2>
+  <p>첫 시드는 <strong>1,000만 원</strong>을 한 번만 지급받습니다. 한 판이 끝났다고 원점으로 돌아가지 않습니다. 번 돈은 계좌에 그대로 남아 다음 판의 시작 자금이 되고, 잃은 돈도 그대로 줄어든 채로 다음 판을 시작합니다. 국내 종목에서 30%를 벌면 그다음 미국 종목은 1,300만 원으로 사는 식입니다.</p>
+  <p>계좌가 <strong>1주도 살 수 없는 금액</strong>까지 줄어야만 초기화 안내가 나오고, 그때 1,000만 원을 다시 지급받을 수 있습니다(전적 유지). 장이 끝난 뒤 비교하는 <strong>존버(시초가 매수→종가 매도)</strong>도 그 판에 투입한 내 잔고를 기준으로 계산합니다. 남의 1,000만 원이 아니라 내 돈으로 샀다면 어땠을지 보는 셈입니다.</p>
+  <h2>정수 주, 실제 비용</h2>
+  <p>국내 종목은 원화로, 미국 종목은 그 거래일의 원/달러 환율(USDKRW 종가)로 환산해 원화로 매매합니다. 100만 원어치를 사고 싶어도 1주 가격이 넘지 않으면 살 수 없고, 소수점 주식은 취급하지 않습니다. 실제 증권사와 같은 방식입니다.</p>
   <table>
     <tr><th>구분</th><th>매수</th><th>매도</th></tr>
     <tr><td>국내주식</td><td>위탁수수료 0.015%</td><td>위탁수수료 0.015% + 증권거래세 0.20%<br><span class="mini">2026년: 거래세 0.05% + 농어촌특별세 0.15%</span></td></tr>
@@ -387,7 +458,8 @@
   <div class="callout warn"><p><b>반영하지 않은 것</b> — 환전 스프레드, 미국주식 양도소득세(연 250만 원 공제, 22%), 배당, 슬리피지·호가 단위는 거래 단위 계산에 넣지 않았습니다. 국내 세율과 수수료는 증권사·연도에 따라 조금씩 다르므로 실제와 소폭 차이가 날 수 있습니다.</p></div>
 
   <h2>장 마감, 그리고 존버와의 비교</h2>
-  <p>장이 끝나면 결과 화면에서 <strong>그날 시초가에 살 수 있는 만큼 사서 종가에 팔았을 때</strong>(존버)와 내 수익률을 나란히 비교합니다. 같은 수수료·세금을 적용한 공정한 비교입니다. 그날 시장이 오른 날이면 아무것도 안 한 사람이 이기고, 흔들리며 빠진 날이면 현금을 들고 있던 사람이 이깁니다.</p>
+  <p>장이 끝나면 결과 화면에서 <strong>그날 시초가에 내 잔고로 살 수 있는 만큼 사서 종가에 팔았을 때</strong>(존버)와 내 수익률을 나란히 비교합니다. 같은 수수료·세금을 적용한 공정한 비교입니다. 그날 시장이 오른 날이면 아무것도 안 한 사람이 이기고, 흔들리며 빠진 날이면 현금을 들고 있던 사람이 이깁니다.</p>
+  <p>종목을 고르는 화면에는 이름·티커·시장만 보이고 <strong>그날의 등락률과 가격은 가려져</strong> 있습니다. 등락률은 장이 끝난 결과 화면에서 처음 공개됩니다.</p>
   <table>
     <tr><th>등급</th><th>기준 (존버 수익률과의 차이)</th></tr>
     <tr><td>S</td><td>+8%p 이상 앞서고 수익 중</td></tr>
@@ -416,9 +488,13 @@
   <details class="faq"><summary>미국 주식을 왜 원화로 표시하나요?</summary><p>국내·미국을 같은 조건에서 비교하려고 초기 자금을 양쪽 다 1,000만 원으로 통일했습니다. 미국 종목은 해당 거래일의 원/달러 환율(USDKRW 종가)로 원화 환산해 매매하고, 손익과 자산도 원화로 계산합니다. 화면에는 달러 가격과 적용 환율을 함께 표시합니다.</p></details>
   <details class="faq"><summary>등급은 어떻게 매기나요?</summary><p>그날 시초가에 매수해 종가에 판 경우(존버)와 내 수익률을 비교합니다. +8%p 이상 앞서면 S, +3%p 이상이면 A, ±3%p 이내면 B, -3~-8%p면 C, -8~-15%p면 D, 그보다 뒤지거나 -15% 손실이면 F입니다.</p></details>
   <details class="faq"><summary>매매는 어느 가격에 체결되나요?</summary><p>화면에 방금 그려진 5분봉의 종가에 체결됩니다. 버튼을 누른 순간의 실제 가격이 아니라 그 봉이 끝난 시점의 가격이며, 실전에서 다음 봉 시가에 체결되는 것과 비슷하게 맞춘 것입니다.</p></details>
+  <details class="faq"><summary>매판 1,000만 원으로 돌아가나요?</summary><p>아니요. 1,000만 원은 처음 한 번만 지급됩니다. 한 판이 끝나면 번 돈과 잃은 돈이 그대로 계좌에 남고, 다음 판은 그 잔고로 시작합니다. 계좌가 1주도 살 수 없는 금액까지 줄면 안내와 함께 1,000만 원을 다시 지급받아 새로 시작할 수 있습니다(전적 유지).</p></details>
+  <details class="faq"><summary>종목 고를 때 등락률이 안 보이는데요?</summary><p>일부러 가렸습니다. 종목 목록에는 이름·티커·시장만 나오고 그날의 등락률과 가격은 나오지 않습니다. 오른 종목만 골라 담는 습관을 막기 위해서이고, 그날의 등락률과 시초가·종가·존버 수익률은 정규장 재생이 끝난 결과 화면에서 처음 공개됩니다.</p></details>
+  <details class="faq"><summary>배속은 얼마나 빨라지나요?</summary><p>1x·2x·3x·5x 네 단계이고 최대 5배속입니다. 1배속이면 5분봉 한 개가 1초에 지나가고, 5배속이면 하루 장이 15초 안에 끝납니다.</p></details>
+  <details class="faq"><summary>어떤 종목을 거래할 수 있나요?</summary><p>코스피·코스닥·나스닥·뉴욕증권거래소 상장 종목과 지수 ETF까지 146종목입니다. 다우존스 30종목은 전부 포함되어 있고, 검색창에 종목명이나 티커를 넣어 바로 고를 수 있습니다.</p></details>
   <details class="faq"><summary>블라인드 모드는 무엇인가요?</summary><p>종목명과 날짜를 가린 채 차트만 보고 거래하는 모드입니다. 장 마감 결과 화면에서 어떤 종목이었는지 공개됩니다.</p></details>
 
-  <p class="mini" style="margin-top:22px">기준 시점: 2026년 11월. 시세 데이터는 Yahoo Finance 공개 차트 API의 직전 거래일 정규장 5분봉·일봉이며, 원/달러 환율은 같은 출처의 USDKRW 일봉 종가입니다. 본 게임은 과거 데이터를 이용한 학습·오락용 도구로 투자 권유가 아니며, 어떤 수익도 보장하지 않습니다. 기록은 내 브라우저(localStorage)에만 저장되고 서버로 전송되지 않습니다.</p>
+  <p class="mini" style="margin-top:22px">기준 시점: 2026년 11월. 시세 데이터는 Yahoo Finance 공개 차트 API의 직전 거래일 정규장 5분봉·일봉이며, 원/달러 환율은 같은 출처의 USDKRW 일봉 종가입니다. 대상은 코스피·코스닥·나스닥·뉴욕증권거래소·지수 ETF 146종목으로 매일 갱신됩니다. 본 게임은 과거 데이터를 이용한 학습·오락용 도구로 투자 권유가 아니며, 어떤 수익도 보장하지 않습니다. 계좌 기록은 내 브라우저(localStorage)에만 저장되고 서버로 전송되지 않습니다.</p>
 </article>
 
 <section class="related">
@@ -469,6 +545,6 @@
   </div>
 </footer>
 <script src="assets/kit.js"></script>
-<script src="assets/market-replay.js?v=20261125f"></script>
+<script src="assets/market-replay.js?v=20261125mr2"></script>
 </body>
 </html>

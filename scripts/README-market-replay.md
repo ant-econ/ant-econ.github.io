@@ -13,9 +13,23 @@
 
 거래비용 기본값: 국내 매수 수수료 0.015%, 국내 매도 수수료 0.015% + 증권거래세 0.20%(2026년 기준, 거래세 0.05% + 농어촌특별세 0.15%), 미국 매수·매도 각 0.1%.
 
-- 대상 종목: NVDA·TSLA·AAPL·MSFT·QQQ(미국), 005930.KS·000660.KS·035420.KS·005380.KS(국내)
+- 대상 종목: 146개 — 코스피 58, 코스닥 20, 나스닥 31, 뉴욕증권거래소(NYSE) 34, 지수 ETF 3(SPY·QQQ·DIA). 다우존스 30종목과 S&P500 구성 종목 60개를 포함합니다. 목록은 스크립트의 `SYMBOLS`에 있고, 각 항목은 `(시장, 티커, 표시 이름, 거래소, 태그)`입니다. 태그 `KOSPI·KOSDAQ·NASDAQ·NYSE·ETF`는 게시판 필터, `SP500·DJIA`는 지수 구성 종목 표시입니다.
 - 시장별로 **최근 3거래일**을 보관합니다(`--keep`으로 변경).
 - 정규장 시작 봉과 마지막 봉이 모두 있는 날만 싣습니다. 시초가 데이터가 비어 있는 날(야후 데이터 공백)은 게임의 "존버" 비교가 왜곡되므로 제외하고, 제외 사유를 JSON `notes`에 남깁니다.
+- 146종목 × 2회(분봉+일봉) 요청을 6개 스레드로 받아 약 10초면 끝납니다. 파일은 1.7MB, GitHub Pages가 gzip으로 내려 450KB 정도입니다.
+
+## 왜 브라우저가 야후를 직접 부르지 않는가
+
+"전 종목을 브라우저에서 온디맨드로 받아오기"를 먼저 시험했고, **실패**했습니다(2026-11-25 확인).
+
+| 경로 | 결과 |
+| --- | --- |
+| `https://query1.finance.yahoo.com/v8/finance/chart/...` 직접 | CORS 헤더 없음 → 브라우저에서 읽을 수 없음 |
+| `corsproxy.io` | HTTP 401 (API 키 없으면 거부) |
+| `api.allorigins.win` | 3회 연속 요청에 1.4초·21초 성공, 522 실패 — 지연과 실패가 무작위 |
+| `api.codetabs.com`, `thingproxy` | 522·연결 실패 |
+
+무료 프록시는 게임 화면의 필수 경로로 삼기에 너무 불안정해서, 대신 이 스크립트가 146종목을 매일 미리 받아 정적 JSON으로 둡니다. 브라우저는 같은 출처의 `data/market-replay.json`만 읽습니다.
 
 ## 실행
 
@@ -73,7 +87,8 @@ cd <repo> && git pull --rebase --autostash -q && python3 scripts/update_replay.p
     { "id":"kr-2026-11-24", "market":"KR", "date":"2026-11-24",
       "tz":"Asia/Seoul", "tzOffset":540, "open":"09:00", "close":"15:30",
       "currency":"KRW", "fx":1,
-      "symbols":[ { "sym":"005930.KS","name":"삼성전자","ex":"KOSPI",
+      "symbols":[ { "sym":"005930.KS","name":"삼성전자","ex":"코스피",
+                    "tags":["KOSPI"],
                     "bars":[[epoch,o,h,l,c,v], ...],
                     "day":{"open":..,"high":..,"low":..,"close":..,"volume":..,"prevClose":..} } ] }
   ],
