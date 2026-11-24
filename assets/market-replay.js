@@ -55,7 +55,7 @@
     t.textContent = msg;
     t.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { t.classList.remove('show'); }, 1800);
+    toastTimer = setTimeout(function () { t.classList.remove('show'); t.textContent = ''; }, 1800);
   }
   function css(name) { return K.cssVar(name) || '#888'; }
 
@@ -366,14 +366,14 @@
       row('평가 금액', won(val)) +
       row('평가 손익', s.shares ? (unreal >= 0 ? '+' : '') + won(unreal) + ' (' + pct(hpr) + ')' : '—', s.shares ? cls(unreal) : '') +
       row('실현 손익', (s.realized >= 0 ? '+' : '') + won(s.realized), cls(s.realized)) +
-      row('총 자산', won(equity()), 'strong');
+      row('총 자산', won(equity()), 'strong', 'total');
 
     var bq = buyQty(p, s.frac), sq = sellQty(s.frac);
     $('p-preview').innerHTML = '구매 <b>' + comma(bq) + '주</b> ' + won(bq * unitCost(p)) +
       ' · 판매 <b>' + comma(sq) + '주</b> ' + won(sq * unitNet(p));
   }
-  function row(a, b, c) {
-    return '<div class="mr-irow"><span>' + a + '</span><b class="' + (c || '') + '">' + b + '</b></div>';
+  function row(a, b, c, extra) {
+    return '<div class="mr-irow ' + (extra || '') + '"><span>' + a + '</span><b class="' + (c || '') + '">' + b + '</b></div>';
   }
 
   /* ---------------- 차트 ---------------- */
@@ -397,7 +397,7 @@
     var padR = narrow ? 46 : 76;
     var volH = Math.max(34, H * 0.16), gap = 12;
     var priceH = H - padT - padB - volH - gap;
-    var padL = 2;
+    var padL = narrow ? 4 : 8;
     var iw = W - padL - padR;
     var slot = iw / n;
 
@@ -407,7 +407,9 @@
       if (bars[i][2] > hi) hi = bars[i][2];
     }
     var prev = S.sym.day.prevClose;
-    if (prev) { lo = Math.min(lo, prev); hi = Math.max(hi, prev); }
+    var band = (hi - lo) || hi * 0.01 || 1;
+    var prevIn = prev && prev > lo - band * 0.6 && prev < hi + band * 0.6;
+    if (prevIn) { lo = Math.min(lo, prev); hi = Math.max(hi, prev); }
     if (S.shares > 0) { var ap = (S.cost / S.shares) / S.fx; lo = Math.min(lo, ap); hi = Math.max(hi, ap); }
     var pad = (hi - lo) * 0.12 || hi * 0.01 || 1;
     lo -= pad; hi += pad;
@@ -429,7 +431,7 @@
     }
 
     // 전일 종가 점선
-    if (prev) {
+    if (prevIn) {
       ctx.save();
       ctx.setLineDash([4, 4]); ctx.strokeStyle = MUT; ctx.globalAlpha = 0.75;
       ctx.beginPath(); ctx.moveTo(padL, y(prev)); ctx.lineTo(padL + iw, y(prev)); ctx.stroke();

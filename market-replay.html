@@ -108,7 +108,7 @@
 .mr{background:var(--g-bg);color:var(--g-text);border:1px solid var(--line);border-radius:24px;
   box-shadow:0 24px 60px -34px rgba(0,0,0,.85);overflow:hidden;margin:14px 0 0;position:relative}
 .mr *{box-sizing:border-box}
-.mr button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.mr :where(button){font:inherit;cursor:pointer;border:0;background:transparent;color:inherit}
 .mr canvas{width:100%;height:100%;display:block}
 .mr .up{color:var(--g-up)} .mr .dn{color:var(--g-dn)} .mr .flat{color:var(--g-mut)}
 .mr-screen{display:none;padding:20px}
@@ -201,15 +201,17 @@
 .mr-panel{background:var(--g-card);border-radius:20px;padding:16px 16px 18px}
 .mr-cashrow{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;color:var(--g-mut);font-weight:700}
 .mr-cashrow b{font-size:15px;color:var(--g-text);font-weight:800;font-variant-numeric:tabular-nums}
-.mr-hold{margin:8px 0 14px}
+.mr-hold{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;margin:8px 0 14px}
 .mr-irow{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;font-size:13px;color:var(--g-mut);font-weight:600}
 .mr-irow b{font-size:13.5px;color:var(--g-text);font-weight:750;font-variant-numeric:tabular-nums}
 .mr-irow b.strong{font-size:15.5px;font-weight:850}
+.mr-irow.total{grid-column:1/-1;border-top:1px solid var(--g-line);margin-top:5px;padding-top:9px}
 .mr-frac{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
 .mr-frac button{border-radius:11px;padding:10px 0;font-size:13px;font-weight:800;background:var(--g-card2);color:var(--g-mut);transition:.14s}
 .mr-frac button.on{background:var(--g-text);color:var(--g-bg)}
 .mr-preview{text-align:center;font-size:11.5px;color:var(--g-mut);font-weight:650;margin-bottom:10px;min-height:17px;font-variant-numeric:tabular-nums}
-.mr-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mr-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;position:sticky;bottom:0;
+  padding:8px 0 2px;background:linear-gradient(180deg,transparent,var(--g-card) 26%)}
 .mr-buy,.mr-sell{border-radius:15px;padding:16px 8px;font-size:16px;font-weight:850;color:#fff;letter-spacing:-.02em;transition:.14s}
 .mr-buy{background:var(--g-up)} .mr-sell{background:var(--g-dn)}
 .mr-buy:hover,.mr-sell:hover{filter:brightness(1.07)}
@@ -430,6 +432,6 @@
   </div>
 </footer>
 <script src="assets/kit.js"></script>
-<script src="assets/market-replay.js?v=20261125a"></script>
+<script src="assets/market-replay.js?v=20261125b"></script>
 </body>
 </html>
