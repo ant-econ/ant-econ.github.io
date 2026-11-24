@@ -338,7 +338,7 @@
     var deduct = Math.min(ps + irpRaw, LIMIT);
     var extra = Math.min(transfer * EXTRA_RATE, EXTRA_CAP);
     var credit = (deduct + extra) * rate;
-    var room = Math.max(0, LIMIT - deduct) + Math.max(0, EXTRA_CAP - extra);
+    var room = Math.max(0, LIMIT - deduct);
 
     var limitWon = isaLimit * 10000;
     var isaTaxBase = Math.max(0, profit - limitWon);
@@ -375,8 +375,8 @@
     msg.innerHTML = parts.join(' ');
 
     var body = [];
-    body.push('<tr><td>연금저축</td><td>' + K.won(psRaw) + '</td><td>' + K.won(ps) + '까지 공제</td><td class="pos">' + K.won(ps * rate) + '</td></tr>');
-    body.push('<tr><td>IRP</td><td>' + K.won(irpRaw) + '</td><td>합산 900만 원 한도</td><td class="pos">' + K.won(Math.max(0, deduct - ps) * rate) + '</td></tr>');
+    body.push('<tr><td>연금저축</td><td>납입 ' + K.won(psRaw) + '</td><td>공제 대상 ' + K.won(ps) + '</td><td class="pos">' + K.won(ps * rate) + '</td></tr>');
+    body.push('<tr><td>IRP</td><td>납입 ' + K.won(irpRaw) + '</td><td>공제 대상 ' + K.won(Math.max(0, deduct - ps)) + '</td><td class="pos">' + K.won(Math.max(0, deduct - ps) * rate) + '</td></tr>');
     if (extra > 0) body.push('<tr><td>ISA 만기 전환</td><td>' + K.won(transfer) + '</td><td>10%·최대 300만 원 추가</td><td class="pos">' + K.won(extra * rate) + '</td></tr>');
     body.push('<tr><td>ISA</td><td>운용수익 ' + K.won(profit) + '</td><td>비과세 ' + K.num3(limitWon) + '원</td><td class="pos">' + K.won(isaSave) + '</td></tr>');
     body.push('<tr><td><strong>합계</strong></td><td></td><td></td><td class="pos"><strong>' + K.won(credit + isaSave) + '</strong></td></tr>');
