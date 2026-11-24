@@ -365,7 +365,7 @@
     K.el('s-rec2').textContent = d2 >= 1 ? '회복 불가' : K.pct(d2 / (1 - d2) * 100, 1);
 
     var labels = [];
-    for (var y = 0; y <= years; y++) labels.push(y % 5 === 0 ? y + '년' : '');
+    for (var y = 0; y <= years; y++) labels.push(y + '년');
     K.plot(chart, {
       series: [
         { data: a.series, color: K.color('accent'), width: 2.4 },

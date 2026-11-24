@@ -408,7 +408,7 @@
       var r = lo + (hi - lo) * i / steps;
       var p = usdSell * r * (1 - sp) * (1 - cm) - krwBuy;
       data.push(krwBuy > 0 ? p / krwBuy * 100 : 0);
-      labels.push(i % 10 === 0 ? Math.round(r) + '원' : '');
+      labels.push(Math.round(r) + '원');
     }
     K.plot(chart, {
       series: [{ data: data, color: K.color('accent'), fill: true }],

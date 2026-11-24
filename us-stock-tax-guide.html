@@ -396,7 +396,7 @@
     for (var i = 0; i <= steps; i++) {
       var v = top * i / steps;
       data.push(taxOf(v));
-      labels.push(i % 5 === 0 ? K.shortWon(v) : '');
+      labels.push(K.shortWon(v));
     }
     var series = [{ data: data, color: K.color('accent'), fill: true, width: 2.4 }];
     var markers = [];

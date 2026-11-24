@@ -443,7 +443,7 @@
     for (var i = 0; i <= steps; i++) {
       var a = top * i / steps;
       data.push(a * y / 100 + other);
-      labels.push(i % 5 === 0 ? K.shortWon(a) : '');
+      labels.push(K.shortWon(a));
     }
     var markers = [];
     markers.push({ i: Math.round(amount / top * steps), label: '현재', color: K.color('warn') });

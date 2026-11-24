@@ -391,7 +391,7 @@
     for (var v = 0; v <= top; v += step) {
       var d = Math.min(Math.min(v, LIMIT), LIMIT) * rate;
       data.push(d);
-      labels.push(v % 5000000 === 0 ? K.shortWon(v) : '');
+      labels.push(K.shortWon(v));
     }
     K.plot(chart, {
       series: [{ data: data, color: K.color('accent'), fill: true }],

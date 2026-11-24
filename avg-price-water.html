@@ -406,7 +406,7 @@
       var tq = qty + m / now;
       avgs.push(tq > 0 ? (baseCost + m) / tq : avg);
       flat.push(now);
-      labels.push(i % 5 === 0 ? K.shortWon(m) : '');
+      labels.push(K.shortWon(m));
     }
     K.plot(chart, {
       series: [
