@@ -62,7 +62,7 @@
   function sessionLabel(s) {
     return (s.market === 'KR' ? '한국장' : '미국장') + ' · ' + shortDate(s.date) + '(' + weekday(s.date) + ')';
   }
-  function tick(sym) { return sym.replace(/\.(KS|KQ)$/, ''); }
+  function shortSym(sym) { return sym.replace(/\.(KS|KQ)$/, ''); }
   function toast(msg) {
     var t = $('mr-toast');
     if (!t) return;
@@ -196,7 +196,7 @@
     return pick.session.symbols.filter(function (s) {
       if (pick.grp !== 'ALL' && (s.tags || []).indexOf(pick.grp) < 0) return false;
       if (!q) return true;
-      return s.name.toLowerCase().indexOf(q) >= 0 || tick(s.sym).toLowerCase().indexOf(q) >= 0;
+      return s.name.toLowerCase().indexOf(q) >= 0 || shortSym(s.sym).toLowerCase().indexOf(q) >= 0;
     }).sort(function (a, b) { return a.name.localeCompare(b.name, 'ko'); });
   }
 
@@ -215,7 +215,7 @@
       g.innerHTML = list.map(function (s) {
         return '<button type="button" class="mr-sym" data-sym="' + s.sym + '">' +
           '<b>' + s.name + '</b>' +
-          '<span class="sk">' + (s.ex || '') + ' · ' + tick(s.sym) + '</span></button>';
+          '<span class="sk">' + (s.ex || '') + ' · ' + shortSym(s.sym) + '</span></button>';
       }).join('');
     }
     $('mr-empty').hidden = list.length > 0;
@@ -288,7 +288,7 @@
         '<div class="mr-headtop">' +
           '<div class="mr-id">' +
             '<div class="mr-name">' + (pick.blind ? '🕶 비공개 종목' : sym.name) + '</div>' +
-            '<div class="mr-ticker">' + (pick.blind ? '장 마감 후 공개' : (sym.ex || '') + ' · ' + tick(sym.sym) + ' · ' + sessionLabel(s.session)) + '</div>' +
+            '<div class="mr-ticker">' + (pick.blind ? '장 마감 후 공개' : (sym.ex || '') + ' · ' + shortSym(sym.sym) + ' · ' + sessionLabel(s.session)) + '</div>' +
           '</div>' +
           '<div class="mr-time"><b id="p-clock">--:--</b><span id="p-session">' + s.session.open + '–' + s.session.close + '</span></div>' +
         '</div>' +
