@@ -73,6 +73,62 @@
   }
   function css(name) { return K.cssVar(name) || '#888'; }
 
+  /* ---------------- 결과 공유(클립보드) ---------------- */
+  function legacyCopy(txt) {
+    var ta = document.createElement('textarea');
+    ta.value = txt;
+    ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed';
+    ta.style.top = '-1000px';
+    ta.style.left = '0';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    var ok = false;
+    try {
+      ta.select();
+      if (ta.setSelectionRange) ta.setSelectionRange(0, txt.length);
+      ok = document.execCommand('copy');
+    } catch (e) { ok = false; }
+    document.body.removeChild(ta);
+    return ok;
+  }
+  /** true/false를 주는 Promise. https가 아니거나 권한이 없으면 textarea 방식으로 한 번 더 시도한다. */
+  function copyText(txt) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(txt).then(function () { return true; }, function () { return legacyCopy(txt); });
+    }
+    return new Promise(function (res) { res(legacyCopy(txt)); });
+  }
+  /** 공유 문구 — 한 줄 성적 요약과 링크만. 블라인드 모드는 종목·날짜를 가린다. */
+  function shareText(myRet, g, bhRet) {
+    var diff = myRet - bhRet;
+    var who = pick.blind ? '' : S.sym.name + '(' + shortDate(S.session.date) + ') ';
+    return '[어제 장 실전 트레이딩' + (pick.blind ? ' · 블라인드' : '') + '] ' + who +
+      pct(myRet) + ' · 등급 ' + g.g +
+      ' (존버 대비 ' + (diff >= 0 ? '+' : '') + diff.toFixed(2) + '%p)\n' +
+      '직접 거래해 보기 👉 https://ant-econ.github.io/market-replay.html';
+  }
+  function wireShare(btn, txt) {
+    var timer = 0, label = btn.textContent;
+    btn.addEventListener('click', function () {
+      copyText(txt).then(function (ok) {
+        if (!ok) {
+          btn.textContent = '복사가 안 됐어요';
+          window.prompt('아래 문구를 복사해 붙여넣어 주세요', txt);
+        } else {
+          btn.classList.add('ok');
+          btn.textContent = '✓ 복사 완료!';
+          toast('결과를 복사했어요 · 원하는 곳에 붙여넣기 하세요');
+        }
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+          btn.classList.remove('ok');
+          btn.textContent = label;
+        }, 2000);
+      });
+    });
+  }
+
   /* ---------------- 계좌(localStorage) ----------------
      eq = 지금 내 계좌 잔고(원). 첫 시드 1,000만 원은 최초 1회만 지급되고,
      이후 모든 판의 시작 자금은 이 잔고 그대로다. */
@@ -799,6 +855,7 @@
           '<button type="button" class="mr-ghost" id="r-other">다른 종목</button>' +
           '<button type="button" class="mr-primary" id="r-next">다음 장 도전</button>' +
         '</div>' +
+        '<button type="button" class="mr-share" id="r-share">결과 공유하기</button>' +
       '</div>';
     screen('result');
     drawResultChart(bhCurve);
@@ -813,6 +870,7 @@
       var s2 = next.symbols[Math.floor(Math.random() * next.symbols.length)];
       startGame(next, s2);
     });
+    wireShare($('r-share'), shareText(myRet, g, bh.ret));
     var rb = $('r-bust-reset');
     if (rb) rb.addEventListener('click', function () { resetToSeed(); });
     paintAcct();
