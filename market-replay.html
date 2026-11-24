@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>어제 장 실전 트레이딩 게임 — 실제 5분봉 리플레이, 1,000만 원으로 | 개미일지 계산기</title>
+<meta name="description" content="어제 실제 주식시장의 5분봉을 그대로 재생하며 1,000만 원으로 매매하는 무료 트레이딩 게임. 삼성전자·SK하이닉스·엔비디아·테슬라·나스닥100 실제 시세에 수수료·증권거래세·환율까지 반영하고, 존버(시초가 매수→종가 매도) 수익률과 비교합니다. 회원가입 없이 바로 시작.">
+<meta name="keywords" content="트레이딩 게임, 모의투자 게임, 주식 리플레이, 단타 연습, 5분봉 리플레이, 삼성전자 차트, 엔비디아 차트, 존버 비교, 주식 초보 연습, 무료 모의투자">
+<meta name="author" content="개미일지 계산기">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="naver-site-verification" content="cdb28886cc67b8325db51e7ed2cb076ad8123aeb">
+<meta name="naver-site-verification" content="ad395d8f5a244191d970977240f0743daef43cdb">
+<link rel="canonical" href="https://ant-econ.github.io/market-replay.html">
+<link rel="alternate" type="application/rss+xml" title="개미일지 계산기 RSS" href="https://ant-econ.github.io/rss.xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="개미일지 계산기">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="어제 장 실전 트레이딩 게임 — 실제 5분봉으로 다시 거래하기">
+<meta property="og:description" content="어제 실제 시장의 5분봉이 시간순으로 그려집니다. 1,000만 원으로 매수·매도하고 장 마감 후 존버와 비교해 보세요. 수수료·세금·환율까지 실제와 같게.">
+<meta property="og:url" content="https://ant-econ.github.io/market-replay.html">
+<meta property="og:image" content="https://ant-econ.github.io/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="어제 장 실전 트레이딩 게임 — 실제 5분봉 리플레이">
+<meta name="twitter:description" content="1,000만 원으로 어제 장을 다시 거래합니다. 실제 시세·실제 수수료·존버 비교까지.">
+<meta name="theme-color" content="#070b14">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "WebApplication",
+   "name": "어제 장 실전 트레이딩 게임",
+   "url": "https://ant-econ.github.io/market-replay.html",
+   "applicationCategory": "GameApplication",
+   "operatingSystem": "Web",
+   "inLanguage": "ko-KR",
+   "isAccessibleForFree": true,
+   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "KRW" },
+   "description": "직전 거래일 실제 주식시장의 정규장 5분봉을 시간순으로 재생하며 1,000만 원으로 매매하는 트레이딩 게임. 실제 수수료·증권거래세·원달러 환율을 반영하고 장 마감 후 단순 보유(존버) 수익률과 비교합니다.",
+   "featureList": [
+    "실제 거래일 5분봉 가격·거래량 리플레이",
+    "1,000만 원 동일 초기 자금, 정수 주 매매",
+    "증권거래세·위탁수수료·환율 반영",
+    "장 마감 결과 리포트와 존버 수익률 비교",
+    "종목·날짜를 가리는 블라인드 모드"
+   ],
+   "publisher": { "@type": "Organization", "name": "개미일지 계산기", "url": "https://ant-econ.github.io/" }
+  },
+  {
+   "@type": "BreadcrumbList",
+   "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "계산기 홈", "item": "https://ant-econ.github.io/" },
+    { "@type": "ListItem", "position": 2, "name": "어제 장 트레이딩 게임", "item": "https://ant-econ.github.io/market-replay.html" }
+   ]
+  },
+  {
+   "@type": "FAQPage",
+   "mainEntity": [
+    {
+     "@type": "Question",
+     "name": "정말 실제 시장 데이터인가요?",
+     "acceptedAnswer": { "@type": "Answer", "text": "네. Yahoo Finance 공개 차트 API에서 받은 직전 거래일의 정규장 5분봉(시가·고가·저가·종가·거래량)을 그대로 사용합니다. 값은 보기 좋게 다듬지 않으며, 임의로 만든 가짜 데이터는 한 건도 없습니다." }
+    },
+    {
+     "@type": "Question",
+     "name": "수수료와 세금은 어떻게 반영되나요?",
+     "acceptedAnswer": { "@type": "Answer", "text": "국내주식은 매수 시 위탁수수료 0.015%, 매도 시 위탁수수료 0.015%와 증권거래세 0.18%를 뺍니다. 미국주식은 매수·매도 각각 0.1%를 뺍니다. 환전 스프레드와 미국주식 양도소득세(연 250만 원 공제, 22%)는 거래 단위로 계산하지 않아 결과에 포함되지 않습니다." }
+    },
+    {
+     "@type": "Question",
+     "name": "미국 주식을 왜 원화로 표시하나요?",
+     "acceptedAnswer": { "@type": "Answer", "text": "국내·미국을 같은 조건에서 비교하려고 초기 자금을 양쪽 다 1,000만 원으로 통일했습니다. 미국 종목은 해당 거래일의 원/달러 환율(USDKRW 종가)로 원화 환산해 매수·매도하고, 손익과 자산도 원화로 계산합니다. 화면에는 달러 가격과 적용 환율을 함께 표시합니다." }
+    },
+    {
+     "@type": "Question",
+     "name": "등급은 어떻게 매기나요?",
+     "acceptedAnswer": { "@type": "Answer", "text": "그날 시초가에 매수해 종가에 팔았을 때(존버)와 내 수익률을 비교합니다. 존버보다 8%p 이상 앞서면 S, 3%p 이상이면 A, ±3%p 이내면 B, -3~-8%p면 C, -8~-15%p면 D, 그보다 뒤지거나 -15% 손실이면 F입니다." }
+    },
+    {
+     "@type": "Question",
+     "name": "매매는 어느 가격에 체결되나요?",
+     "acceptedAnswer": { "@type": "Answer", "text": "화면에 방금 그려진 5분봉의 종가에 체결됩니다. 버튼을 누른 순간의 실제 가격이 아니라, 그 봉이 끝난 시점의 가격입니다. 실전에서 다음 봉 시가에 체결되는 것과 비슷하게 맞춘 것입니다." }
+    },
+    {
+     "@type": "Question",
+     "name": "블라인드 모드는 무엇인가요?",
+     "acceptedAnswer": { "@type": "Answer", "text": "종목명과 날짜를 가린 채 차트만 보고 거래하는 모드입니다. 유명 종목이라는 이유로 생기는 편견을 없애고, 순수하게 가격과 거래량만으로 판단하는 연습을 할 수 있습니다. 장 마감 결과 화면에서 어떤 종목이었는지 공개됩니다." }
+    }
+   ]
+  }
+ ]
+}
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5969786760477948" crossorigin="anonymous"></script>
+<style>
+/* ===== 어제 장 트레이딩 게임 (토스증권 감성 · 페이지 한정) ===== */
+:root{
+  --g-bg:#17171C; --g-card:#202027; --g-card2:#2A2A33; --g-line:#31313A;
+  --g-text:#F2F4F6; --g-mut:#8B95A1; --g-dim:#4E5968;
+  --g-up:#F04452; --g-dn:#3182F6; --g-blue:#3182F6; --g-amber:#FFB020;
+}
+[data-theme="light"]{
+  --g-bg:#FFFFFF; --g-card:#F2F4F6; --g-card2:#E9EBEE; --g-line:#E5E8EB;
+  --g-text:#191F28; --g-mut:#6B7684; --g-dim:#B0B8C1;
+}
+.mr{background:var(--g-bg);color:var(--g-text);border:1px solid var(--line);border-radius:24px;
+  box-shadow:0 24px 60px -34px rgba(0,0,0,.85);overflow:hidden;margin:14px 0 0;position:relative}
+.mr *{box-sizing:border-box}
+.mr button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.mr canvas{width:100%;height:100%;display:block}
+.mr .up{color:var(--g-up)} .mr .dn{color:var(--g-dn)} .mr .flat{color:var(--g-mut)}
+.mr-screen{display:none;padding:20px}
+.mr-screen.show{display:block;animation:mrIn .22s ease}
+@keyframes mrIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.mr-loading{display:flex;align-items:center;gap:12px;padding:34px 22px;color:var(--g-mut);font-size:14px}
+.mr-loading b{display:block;font-size:15px;color:var(--g-text);margin-bottom:3px}
+.mr-loading span{font-size:13px}
+.spin{width:20px;height:20px;border-radius:50%;border:2px solid var(--g-line);border-top-color:var(--g-blue);
+  animation:spin .8s linear infinite;flex:0 0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* 로비 */
+.mr-eyebrow{display:inline-block;font-size:12px;font-weight:800;color:var(--g-blue);
+  background:color-mix(in srgb,var(--g-blue) 14%,transparent);border-radius:999px;padding:5px 11px;margin-bottom:10px}
+.mr-h2{font-size:clamp(21px,3.4vw,26px);margin:0 0 8px;letter-spacing:-.035em;font-weight:800}
+.mr-lead{color:var(--g-mut);font-size:14.5px;margin:0 0 18px;line-height:1.6}
+.mr-acct{background:var(--g-card);border-radius:18px;padding:16px 18px;margin-bottom:20px}
+.mr-acct-main{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.mr-acct-main span{font-size:13px;color:var(--g-mut);font-weight:700;width:100%}
+.mr-acct-main b{font-size:23px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.mr-acct-main i{font-style:normal;font-size:14px;font-weight:800}
+.mr-acct-sub{display:flex;gap:16px;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--g-line)}
+.mr-acct-sub div{display:flex;flex-direction:column;gap:2px}
+.mr-acct-sub span{font-size:11.5px;color:var(--g-mut);font-weight:700}
+.mr-acct-sub b{font-size:13.5px;font-weight:750}
+.mr-acct-sub button{margin-left:auto;font-size:12px;font-weight:700;color:var(--g-mut);
+  border:1px solid var(--g-line);border-radius:10px;padding:7px 11px}
+.mr-acct-sub button:hover{color:var(--g-text)}
+.mr-step{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;margin:0 0 10px;letter-spacing:-.02em}
+.mr-step span{display:grid;place-items:center;width:20px;height:20px;border-radius:7px;background:var(--g-text);
+  color:var(--g-bg);font-size:11.5px;font-weight:800}
+.mr-sessions{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:18px;-webkit-overflow-scrolling:touch}
+.mr-chip{flex:0 0 auto;display:flex;flex-direction:column;gap:2px;align-items:flex-start;
+  background:var(--g-card);border:1.5px solid transparent;border-radius:14px;padding:10px 14px;text-align:left;transition:.14s}
+.mr-chip b{font-size:13.5px;font-weight:750;letter-spacing:-.02em}
+.mr-chip span{font-size:11.5px;color:var(--g-mut)}
+.mr-chip.on{border-color:var(--g-blue);background:color-mix(in srgb,var(--g-blue) 12%,var(--g-card))}
+.mr-chip.on b{color:var(--g-blue)}
+.mr-symbols{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:8px;margin-bottom:16px}
+.mr-sym{display:flex;flex-direction:column;gap:3px;align-items:flex-start;text-align:left;
+  background:var(--g-card);border:1.5px solid transparent;border-radius:16px;padding:13px 15px;transition:.14s}
+.mr-sym:hover{border-color:color-mix(in srgb,var(--g-blue) 45%,transparent)}
+.mr-sym.on{border-color:var(--g-blue);background:color-mix(in srgb,var(--g-blue) 10%,var(--g-card))}
+.mr-sym b{font-size:14.5px;font-weight:800;letter-spacing:-.02em}
+.mr-sym .sk{font-size:11px;color:var(--g-mut);font-weight:650}
+.mr-sym .sp{font-size:13px;font-weight:750;font-variant-numeric:tabular-nums;margin-top:3px}
+.mr-sym .sc{font-size:12.5px;font-weight:800;font-variant-numeric:tabular-nums}
+.mr-sym.blind{align-items:center;text-align:center;justify-content:center;padding:18px 12px}
+.mr-sym.blind .si{font-size:20px}
+.mr-sym.blind b{font-size:13.5px}
+.mr-sym.blind .sp{font-size:11px;color:var(--g-mut);font-weight:600}
+.mr-blindrow{display:flex;align-items:center;gap:10px;width:100%;background:var(--g-card);border-radius:14px;
+  padding:13px 15px;margin-bottom:14px;font-size:13.5px;font-weight:700;color:var(--g-mut);text-align:left}
+.mr-blindrow .ic{font-size:16px}
+.mr-blindrow i{margin-left:auto;width:36px;height:21px;border-radius:999px;background:var(--g-line);position:relative;transition:.18s;flex:0 0 auto}
+.mr-blindrow i:after{content:"";position:absolute;top:3px;left:3px;width:15px;height:15px;border-radius:50%;
+  background:var(--g-text);transition:.18s}
+.mr-blindrow.on{color:var(--g-text)}
+.mr-blindrow.on i{background:var(--g-blue)}
+.mr-blindrow.on i:after{left:18px;background:#fff}
+.mr-primary{width:100%;background:var(--g-blue);color:#fff;border-radius:16px;padding:16px;
+  font-size:16px;font-weight:800;letter-spacing:-.02em;transition:.15s}
+.mr-primary:hover{filter:brightness(1.06)}
+.mr-primary:disabled{background:var(--g-card2);color:var(--g-dim);cursor:default;filter:none}
+.mr-fine{font-size:11.5px;color:var(--g-mut);margin:12px 0 0;line-height:1.6}
+
+/* 진행 화면 */
+.mr-head{padding:2px 0 6px}
+.mr-headtop{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.mr-name{font-size:16px;font-weight:800;letter-spacing:-.02em}
+.mr-ticker{font-size:11.5px;color:var(--g-mut);font-weight:600;margin-top:2px}
+.mr-time{text-align:right;flex:0 0 auto}
+.mr-time b{display:block;font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+.mr-time span{font-size:11px;color:var(--g-mut)}
+.mr-price{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin:10px 0 2px}
+.mr-price b{font-size:clamp(26px,6vw,32px);font-weight:850;letter-spacing:-.045em;font-variant-numeric:tabular-nums}
+.mr-chg{font-size:12.5px;font-weight:800;font-variant-numeric:tabular-nums}
+.mr-sub{font-size:11.5px;color:var(--g-mut);font-weight:600}
+.mr-bars{display:flex;align-items:center;gap:9px;margin-top:10px;font-size:11px;color:var(--g-mut);font-weight:700;font-variant-numeric:tabular-nums}
+.mr-prog{flex:1;height:4px;border-radius:999px;background:var(--g-card2);overflow:hidden}
+.mr-prog i{display:block;height:100%;width:0;background:var(--g-blue);border-radius:999px;transition:width .12s linear}
+.mr-chartbox{height:340px;margin:8px -4px 0}
+.mr-chartbox.small{height:180px;margin:12px 0 0}
+.mr-ctl{display:flex;align-items:center;gap:8px;margin:6px 0 14px}
+.mr-pause{background:var(--g-card);border-radius:12px;padding:9px 14px;font-size:12.5px;font-weight:800}
+.mr-speed{display:flex;gap:4px;margin-left:auto;background:var(--g-card);border-radius:12px;padding:4px}
+.mr-speed button{border-radius:9px;padding:6px 10px;font-size:12px;font-weight:800;color:var(--g-mut)}
+.mr-speed button.on{background:var(--g-text);color:var(--g-bg)}
+.mr-panel{background:var(--g-card);border-radius:20px;padding:16px 16px 18px}
+.mr-cashrow{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;color:var(--g-mut);font-weight:700}
+.mr-cashrow b{font-size:15px;color:var(--g-text);font-weight:800;font-variant-numeric:tabular-nums}
+.mr-hold{margin:8px 0 14px}
+.mr-irow{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;font-size:13px;color:var(--g-mut);font-weight:600}
+.mr-irow b{font-size:13.5px;color:var(--g-text);font-weight:750;font-variant-numeric:tabular-nums}
+.mr-irow b.strong{font-size:15.5px;font-weight:850}
+.mr-frac{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.mr-frac button{border-radius:11px;padding:10px 0;font-size:13px;font-weight:800;background:var(--g-card2);color:var(--g-mut);transition:.14s}
+.mr-frac button.on{background:var(--g-text);color:var(--g-bg)}
+.mr-preview{text-align:center;font-size:11.5px;color:var(--g-mut);font-weight:650;margin-bottom:10px;min-height:17px;font-variant-numeric:tabular-nums}
+.mr-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mr-buy,.mr-sell{border-radius:15px;padding:16px 8px;font-size:16px;font-weight:850;color:#fff;letter-spacing:-.02em;transition:.14s}
+.mr-buy{background:var(--g-up)} .mr-sell{background:var(--g-dn)}
+.mr-buy:hover,.mr-sell:hover{filter:brightness(1.07)}
+.mr-buy:active,.mr-sell:active{transform:scale(.985)}
+.mr-toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,14px);background:rgba(20,20,24,.94);
+  color:#fff;font-size:12.5px;font-weight:700;padding:10px 16px;border-radius:12px;opacity:0;pointer-events:none;
+  transition:.2s;z-index:5;max-width:88%;text-align:center}
+.mr-toast.show{opacity:1;transform:translate(-50%,0)}
+[data-theme="light"] .mr-toast{background:rgba(25,31,40,.92)}
+
+/* 결과 화면 */
+.mr-rescard{background:var(--g-card);border-radius:22px;padding:20px}
+.mr-restop{display:flex;gap:12px;align-items:center}
+.mr-grade{display:grid;place-items:center;width:46px;height:46px;border-radius:14px;font-size:21px;font-weight:900;color:#fff;flex:0 0 auto}
+.g-S{background:linear-gradient(140deg,#F04452,#FF8A3D)}
+.g-A{background:#3182F6}.g-B{background:#00B37E}.g-C{background:#8B95A1}
+.g-D{background:#7A5AF8}.g-F{background:#4E5968}
+.mr-restitle{font-size:15px;font-weight:800;letter-spacing:-.025em;line-height:1.35}
+.mr-ressym{font-size:11.5px;color:var(--g-mut);font-weight:650;margin-top:3px}
+.mr-bigret{font-size:clamp(34px,8vw,44px);font-weight:900;letter-spacing:-.05em;margin:18px 0 2px;font-variant-numeric:tabular-nums}
+.mr-bigret span{font-size:13px;font-weight:700;color:var(--g-mut);margin-left:8px;letter-spacing:-.01em}
+.mr-vs{font-size:13px;color:var(--g-mut);font-weight:650}
+.mr-vs b{font-weight:850}
+.mr-legend{display:flex;gap:14px;font-size:11.5px;color:var(--g-mut);font-weight:650;margin-top:6px}
+.mr-legend i{display:inline-block;width:9px;height:3px;border-radius:2px;margin-right:5px;vertical-align:3px}
+.mr-grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0 4px}
+.mr-stat{background:var(--g-bg);border-radius:13px;padding:11px 13px;display:flex;flex-direction:column;gap:3px}
+.mr-stat span{font-size:11px;color:var(--g-mut);font-weight:700}
+.mr-stat b{font-size:14px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.mr-acctline{font-size:12.5px;color:var(--g-mut);font-weight:650;margin:12px 0 0}
+.mr-acctline b{color:var(--g-text);font-weight:800}
+.mr-actions3{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:7px;margin-top:16px}
+.mr-ghost{background:var(--g-card2);color:var(--g-text);border-radius:14px;padding:14px 6px;font-size:12.5px;font-weight:800}
+.mr-primary.sm{padding:14px 6px;font-size:12.5px;border-radius:14px}
+
+@media(max-width:640px){
+  .mr-screen{padding:16px}
+  .mr-chartbox{height:300px}
+  .mr-symbols{grid-template-columns:1fr 1fr}
+  .mr-actions3{grid-template-columns:1fr 1fr}
+  .mr-actions3 .mr-primary{grid-column:1/-1}
+  .mr-price b{font-size:27px}
+  .mr-chg{font-size:11.5px}
+}
+@media(max-width:400px){
+  .mr-symbols{grid-template-columns:1fr}
+  .mr-tierrow{gap:4px}
+}
+</style>
+</head>
+<body>
+<div class="aura" aria-hidden="true"></div>
+<header class="site">
+  <div class="wrap bar">
+    <a class="brand" href="index.html"><span class="dot">🐜</span> 개미일지 계산기</a>
+    <nav class="top">
+      <a href="index.html">계산기 홈</a>
+      <a href="market-replay.html" class="on">🎮 트레이딩 게임</a>
+      <a href="us-stock-tax-guide.html">미국주식 세금</a>
+      <a href="dividend-health-insurance.html">배당·건보</a>
+      <a href="isa-pension-tax.html">ISA·연금</a>
+      <a href="etf-fee-drag.html">ETF 비용</a>
+      <a href="about.html">소개</a>
+    </nav>
+    <button class="themebtn" id="themebtn" aria-label="화면 테마 바꾸기" title="다크/라이트 전환">☾</button>
+  </div>
+</header>
+
+<main class="wrap">
+<nav class="breadcrumb" aria-label="현재 위치"><a href="index.html">계산기 홈</a><span>›</span>어제 장 트레이딩 게임</nav>
+<section class="pagehead">
+  <div class="crumbtab">🎮 실전 리플레이</div>
+  <h1>어제 장을 <em>다시 거래</em>합니다,<br>1,000만 원으로</h1>
+  <p class="lede">직전 거래일의 실제 5분봉이 시간순으로 그려집니다. 삼성전자·SK하이닉스부터 엔비디아·테슬라까지, 그날 실제로 오간 가격과 거래량 그대로. 매수·매도 버튼을 누르면 수수료와 증권거래세가 실제처럼 빠져나갑니다.</p>
+  <div class="hero-stats">
+    <div class="chipstat"><b>실제 5분봉</b>가격·거래량 그대로</div>
+    <div class="chipstat"><b>1,000만원</b>국내·미국 동일 자금</div>
+    <div class="chipstat"><b>0.195%</b>국내 매도 비용 반영</div>
+    <div class="chipstat"><b>존버 비교</b>시초가 매수→종가 매도</div>
+  </div>
+</section>
+
+<section class="mr" id="mr-app" aria-label="어제 장 실전 트레이딩 게임">
+  <div class="mr-toast" id="mr-toast"></div>
+  <div class="mr-loading" id="mr-loading"><span class="spin"></span><div><b>실제 시세를 불러오는 중…</b><span>직전 거래일 5분봉을 내려받고 있습니다.</span></div></div>
+
+  <div class="mr-screen" id="mr-lobby">
+    <div class="mr-eyebrow">실제 시세 · 5분봉 리플레이</div>
+    <h2 class="mr-h2">어제 장, 다시 거래해 볼까요?</h2>
+    <p class="mr-lead">1,000만 원으로 시작합니다. 정수 주로만 매매되고, 수수료·증권거래세·환율이 실제와 같게 적용됩니다.</p>
+
+    <div class="mr-acct">
+      <div class="mr-acct-main">
+        <span>내 계좌</span>
+        <b id="acct-equity">10,000,000원</b>
+        <i id="acct-ret" class="flat">0.00%</i>
+      </div>
+      <div class="mr-acct-sub">
+        <div><span>전적</span><b id="acct-record">첫 도전 전</b></div>
+        <div><span>최고 수익률</span><b id="acct-best">—</b></div>
+        <button type="button" id="mr-reset">기록 초기화</button>
+      </div>
+    </div>
+
+    <div class="mr-step"><span>1</span>어느 장을 거래할까요?</div>
+    <div class="mr-sessions" id="mr-sessions"></div>
+
+    <div class="mr-step"><span>2</span>종목을 고르세요</div>
+    <div class="mr-symbols" id="mr-symbols"></div>
+
+    <button type="button" class="mr-blindrow" id="mr-blind" aria-pressed="false">
+      <span class="ic">🕶</span><span id="mr-blind-txt">블라인드 모드 — 종목·날짜를 가리고 거래</span><i></i>
+    </button>
+
+    <button type="button" class="mr-primary" id="mr-start" disabled>종목을 고르면 시작할 수 있어요</button>
+    <p class="mr-fine" id="mr-data-note">실제 시세 데이터를 불러오는 중입니다.</p>
+  </div>
+
+  <div class="mr-screen" id="mr-play"></div>
+  <div class="mr-screen" id="mr-result"></div>
+</section>
+
+<article class="card prose" style="margin-top:24px">
+  <h2>이 게임이 하는 일</h2>
+  <p>지난 거래일의 <strong>정규장 5분봉</strong>을 처음부터 재생하면서, 그날의 가격 흐름만 보고 매매합니다. 종목이 무엇인지, 어떤 뉴스가 있었는지는 알려주지 않습니다. 미래를 모르는 상태에서 눌러 본 버튼의 결과가 그대로 손익이 됩니다.</p>
+  <p>흔한 모의투자 게임은 랜덤 워크나 과거 데이터를 각색해 씁니다. 여기서는 다릅니다. Yahoo Finance 공개 차트 API에서 받은 <strong>실제 5분봉의 시가·고가·저가·종가·거래량</strong>을 값 하나 바꾸지 않고 그대로 씁니다. 화면에 그려지는 캔들은 그날 실제로 오간 가격이고, 거래량 막대도 실제 체결량입니다.</p>
+
+  <h2>1,000만 원, 정수 주, 실제 비용</h2>
+  <p>초기 자금은 국내·미국 모두 <strong>1,000만 원</strong>으로 같습니다. 국내 종목은 원화로, 미국 종목은 그 거래일의 원/달러 환율(USDKRW 종가)로 환산해 원화로 매매합니다. 100만 원어치를 사고 싶어도 1주 가격이 넘지 않으면 살 수 없고, 소수점 주식은 취급하지 않습니다. 실제 증권사와 같은 방식입니다.</p>
+  <table>
+    <tr><th>구분</th><th>매수</th><th>매도</th></tr>
+    <tr><td>국내주식</td><td>위탁수수료 0.015%</td><td>위탁수수료 0.015% + 증권거래세 0.18%</td></tr>
+    <tr><td>미국주식</td><td>수수료 0.1%</td><td>수수료 0.1%</td></tr>
+  </table>
+  <p>국내주식은 매도할 때 <strong>0.195%</strong>가 빠져나갑니다. 1,000만 원어치를 사고 그대로 팔면 약 2만 원이 사라진다는 뜻입니다. 하루에 몇 번씩 사고팔면 이 비용만으로 수익률이 마이너스가 됩니다. 실제 단타에서 수수료와 세금이 왜 결정적인지 몸으로 확인할 수 있는 부분입니다.</p>
+  <div class="callout warn"><p><b>반영하지 않은 것</b> — 환전 스프레드, 미국주식 양도소득세(연 250만 원 공제, 22%), 배당, 슬리피지·호가 단위는 거래 단위 계산에 넣지 않았습니다. 국내 세율과 수수료는 증권사·연도에 따라 조금씩 다르므로 실제와 소폭 차이가 날 수 있습니다.</p></div>
+
+  <h2>장 마감, 그리고 존버와의 비교</h2>
+  <p>장이 끝나면 결과 화면에서 <strong>그날 시초가에 살 수 있는 만큼 사서 종가에 팔았을 때</strong>(존버)와 내 수익률을 나란히 비교합니다. 같은 수수료·세금을 적용한 공정한 비교입니다. 그날 시장이 오른 날이면 아무것도 안 한 사람이 이기고, 흔들리며 빠진 날이면 현금을 들고 있던 사람이 이깁니다.</p>
+  <table>
+    <tr><th>등급</th><th>기준 (존버 수익률과의 차이)</th></tr>
+    <tr><td>S</td><td>+8%p 이상 앞서고 수익 중</td></tr>
+    <tr><td>A</td><td>+3%p 이상</td></tr>
+    <tr><td>B</td><td>±3%p 이내 (존버와 비슷)</td></tr>
+    <tr><td>C</td><td>-3%p ~ -8%p</td></tr>
+    <tr><td>D</td><td>-8%p ~ -15%p</td></tr>
+    <tr><td>F</td><td>-15%p 미만 또는 -15% 손실</td></tr>
+  </table>
+  <p>등급이 높다고 훌륭한 투자자가 되는 것은 아닙니다. 하루치 결과는 대부분 운입니다. 다만 같은 조건에서 반복해 보면 <strong>내가 어떤 상황에서 흔들리는지</strong>가 보입니다. 그게 이 게임의 쓸모입니다.</p>
+
+  <h3>초보가 반복하는 네 가지</h3>
+  <ul>
+    <li><strong>오르는 걸 보고 따라 산다.</strong> 5분봉이 세 개 연속 빨간색이면 그제야 사고, 그 봉이 꺾이면 바로 손실입니다. 리플레이에서는 그 순간이 몇 초 만에 지나가므로 습관이 그대로 드러납니다.</li>
+    <li><strong>물타기로 버틴다.</strong> 평단가가 내려가니 기분은 나아지지만, 하루 안에 회복하지 못하면 손실만 커집니다. 화면의 평단가 점선이 내 가격보다 아래에 있는 시간이 길어지는지 보세요.</li>
+    <li><strong>손절을 장 마감까지 미룬다.</strong> -2%에서 못 자르고 -7%에서 자르면, 그 하루의 수익률은 회복이 거의 불가능해집니다.</li>
+    <li><strong>너무 자주 산다.</strong> 하루에 10번 매매하면 국내주식 기준 비용만 2%에 가깝습니다. 방향을 맞혀도 비용에 잡아먹힙니다.</li>
+  </ul>
+
+  <h3>블라인드 모드로 편견 빼기</h3>
+  <p>종목명과 날짜를 가리면 유명하다는 이유, 어제 올랐다는 이유가 개입할 여지가 사라집니다. 차트의 기울기와 거래량만 보고 판단하게 됩니다. 같은 날짜의 삼성전자와 어떤 잡주를 나란히 놓고 비교하기 어려운 이유도 여기에 있습니다. 이름을 모르면 판단이 얼마나 달라지는지 한 번 확인해 보세요.</p>
+
+  <h3>자주 묻는 질문</h3>
+  <details class="faq" open><summary>정말 실제 시장 데이터인가요?</summary><p>네. Yahoo Finance 공개 차트 API에서 받은 직전 거래일의 정규장 5분봉을 그대로 사용합니다. 값은 보기 좋게 다듬지 않으며, 임의로 만든 가짜 데이터는 한 건도 없습니다. 데이터는 매일 장 마감 뒤 자동으로 갱신됩니다.</p></details>
+  <details class="faq"><summary>수수료와 세금은 어떻게 반영되나요?</summary><p>국내주식은 매수 시 위탁수수료 0.015%, 매도 시 위탁수수료 0.015%와 증권거래세 0.18%를 뺍니다. 미국주식은 매수·매도 각각 0.1%를 뺍니다. 환전 스프레드와 미국주식 양도소득세는 거래 단위로 계산하지 않아 결과에 포함되지 않습니다.</p></details>
+  <details class="faq"><summary>미국 주식을 왜 원화로 표시하나요?</summary><p>국내·미국을 같은 조건에서 비교하려고 초기 자금을 양쪽 다 1,000만 원으로 통일했습니다. 미국 종목은 해당 거래일의 원/달러 환율(USDKRW 종가)로 원화 환산해 매매하고, 손익과 자산도 원화로 계산합니다. 화면에는 달러 가격과 적용 환율을 함께 표시합니다.</p></details>
+  <details class="faq"><summary>등급은 어떻게 매기나요?</summary><p>그날 시초가에 매수해 종가에 판 경우(존버)와 내 수익률을 비교합니다. +8%p 이상 앞서면 S, +3%p 이상이면 A, ±3%p 이내면 B, -3~-8%p면 C, -8~-15%p면 D, 그보다 뒤지거나 -15% 손실이면 F입니다.</p></details>
+  <details class="faq"><summary>매매는 어느 가격에 체결되나요?</summary><p>화면에 방금 그려진 5분봉의 종가에 체결됩니다. 버튼을 누른 순간의 실제 가격이 아니라 그 봉이 끝난 시점의 가격이며, 실전에서 다음 봉 시가에 체결되는 것과 비슷하게 맞춘 것입니다.</p></details>
+  <details class="faq"><summary>블라인드 모드는 무엇인가요?</summary><p>종목명과 날짜를 가린 채 차트만 보고 거래하는 모드입니다. 장 마감 결과 화면에서 어떤 종목이었는지 공개됩니다.</p></details>
+
+  <p class="mini" style="margin-top:22px">기준 시점: 2026년 11월. 시세 데이터는 Yahoo Finance 공개 차트 API의 직전 거래일 정규장 5분봉·일봉이며, 원/달러 환율은 같은 출처의 USDKRW 일봉 종가입니다. 본 게임은 과거 데이터를 이용한 학습·오락용 도구로 투자 권유가 아니며, 어떤 수익도 보장하지 않습니다. 기록은 내 브라우저(localStorage)에만 저장되고 서버로 전송되지 않습니다.</p>
+</article>
+
+<section class="related">
+  <h2>같은 시선으로 이어서 보기</h2>
+  <p class="mini">게임에서 확인한 감각을 계산으로 검증해 보세요.</p>
+  <div class="calgrid">
+      <a class="calcard" href="avg-price-water.html">
+        <div class="ic">📉</div>
+        <h3>물타기·평단가 계산기</h3>
+        <p>평단가와 본전 수익률, 물타기 후의 평단 변화를 미리 계산합니다.</p>
+        <span class="tag">📉 평단가 →</span>
+      </a>
+      <a class="calcard" href="us-stock-tax-guide.html">
+        <div class="ic">💰</div>
+        <h3>미국주식 양도세 계산기</h3>
+        <p>게임에서 번 손익이 실제였다면 세금이 얼마였을지 계산해 보세요.</p>
+        <span class="tag">💰 세금 →</span>
+      </a>
+      <a class="calcard" href="sp500-vs-nasdaq100.html">
+        <div class="ic">📈</div>
+        <h3>S&amp;P500 vs 나스닥100</h3>
+        <p>단타 대신 장기 적립을 택하면 20년 뒤 어떻게 되는지 비교합니다.</p>
+        <span class="tag">📈 지수 비교 →</span>
+      </a>
+  </div>
+</section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="fnav">
+      <a href="market-replay.html">🎮 어제 장 트레이딩 게임</a>
+      <a href="us-stock-tax-guide.html">미국주식 양도세</a>
+      <a href="dividend-health-insurance.html">배당소득세·건보료</a>
+      <a href="sp500-vs-nasdaq100.html">S&amp;P500 vs 나스닥100</a>
+      <a href="isa-pension-tax.html">ISA·연금저축</a>
+      <a href="fx-breakeven.html">환율·손익분기</a>
+      <a href="avg-price-water.html">물타기·평단가</a>
+      <a href="etf-fee-drag.html">국내 vs 미국 ETF</a>
+    </div>
+    <div class="fnav">
+      <a href="about.html">사이트 소개</a>
+      <a href="privacy.html">개인정보처리방침</a>
+      <a href="terms.html">이용약관·면책</a>
+      <a href="rss.xml">RSS</a>
+    </div>
+    <p class="fine">개미일지 계산기는 2026년 기준 세법을 바탕으로 한 참고용 계산 도구입니다. 실제 세액·보험료는 개인별 소득·재산·환율·금융사 처리에 따라 달라질 수 있으며, 세무·투자 판단의 최종 책임은 이용자에게 있습니다. © 2026 개미일지 계산기.</p>
+  </div>
+</footer>
+<script src="assets/kit.js"></script>
+<script src="assets/market-replay.js"></script>
+</body>
+</html>
