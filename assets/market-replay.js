@@ -345,9 +345,10 @@
     var chgKrw = prev ? pKr - prev * s.fx : 0;
     var ce = $('p-chg');
     ce.className = 'mr-chg ' + cls(chgPct);
-    ce.textContent = (chgKrw >= 0 ? '▲ ' : '▼ ') + won(Math.abs(chgKrw)) + '  ' + pct(chgPct) + (prev ? ' (전일대비)' : '');
+    ce.innerHTML = (chgKrw >= 0 ? '▲ ' : '▼ ') + won(Math.abs(chgKrw)) + '&nbsp; ' + pct(chgPct) +
+      (prev ? '<span class="hide-sm"> (전일대비)</span>' : '');
     $('p-sub').innerHTML = s.session.currency === 'USD'
-      ? usd(p) + ' × 환율 ' + comma(s.fx) + '원'
+      ? usd(p) + ' × 환율 ' + s.fx.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원'
       : (s.sym.ex || '') + ' 정규장 · 원화';
     $('p-clock').textContent = hhmm(bar[0], s.session.tzOffset);
     $('p-bar').textContent = (s.idx + 1) + ' / ' + s.total + '봉';

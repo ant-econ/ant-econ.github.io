@@ -186,7 +186,7 @@
 .mr-time span{font-size:11px;color:var(--g-mut)}
 .mr-price{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin:10px 0 2px}
 .mr-price b{font-size:clamp(26px,6vw,32px);font-weight:850;letter-spacing:-.045em;font-variant-numeric:tabular-nums}
-.mr-chg{font-size:12.5px;font-weight:800;font-variant-numeric:tabular-nums}
+.mr-chg{font-size:12.5px;font-weight:800;font-variant-numeric:tabular-nums;white-space:normal}
 .mr-sub{font-size:11.5px;color:var(--g-mut);font-weight:600}
 .mr-bars{display:flex;align-items:center;gap:9px;margin-top:10px;font-size:11px;color:var(--g-mut);font-weight:700;font-variant-numeric:tabular-nums}
 .mr-prog{flex:1;height:4px;border-radius:999px;background:var(--g-card2);overflow:hidden}
@@ -203,7 +203,7 @@
 .mr-cashrow b{font-size:15px;color:var(--g-text);font-weight:800;font-variant-numeric:tabular-nums}
 .mr-hold{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;margin:8px 0 14px}
 .mr-irow{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;font-size:13px;color:var(--g-mut);font-weight:600}
-.mr-irow b{font-size:13.5px;color:var(--g-text);font-weight:750;font-variant-numeric:tabular-nums}
+.mr-irow b{font-size:13.5px;color:var(--g-text);font-weight:750;font-variant-numeric:tabular-nums;text-align:right;min-width:0}
 .mr-irow b.strong{font-size:15.5px;font-weight:850}
 .mr-irow.total{grid-column:1/-1;border-top:1px solid var(--g-line);margin-top:5px;padding-top:9px}
 .mr-frac{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
@@ -256,9 +256,11 @@
   .mr-price b{font-size:27px}
   .mr-chg{font-size:11.5px}
 }
-@media(max-width:400px){
+@media(max-width:430px){
   .mr-symbols{grid-template-columns:1fr}
-  .mr-tierrow{gap:4px}
+  .mr-hold{grid-template-columns:1fr}
+  .mr-fine{font-size:11px}
+  .hide-sm{display:none}
 }
 </style>
 </head>
@@ -432,6 +434,6 @@
   </div>
 </footer>
 <script src="assets/kit.js"></script>
-<script src="assets/market-replay.js?v=20261125b"></script>
+<script src="assets/market-replay.js?v=20261125c"></script>
 </body>
 </html>
