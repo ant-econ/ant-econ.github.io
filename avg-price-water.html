@@ -373,7 +373,7 @@
       msg.innerHTML = '추가 매수 없이 보유만 하면 본전까지 <strong>' + K.pct(be1, 1) + '</strong>가 필요합니다.';
     } else if (pl < 0) {
       msg.className = 'sub2';
-      msg.innerHTML = '투자금은 ' + K.won(invest) + '으로 늘고 손실률은 ' + K.pct(loss, 1) + '입니다. 본전까지 필요한 상승률은 ' + K.pct(be1, 1) + ' → <strong>' + K.pct(be2, 1) + '</strong>로 낮아졌지만, 손실 금액은 ' + K.won(-pl) + '입니다.';
+      msg.innerHTML = '투자금은 ' + K.shortWon(invest) + '원으로 늘고 손실률은 ' + K.pct(loss, 1) + '입니다. 본전까지 필요한 상승률은 ' + K.pct(be1, 1) + ' → <strong>' + K.pct(be2, 1) + '</strong>로 낮아졌지만, 손실 금액은 ' + K.won(-pl) + '입니다.';
     } else {
       msg.className = 'sub2';
       msg.innerHTML = '현재 수익 구간입니다. 새 평단가 ' + K.won(newAvg) + '은 현재가보다 낮습니다.';

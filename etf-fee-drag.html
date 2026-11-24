@@ -382,7 +382,7 @@
     if (Math.abs(diff) < 10000) {
       msg.innerHTML = '두 방법의 세후 차이가 거의 없습니다. 이 경우 환전·신고의 번거로움과 계좌 활용도를 기준으로 고르세요.';
     } else if (diff >= 0) {
-      msg.innerHTML = '이 조건에서는 <strong>국내 ETF</strong>가 ' + K.won(diff) + ' 유리합니다. 세금 ' + K.won(now.krT) + ' 대 ' + K.won(now.usT + now.fx) + ', 보수 차이 ' + K.won(now.b.bal - now.a.bal) + '가 반영된 결과입니다.';
+      msg.innerHTML = '이 조건에서는 <strong>국내 ETF</strong>가 ' + K.won(diff) + ' 유리합니다. 세금 ' + K.won(now.krT) + ' 대 ' + K.won(now.usT) + ', 환전 비용 ' + K.won(now.fx) + ', 보수 차이 ' + K.won(now.b.bal - now.a.bal) + '를 반영한 결과입니다.';
     } else {
       msg.innerHTML = '이 조건에서는 <strong>미국 직투</strong>가 ' + K.won(-diff) + ' 유리합니다. 250만 원 공제와 낮은 보수가 세율 차이를 상쇄했습니다. 다만 환전·신고 절차와 환율 변동은 별도로 감수해야 합니다.';
     }
