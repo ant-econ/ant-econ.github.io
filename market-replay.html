@@ -303,7 +303,7 @@
 .mr-dayhead b{font-size:14px;font-weight:800;letter-spacing:-.02em}
 .mr-dayhead span{font-size:11.5px;color:var(--g-mut);font-weight:700;font-variant-numeric:tabular-nums}
 .mr-dayrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--g-line)}
-.mr-dayrow .fl{font-size:17px;line-height:1}
+.mr-dayrow span.fl{font-size:17px;line-height:1}
 .mr-dayrow div{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .mr-dayrow b{font-size:13px;font-weight:800;letter-spacing:-.02em}
 .mr-dayrow span{font-size:11px;color:var(--g-mut);font-weight:650;font-variant-numeric:tabular-nums}
@@ -313,13 +313,15 @@
 .mr-lobbyrow .sub i{font-style:normal;font-weight:800}
 .mr-lobbyrow .sub i.on{color:var(--g-up)}
 .mr-lobbyrow .sub i.off{color:var(--g-dim)}
-.mr-live .mkt b.mr-mkrow{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
-.mr-mkchip{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--g-mut);
-  background:var(--g-card2);border-radius:999px;padding:3px 9px;letter-spacing:0;font-variant-numeric:tabular-nums}
-.mr-mkchip b{font-weight:850;color:inherit;font-size:11px;letter-spacing:0}
-.mr-mkchip.reg{color:#fff;background:var(--g-up)}
-.mr-mkchip.pre,.mr-mkchip.post{color:var(--g-amber);background:color-mix(in srgb,var(--g-amber) 15%,var(--g-card2))}
-.mr-mkchip.off{color:var(--g-dim)}
+.mr-live .mkt b.mr-mkrow{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-top:7px}
+.mr-live .mkt b.mr-mkrow .mr-mkchip{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;
+  color:var(--g-mut);background:var(--g-card2);border-radius:999px;padding:3px 9px;letter-spacing:0;
+  font-variant-numeric:tabular-nums;line-height:1.5}
+.mr-live .mkt b.mr-mkrow .mr-mkchip b{font-weight:850;color:inherit;font-size:11px;letter-spacing:0;display:inline}
+.mr-live .mkt b.mr-mkrow .mr-mkchip.reg{color:#fff;background:var(--g-up)}
+.mr-live .mkt b.mr-mkrow .mr-mkchip.pre,
+.mr-live .mkt b.mr-mkrow .mr-mkchip.post{color:var(--g-amber);background:color-mix(in srgb,var(--g-amber) 15%,var(--g-card2))}
+.mr-live .mkt b.mr-mkrow .mr-mkchip.off{color:var(--g-dim)}
 .mr-jumps{display:flex;gap:6px;overflow-x:auto;padding:0 0 12px;-webkit-overflow-scrolling:touch}
 .mr-jumpbtn{flex:0 0 auto;font-size:11.5px;font-weight:700;color:var(--g-mut);background:var(--g-card);
   border:1px solid var(--g-line);border-radius:999px;padding:7px 12px;white-space:nowrap}
@@ -643,7 +645,7 @@
   </ul>
 
   <h3>국장 오전, 미장 밤 — 한 줄로 이어진 하루</h3>
-  <p>통합 장은 <strong>한국시간</strong> 기준입니다. 예를 들어 미국장 11/23(월)은 KST 18:00 프리마켓으로 열려 23:30 정규장을 거쳐 다음 날 09:00 애프터마켓까지 이어지고, 바로 뒤에 한국장 11/24(화) 09:00 정규장이 붙습니다. 그래서 한 판이 하루를 조금 넘고, 1배속으로는 오래 걸립니다. 화면 위의 <strong>구간 이동</strong> 버튼으로 국장·미장 정규장 시작점으로 건너뛰고, 2x·5x·10x·20x 배속을 섮는 것이 기본 사용법입니다.</p>
+  <p>통합 장은 <strong>한국시간</strong> 기준입니다. 예를 들어 미국장 11/23(월)은 KST 18:00 프리마켓으로 열려 23:30 정규장을 거쳐 다음 날 09:00 애프터마켓까지 이어지고, 바로 뒤에 한국장 11/24(화) 09:00 정규장이 붙습니다. 그래서 한 판이 하루를 조금 넘기 때문에, 화면 위의 <strong>구간 이동</strong> 버튼으로 국장·미장 정규장 시작점으로 건너뛰고 2x·5x·10x·20x 배속을 섞어 쓰는 것이 기본 사용법입니다.</p>
   <p>시간대가 겹치지 않기 때문에 “지금 이 순간 두 시장을 동시에” 사는 대신, <strong>한 판 안에서 두 시장을 함께 보유</strong>하게 됩니다. 미국장에서 담은 종목을 들고 국장으로 넘어가 국장 종목을 더하거나, 반대로 국장에서 번 돈을 밤 미국장에 넣는 식입니다. 두 나라 돈을 각각 쓸 필요 없이 한 원화 계좌에서 환율로 환산해 매매합니다.</p>
 
   <h3>여러 종목을 동시에, 내 포트폴리오로</h3>
@@ -717,6 +719,6 @@
   </div>
 </footer>
 <script src="assets/kit.js"></script>
-<script src="assets/market-replay.js?v=20261125mr9"></script>
+<script src="assets/market-replay.js?v=20261125mr10"></script>
 </body>
 </html>

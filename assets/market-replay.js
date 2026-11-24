@@ -1044,7 +1044,7 @@
         stEl.innerHTML = '● 지금 ' + marketName(e.market) + ' ' + phaseOf(e.sess, now).t + ' · 실시간 매매 가능';
       } else {
         stEl.className = 'mr-status';
-        stEl.innerHTML = '○ 지금은 <b>거래시간 외</b> — ' + esc(st.txt) + ' · 직전 종가 ' + won(p * e.fx) + '로 평가';
+        stEl.innerHTML = '○ 지금은 <b>거래시간 외</b> — ' + esc(st.txt) + ' · 직전 종가 ' + won(p * e.fx) + ' 기준으로 평가';
       }
     }
     var buyBtn = $('p-buy'), sellBtn = $('p-sell');
