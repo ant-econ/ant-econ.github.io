@@ -347,7 +347,7 @@
     var profit = krwSell - krwBuy;
     var ret = krwBuy > 0 ? profit / krwBuy * 100 : 0;
     var plainBuy = usd * br, plainSell = usdSell * sr;
-    var fees = Math.max(0, plainBuy - krwBuy + plainSell - krwSell);
+    var fees = Math.max(0, (plainBuy - krwBuy) + (plainSell - krwSell));
     var priceEffect = (usdSell - usd) * br;
     var fxEffect = usdSell * (sr - br);
     var tax = taxEl.checked ? Math.max(0, profit) * 0.22 : 0;
