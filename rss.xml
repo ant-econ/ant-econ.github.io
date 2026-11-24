@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>개미일지 계산기</title>
+    <link>https://a01054817980-cell.github.io/</link>
+    <description>미국주식 양도소득세·복리·배당금 실수령액을 직접 계산하는 무료 금융 계산기와 2026년 기준 세법 가이드</description>
+    <language>ko</language>
+    <copyright>개미일지 계산기</copyright>
+    <lastBuildDate>Tue, 24 Nov 2026 22:10:00 +0900</lastBuildDate>
+    <atom:link href="https://a01054817980-cell.github.io/rss.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>미국주식 양도소득세 계산기 — 기본공제 250만 원·22% 세율 자동 계산</title>
+      <link>https://a01054817980-cell.github.io/#tax</link>
+      <guid isPermaLink="false">https://a01054817980-cell.github.io/#tax</guid>
+      <description>매도 건별 양도차익과 필요경비를 입력하면 기본공제 250만 원을 한 번만 적용해 과세표준, 소득세 20%+지방소득세 2%, 세후 수익과 실효세율까지 바로 계산합니다. 손익통산과 절세 팁, 신고 절차도 함께 정리했습니다.</description>
+      <pubDate>Tue, 24 Nov 2026 09:00:00 +0900</pubDate>
+    </item>
+    <item>
+      <title>복리·적립식 투자 시뮬레이터 — 월 적립액으로 20년 뒤 평가액 계산</title>
+      <link>https://a01054817980-cell.github.io/#compound</link>
+      <guid isPermaLink="false">https://a01054817980-cell.github.io/#compound</guid>
+      <description>초기 투자금, 월 적립액, 연평균 수익률, 기간, 월초·월말 납입, 물가상승률을 넣으면 최종 평가액과 총 납입원금, 수익금, 연도별 성장 차트를 보여 줍니다. 복리 계산 원리와 적립식 투자 가이드도 함께 읽어 보세요.</description>
+      <pubDate>Tue, 24 Nov 2026 09:05:00 +0900</pubDate>
+    </item>
+    <item>
+      <title>배당금 실수령액 계산기 — 미국 15% 원천징수와 금융소득종합과세</title>
+      <link>https://a01054817980-cell.github.io/#dividend</link>
+      <guid isPermaLink="false">https://a01054817980-cell.github.io/#dividend</guid>
+      <description>투자금과 배당수익률, 지급 주기, 원천징수율, 다른 금융소득을 입력하면 세전·세후 연 배당과 월·1회 지급액을 계산합니다. 금융소득 2,000만 원 초과 시 추가 부담 추정과 배당 일정 차트까지 확인하세요.</description>
+      <pubDate>Tue, 24 Nov 2026 09:10:00 +0900</pubDate>
+    </item>
+    <item>
+      <title>계산 기준과 사이트 소개 — 세율·공제 적용 기준 한눈에 보기</title>
+      <link>https://a01054817980-cell.github.io/about.html</link>
+      <guid isPermaLink="false">https://a01054817980-cell.github.io/about.html</guid>
+      <description>2026년 현행 세법 기준으로 계산식을 정리했습니다. 각 계산기의 가정과 한계, 개미일지 유튜브·블로그 연동 안내를 확인하세요.</description>
+      <pubDate>Tue, 24 Nov 2026 09:15:00 +0900</pubDate>
+    </item>
+  </channel>
+</rss>
