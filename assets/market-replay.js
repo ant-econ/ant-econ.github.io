@@ -440,7 +440,8 @@
     }
 
     // 봉 또는 라인
-    var candle = slot >= 4.2;
+    var forceLine = /[?&]line=1/.test(location.search); // 좁은 화면(라인 모드) 점검용
+    var candle = !forceLine && slot >= 4.2;
     if (candle) {
       var bw = Math.max(1.5, slot * 0.66);
       for (var i2 = 0; i2 <= last; i2++) {
