@@ -57,7 +57,7 @@
     var p = String(txt || '09:00').split(':');
     return (+p[0] || 0) * 3600 + (+p[1] || 0) * 60;
   }
-  function shortSym(sym) { return sym.replace(/\.(KS|KQ)$/, ''); }
+  function shortSym(sym) { return String(sym == null ? '' : sym).replace(/\.(KS|KQ)$/, ''); }
   function shortDate(dateStr) {
     var p = dateStr.split('-');
     return +p[1] + '/' + +p[2];
@@ -88,14 +88,17 @@
     toastTimer = setTimeout(function () { t.classList.remove('show'); t.textContent = ''; }, 1900);
   }
   function hashStr(s) {
+    var str = String(s == null ? '' : s);
     var h = 0;
-    for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+    for (var i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
     return Math.abs(h);
   }
-  function iconHTML(sym, market) {
-    var name = String(sym.name || '');
-    var ini = market === 'KR' ? name.replace(/\s/g, '').slice(0, 1) : shortSym(sym.sym).slice(0, 2);
-    var c = ICON_COLORS[hashStr(sym.sym) % ICON_COLORS.length];
+  /** 종목 아이콘 — 원형 배지 + 우하단 국기. id를 넘기면 보유 객체처럼 sym 필드가 없어도 된다. */
+  function iconHTML(sym, market, id) {
+    var key = id || (sym && sym.sym) || '';
+    var name = String((sym && sym.name) || '');
+    var ini = market === 'KR' ? name.replace(/\s/g, '').slice(0, 1) || '•' : shortSym(key).slice(0, 2);
+    var c = ICON_COLORS[hashStr(key) % ICON_COLORS.length];
     var flag = market === 'KR' ? '🇰🇷' : '🇺🇸';
     return '<span class="mr-ic" style="background:' + c + '" aria-hidden="true"><i>' + esc(ini) + '</i>' +
       '<em>' + flag + '</em></span>';
@@ -577,6 +580,7 @@
       if (!b || !S) return;
       var v = b.getAttribute('data-view');
       if (v === 'add') { S.pfFilter = 'all'; setView('pf'); return; }
+      if (v === 'pf') S.pfFilter = 'hold';
       setView(v);
     });
     var body = $('p-body');
@@ -721,7 +725,7 @@
       if (S.pfFilter === 'all') {
         var h = S.acct.holdings[id];
         return '<button type="button" class="mr-row" data-sym="' + id + '">' +
-          iconHTML(e ? e.ref : (h || { sym: id, name: id }), S.session.market) +
+          iconHTML(e ? e.ref : (h || { name: id }), S.session.market, id) +
           '<span class="mr-rowmid"><b class="nm">' + esc(e ? e.ref.name : id) + '</b>' +
           '<span class="sub">' + esc((e && e.ref.ex) || '') + ' · ' + esc(shortSym(id)) + '</span></span>' +
           '<span class="mr-rowright">' + (h && h.qty ? '<b class="hold">보유 ' + comma(h.qty) + '주</b>' : '<b class="go">›</b>') + '</span></button>';
@@ -732,7 +736,7 @@
       var isOther = !S.bySym[id];
       var nm = h2 ? h2.name : id;
       return '<button type="button" class="mr-row" data-sym="' + id + '">' +
-        iconHTML(h2 || { sym: id, name: nm }, h2 ? h2.market : S.session.market) +
+        iconHTML(h2 || { name: nm }, h2 ? h2.market : S.session.market, id) +
         '<span class="mr-rowmid"><b class="nm">' + esc(nm) + (isOther ? ' <i class="oth">다른 시장</i>' : '') + '</b>' +
         '<span class="sub">' + comma(h2.qty) + '주 · 평단 ' + avgText(h2) + '</span>' +
         '<span class="sub2">현재 ' + curText(m, id) + ' · 평가손익 <i class="pnl ' + cls(holdValue(id) - h2.paid) + '">' +
