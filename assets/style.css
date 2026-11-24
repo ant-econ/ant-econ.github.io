@@ -160,19 +160,6 @@ label.f .hint{font-weight:500;color:var(--muted);opacity:.8}
 .lrow{display:grid;grid-template-columns:1fr 1fr 1fr 34px;gap:8px;margin-bottom:8px;align-items:center}
 .lrow .inp input{padding:10px 10px;font-size:14.5px;font-variant-numeric:tabular-nums}
 input::placeholder{color:var(--muted);opacity:.62;font-weight:600}
-@media(max-width:560px){
-  .lhead{display:none}
-  .lrow{grid-template-columns:1fr 1fr;align-items:end}
-  .lrow .inp::before{display:block;font-size:11px;font-weight:700;color:var(--muted);margin:0 0 4px 3px}
-  .lrow .inp:nth-child(1)::before{content:"매도금액"}
-  .lrow .inp:nth-child(2)::before{content:"매입금액"}
-  .lrow .inp:nth-child(3)::before{content:"필요경비"}
-  .lrow .del{height:42px;align-self:end}
-  .tabs button{min-width:132px;padding:11px 10px;font-size:13.5px}
-  .hero{padding:36px 0 20px}
-  .card{padding:17px;border-radius:15px}
-  .guide p,.guide li{font-size:14.5px}
-}
 .lrow .del{border:1px solid var(--line);background:var(--bg-soft);color:var(--muted);border-radius:10px;height:38px;cursor:pointer;font-size:15px}
 .lrow .del:hover{color:var(--down);border-color:var(--down)}
 .lhead{display:grid;grid-template-columns:1fr 1fr 1fr 34px;gap:8px;font-size:12px;color:var(--muted);font-weight:700;margin-bottom:6px}
@@ -230,4 +217,19 @@ footer.site .fine{line-height:1.7;font-size:12.5px;max-width:760px}
   nav.top{order:3;flex:1 0 100%;margin-left:0;gap:2px;overflow-x:auto;padding-bottom:2px}
   nav.top a{font-size:13px;padding:5px 8px;white-space:nowrap}
   .themebtn{margin-left:auto;width:34px;height:34px;border-radius:10px}
+}
+
+/* 모바일 계산기 레이아웃 (모든 기본 규칙 뒤에 위치해야 우선 적용됨) */
+@media(max-width:560px){
+  .lhead{display:none}
+  .lrow{grid-template-columns:1fr 1fr;align-items:end}
+  .lrow .inp::before{display:block;font-size:11px;font-weight:700;color:var(--muted);margin:0 0 4px 3px}
+  .lrow .inp:nth-child(1)::before{content:"매도금액"}
+  .lrow .inp:nth-child(2)::before{content:"매입금액"}
+  .lrow .inp:nth-child(3)::before{content:"필요경비"}
+  .lrow .del{height:42px;align-self:end}
+  .tabs button{min-width:132px;padding:11px 10px;font-size:13.5px}
+  .hero{padding:36px 0 20px}
+  .card{padding:17px;border-radius:15px}
+  .guide p,.guide li{font-size:14.5px}
 }
