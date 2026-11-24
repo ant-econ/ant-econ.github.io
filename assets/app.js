@@ -253,6 +253,13 @@
     ctx.clearRect(0, 0, w, h);
     return { ctx: ctx, w: w, h: h };
   }
+  function niceMax(v) {
+    if (!(v > 0)) return 1;
+    var e = Math.pow(10, Math.floor(Math.log(v) / Math.LN10));
+    var m = v / e;
+    var n = m <= 1 ? 1 : m <= 2 ? 2 : m <= 2.5 ? 2.5 : m <= 5 ? 5 : 10;
+    return n * e;
+  }
   function shortWon(v) {
     var a = Math.abs(v);
     if (a >= 100000000) return (v / 100000000).toFixed(a >= 1000000000 ? 0 : 1) + '억';
@@ -267,9 +274,9 @@
     if (!data || data.length < 2) return;
     var padL = 52, padR = 46, padT = 14, padB = 26;
     var iw = w - padL - padR, ih = h - padT - padB;
-    var maxV = 0;
-    data.forEach(function (d) { maxV = Math.max(maxV, d.value, d.paid); });
-    if (maxV <= 0) maxV = 1;
+    var peak = 0;
+    data.forEach(function (d) { peak = Math.max(peak, d.value, d.paid); });
+    var maxV = niceMax(peak);
     var grid = cssVar('--line'), muted = cssVar('--muted'), accent = cssVar('--accent'),
         accent2 = cssVar('--accent-2'), up = cssVar('--up');
 
@@ -339,8 +346,10 @@
     var labels = { 12: '월', 4: '분기', 2: '반기', 1: '연' };
     var padL = 52, padR = 16, padT = 14, padB = 26;
     var iw = w - padL - padR, ih = h - padT - padB;
-    var maxV = Math.max(divState.gross, 1);
+    var grossEach = divState.gross / n, netEach = divState.net / n;
+    var maxV = niceMax(Math.max(grossEach, netEach));
     var grid = cssVar('--line'), muted = cssVar('--muted'), accent = cssVar('--accent'), accent2 = cssVar('--accent-2');
+    var soft = document.documentElement.getAttribute('data-theme') === 'light' ? 'rgba(29,92,246,.18)' : 'rgba(120,160,230,.30)';
 
     ctx.font = '11px -apple-system,"Noto Sans KR",sans-serif';
     ctx.textBaseline = 'middle';
@@ -354,14 +363,13 @@
 
     var slot = iw / n;
     var bw = Math.max(6, Math.min(40, slot * 0.34));
-    var grossEach = divState.gross / n, netEach = divState.net / n;
     var grad = ctx.createLinearGradient(0, padT, 0, padT + ih);
     grad.addColorStop(0, accent2); grad.addColorStop(1, accent);
 
     for (var i = 0; i < n; i++) {
       var cx = padL + slot * (i + 0.5);
       var hG = ih * (grossEach / maxV), hN = ih * (netEach / maxV);
-      ctx.fillStyle = grid;
+      ctx.fillStyle = soft;
       ctx.fillRect(cx - bw - 2, padT + ih - Math.max(1, hG), bw, Math.max(1, hG));
       ctx.fillStyle = grad;
       ctx.fillRect(cx + 2, padT + ih - Math.max(1, hN), bw, Math.max(1, hN));
