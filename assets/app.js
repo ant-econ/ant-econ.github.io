@@ -30,9 +30,13 @@
 
   /* ---------- 테마 ---------- */
   var themeBtn = $('#themebtn');
+  var themeRoot = document.documentElement;
+  var themeKey = themeRoot.getAttribute('data-theme-key') || 'ant-theme';
+  var themeDefault = themeRoot.getAttribute('data-theme-default');
   var saved = null;
-  try { saved = localStorage.getItem('ant-theme'); } catch (e) {}
-  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  try { saved = localStorage.getItem(themeKey); } catch (e) {}
+  if (saved === 'dark' || saved === 'light') themeRoot.setAttribute('data-theme', saved);
+  else if (themeDefault) themeRoot.setAttribute('data-theme', themeDefault);
   var paintBtn = function () {
     var dark = document.documentElement.getAttribute('data-theme') !== 'light';
     if (themeBtn) themeBtn.textContent = dark ? '☾' : '☀';
@@ -41,7 +45,7 @@
   if (themeBtn) themeBtn.addEventListener('click', function () {
     var dark = document.documentElement.getAttribute('data-theme') !== 'light';
     document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
-    try { localStorage.setItem('ant-theme', dark ? 'light' : 'dark'); } catch (e) {}
+    try { localStorage.setItem(themeKey, dark ? 'light' : 'dark'); } catch (e) {}
     paintBtn();
     drawAll();
   });

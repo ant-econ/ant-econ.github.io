@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" data-theme="light">
+<html lang="ko" data-theme="light" data-theme-default="light" data-theme-key="ae-theme-v2">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -25,6 +25,10 @@
 <meta name="theme-color" content="#f6f8fc">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/style.css?v=20261126c">
+<script>
+/* 테마: 새 키(ae-theme-v2)만 사용 — 이전 방문 때 저장된 낡은 ant-theme=dark 값은 무시하고 라이트가 기본 */
+(function(){try{var r=document.documentElement,k=r.getAttribute('data-theme-key'),v=k?localStorage.getItem(k):null;if(v==='dark'||v==='light')r.setAttribute('data-theme',v);}catch(e){}})();
+</script>
 <style>
 /* ===== 홈 라이트 핀테크 허브 (2026-11 리뉴얼) ===== */
 html[data-theme="light"]{
@@ -779,6 +783,6 @@ html[data-theme="dark"] .pvfoot{color:#9db0cc;background:rgba(10,18,32,.82)}
 })();
 </script>
 
-<script src="assets/app.js"></script>
+<script src="assets/app.js?v=20261126d"></script>
 </body>
 </html>
