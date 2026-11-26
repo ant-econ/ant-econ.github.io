@@ -536,15 +536,17 @@
     var topSec = r.topSec;
     var perM = r.metrics.filter(function (m) { return m.key === 'per'; })[0] || {};
 
-    /* 1) 단일 종목·상위 종목 과집중 */
-    if (r.top1 > 0.25 || hhiPts > 2500) {
-      var urgentC = (r.top1 >= 0.4 || hhiPts >= 4000);
+    /* 1) 단일 종목·상위 종목 과집중 (지수 ETF·채권은 바구니라 개별 종목 리스크에서 제외) */
+    var nonEtf = r.sorted.filter(function (x) { return x.h.sector !== 'ETF' && x.h.sector !== 'BOND'; });
+    var bigStock = nonEtf[0] || null;
+    if (bigStock && bigStock.w > 0.25) {
+      var urgentC = (bigStock.w >= 0.4 || hhiPts >= 4000);
       var codeC = usSide ? (firstNew(['SPY', 'QQQ', 'DIA']) || 'SPY') : (firstNew(['069500', 'SPY']) || '069500');
-      var shrink = r.top1 >= 0.4 ? 0.20 : 0.15;
+      var shrink = bigStock.w >= 0.4 ? 0.20 : 0.15;
       out.push({
         id: 'concentration', level: urgentC ? 'urgent' : 'rec',
         title: '상위 종목 비중을 25% 이하로',
-        why: '<b>' + esc(r.sorted[0].h.name) + '</b> 한 종목이 ' + pct(r.top1) + ', 상위 3종목이 ' + pct(r.top3) +
+        why: '<b>' + esc(bigStock.h.name) + '</b> 한 종목이 ' + pct(bigStock.w) + ', 상위 3종목이 ' + pct(r.top3) +
           '입니다. 실질 분산 종목 수는 ' + num3(r.effN) + '개로 담은 ' + r.n + '종목보다 적습니다(HHI ' +
           Math.round(hhiPts).toLocaleString('ko-KR') + ').',
         act: '가장 큰 종목의 비중을 20~25% 이하로 낮추고, 덜어낸 금액은 ' +
@@ -553,18 +555,26 @@
         examples: usSide ? ['SPY', '069500', 'QQQ'] : ['069500', 'SPY', 'SCHD'],
         assets: [{ code: codeC, w: shrink }]
       });
+    } else if (bigStock) {
+      oks.push({
+        id: 'ok-concentration', level: 'ok', title: '개별 종목 집중 없음',
+        why: '가장 큰 개별 종목이 ' + pct(bigStock.w) + '로 25%를 넘지 않습니다. 실질 분산 종목 수 ' + num3(r.effN) + '개(HHI ' +
+          Math.round(hhiPts).toLocaleString('ko-KR') + ')로 한 종목에 거는 구조가 아니다.',
+        act: '종목을 더 늘리기보다 지금 비중을 유지하면서, 연 1회 정도 흐트러진 비중만 되돌리는 리밸런싱이 효율적입니다.'
+      });
     } else {
       oks.push({
-        id: 'ok-concentration', level: 'ok', title: '분산은 지금 수준 유지',
-        why: '상위 1종목 ' + pct(r.top1) + ', 실질 분산 종목 수 ' + num3(r.effN) + '개(HHI ' +
-          Math.round(hhiPts).toLocaleString('ko-KR') + ')로 한두 종목에 거는 구조가 아닙니다.',
-        act: '종목을 더 늘리기보다 지금 비중을 유지하면서, 연 1회 정도 흐트러진 비중만 되돌리는 리밸런싱이 효율적입니다.'
+        id: 'ok-concentration', level: 'ok', title: '개별 종목 집중 없음',
+        why: 'ETF·채권 바구니로만 구성돼 한 종목 리스크는 없습니다(지수 ETF·채권은 집중도 계산에서 제외).',
+        act: '다만 지수 전체가 빠지면 함께 빠지는 구조이므로, 방어 자산과 지역 배분을 함께 보세요.'
       });
     }
 
-    /* 2) 섹터·테마 쏠림 */
-    if (topSec && topSec.w >= 0.45) {
-      var urgentS = (topSec.w >= 0.6 || (r.itW >= 0.7));
+    /* 2) 섹터·테마 쏠림 (ETF·채권은 업종 판단에서 제외) */
+    var coreSecs = r.secList.filter(function (s) { return s.key !== 'ETF' && s.key !== 'BOND'; });
+    var topCore = coreSecs[0] || null;
+    if (topCore && topCore.w >= 0.45) {
+      var urgentS = (topCore.w >= 0.6 || (r.itW >= 0.7));
       var gaps = Object.keys(SEC_EXAMPLES).filter(function (k) { return (sw[k] || 0) < 0.05; });
       var first = usSide ? 'US' : 'KR', second = usSide ? 'KR' : 'US';
       var picks = [];
@@ -588,21 +598,27 @@
       var gapNames = gaps.map(function (k) { return GAP_LABEL[k]; }).join('·');
       out.push({
         id: 'sector', level: urgentS ? 'urgent' : 'rec',
-        title: topSec.label + ' 쏠림 완화',
-        why: '<b>' + esc(topSec.label) + ' ' + pct(topSec.w) + '</b>' +
-          (r.topTheme && r.topTheme.w >= 0.45 && r.topTheme.key !== topSec.label ? ' · 테마로는 ' + esc(r.topTheme.key) + ' ' + pct(r.topTheme.w) : '') +
+        title: topCore.label + ' 쏠림 완화',
+        why: '<b>' + esc(topCore.label) + ' ' + pct(topCore.w) + '</b>' +
+          (r.topTheme && r.topTheme.w >= 0.45 && r.topTheme.key !== topCore.label ? ' · 테마로는 ' + esc(r.topTheme.key) + ' ' + pct(r.topTheme.w) : '') +
           '입니다. 비중이 5% 미만인 영역은 ' + (gapNames || '없음') + '로, 같은 업황을 공유하는 자산이 대부분이라 함께 움직일 가능성이 큽니다.',
-        act: '쏠린 ' + esc(topSec.label) + '에서 5~10%p를 덜어 ' + (pickNames || '다른 업종') +
+        act: '쏠린 ' + esc(topCore.label) + '에서 5~10%p를 덜어 ' + (pickNames || '다른 업종') +
           ' 쪽으로 옮기면 업황 사이클이 다른 자산이 생깁니다. 업종을 고를 때는 이미 담은 종목과 매출 구조가 겹치지 않는지 먼저 보세요.',
         examples: chipCodes.length ? chipCodes : picks,
         assets: assetsS
       });
-    } else if (topSec) {
+    } else if (topCore) {
       oks.push({
         id: 'ok-sector', level: 'ok', title: '섹터는 고르게 퍼져 있음',
-        why: '가장 큰 섹터가 ' + esc(topSec.label) + ' ' + pct(topSec.w) + '로 45% 미만이고, 상위 3개 섹터 합계도 ' +
-          pctx(r.secList.filter(function (s) { return s.key !== 'ETF' && s.key !== 'BOND'; }).slice(0, 3).reduce(function (a, s) { return a + s.w; }, 0)) + '입니다.',
+        why: '가장 큰 섹터가 ' + esc(topCore.label) + ' ' + pct(topCore.w) + '로 45% 미만이고, 상위 3개 섹터 합계도 ' +
+          pctx(coreSecs.slice(0, 3).reduce(function (a, s) { return a + s.w; }, 0)) + '입니다.',
         act: '지금의 업종 배분을 유지하세요. 새 종목을 담을 때만 기존 섹터와 겹치지 않는지 확인하면 됩니다.'
+      });
+    } else {
+      oks.push({
+        id: 'ok-sector', level: 'ok', title: '지수 ETF 중심 구성',
+        why: 'ETF·채권으로만 구성돼 개별 업종 쏠림은 없습니다. 지수 안에 이미 여러 업종이 담겨 있습니다.',
+        act: '지수 자체의 업종 구성은 유지되고 있으니, 특정 업종을 더 담을 때만 비중이 과해지지 않는지 보세요.'
       });
     }
 
