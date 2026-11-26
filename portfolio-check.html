@@ -389,7 +389,7 @@ details.faq p{margin:8px 0 0;font-size:13.5px;color:var(--muted);line-height:1.7
 .radarleg li:last-child{border-bottom:0;padding-bottom:0}
 .radarleg .rl{grid-area:l;font-size:12.5px;font-weight:800;color:var(--muted)}
 .radarleg b{grid-area:b;font-size:14px;letter-spacing:-.02em;text-align:right}
-.radarleg i{grid-area:i;display:block;height:6px;border-radius:4px;background:var(--card-2);overflow:hidden}
+.radarleg i{grid-area:i;display:block;height:6px;border-radius:4px;background:var(--card-2);overflow:hidden;max-width:340px}
 .radarleg i u{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#2563eb,#0ea5e9)}
 .radarleg .rb{grid-area:r;font-size:11px;color:var(--muted);line-height:1.5}
 
@@ -431,7 +431,7 @@ html[data-theme="dark"] .baseline{background:var(--card-2)}
 .stbl td.nm .mk{font-size:9.5px;font-weight:900;color:var(--muted);background:var(--card-2);border:1px solid var(--line);border-radius:5px;padding:1px 4px;margin-left:5px}
 .stbl td.num{font-variant-numeric:tabular-nums}
 .stbl td.sec{text-align:left;color:var(--muted);font-size:11.5px}
-.stbl .wbar{display:inline-block;width:42px;height:6px;border-radius:4px;background:var(--card-2);overflow:hidden;margin-right:6px;vertical-align:1px}
+.stbl .wbar{display:inline-block;width:54px;height:7px;border-radius:4px;background:color-mix(in srgb,var(--accent) 12%,var(--line));overflow:hidden;margin-right:7px;vertical-align:1px}
 .stbl .wbar i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#2563eb,#60a5fa)}
 .tgl{display:inline-block;font-size:10.5px;font-weight:900;padding:2px 8px;border-radius:999px;white-space:nowrap;font-style:normal}
 .tgl.low{background:#e7f8ef;color:#047857;border:1px solid #b9ecd3}
@@ -731,7 +731,7 @@ html[data-theme="dark"] .tgl.hot{background:color-mix(in srgb,var(--down) 18%,tr
   <h3>6. 5축 레이더·예상 배당금·종목 신호등</h3>
   <p><strong>5축 레이더</strong>는 위에서 계산한 값들을 0~100으로 옮겨 다섯 축으로 그린 것입니다. 분산성·밸류에이션·섹터 균형은 종합 점수와 같은 값이고, 배당 매력은 가중 배당수익률을 시장 평균과 비교해(시장 평균=50점, 두 배=100점) 매기며, 안정성은 가중 베타 0.5 이하를 100점, 2.5 이상을 0점으로 두고 계산합니다. 값이 없는 축(예: PER·PBR이 모두 없는 구성)은 0점으로 그리지 않고 비워 두고 '—'로 표시합니다.</p>
   <p><strong>예상 배당금</strong>은 현재 구성과 배당수익률이 그대로 유지된다고 가정한 추정치입니다. 비중 % 모드에서는 1,000만 원, 금액 모드에서는 입력한 금액의 합계를 기준으로 연간·월평균 세전 배당금을 계산하고, 원천징수 후 금액은 국내 15.4%·미국 15%를 적용한 값입니다. 배당수익률 정보가 없는 종목은 0%로 깎지 않고 계산에서 빼며, 반영된 비중을 함께 표시합니다.</p>
-  <p><strong>종목별 신호등</strong>은 각 종목의 PER·PBR을 같은 시장(코스피 또는 S&amp;P500) 평균과 비교해 −25% 이하면 '저평가', +15% 이하면 '적정', +50% 이하면 '다소 고평가', 그 이상을 '과열'로 표시합니다. ETF·채권은 여러 종목을 담은 상품이라 개별 종목 판정에서 제외합니다. 시장 평균 대비 비교이므로 성장주가 구조적으로 '고평가'로 보인다는 점을 감안해 읽어야 합니다.</p>
+  <p><strong>종목별 신호등</strong>은 각 종목의 PER을 같은 시장(코스피 또는 S&amp;P500) 평균과 비교해 −25% 이하면 '저평가', +15% 이하면 '적정', +50% 이하면 '다소 고평가', 그 이상을 '과열'로 표시합니다. PER이 없는 종목은 PBR로 대신하고, ETF·채권은 여러 종목을 담은 상품이라 판정에서 제외합니다. 시장 평균 대비 비교이므로 성장주가 구조적으로 '고평가'로 보인다는 점을 감안해 읽어야 합니다.</p>
 
   <h3>데이터 한계</h3>
   <ul>
@@ -752,7 +752,7 @@ html[data-theme="dark"] .tgl.hot{background:color-mix(in srgb,var(--down) 18%,tr
   <details class="faq"><summary>내 종목이 목록에 없으면 어떻게 하나요?</summary><p>검색창에 이름을 입력했을 때 결과가 없으면 '직접 입력'으로 종목명·시장·섹터·PER·PBR·PSR을 넣어 진단에 포함할 수 있습니다. 배당수익률과 베타는 비워도 되고, 비우면 해당 지표 계산에서만 빠집니다.</p></details>
   <details class="faq"><summary>예상 배당금은 어떻게 계산하나요?</summary><p>지금 담은 종목과 비중, 각 종목의 최근 배당수익률을 그대로 유지한다고 가정해 계산합니다. 금액 모드에서는 입력한 금액 합계, 비중 % 모드에서는 1,000만 원을 기준으로 연간·월평균 세전 배당금을 보여 주고, 국내 15.4%·미국 15% 원천징수를 적용한 세후 추정치도 함께 표시합니다. 배당 결정·주가·환율이 바뀌면 실제 입금액은 달라집니다.</p></details>
   <details class="faq"><summary>5축 레이더의 점수는 어떻게 매기나요?</summary><p>분산성·밸류에이션·섹터 균형은 종합 점수와 같은 규칙입니다. 배당 매력은 가중 배당수익률이 시장 평균과 같으면 50점, 두 배면 100점이 되도록 하고, 안정성은 가중 베타 0.5 이하를 100점, 2.5 이상을 0점으로 두고 계산합니다. 데이터가 없는 축은 '—'로 비워 둡니다.</p></details>
-  <details class="faq"><summary>종목별 '저평가·적정·고평가' 배지는 무엇을 보나요?</summary><p>그 종목의 PER·PBR을 같은 시장 평균(코스피 또는 S&amp;P500)과 비교한 단순 신호입니다. 시장 평균보다 25% 이상 낮으면 저평가, ±15% 안쪽이면 적정, 15~50% 높으면 다소 고평가, 50% 이상 높으면 과열로 표시합니다. 성장 기대가 큰 기업은 구조적으로 고평가로 보이므로 매수·매도 판단이 아니라 비교용으로 봐 주세요.</p></details>
+  <details class="faq"><summary>종목별 '저평가·적정·고평가' 배지는 무엇을 보나요?</summary><p>그 종목의 PER을 같은 시장 평균(코스피 또는 S&amp;P500)과 비교한 단순 신호입니다. 시장 평균보다 25% 이상 낮으면 저평가, ±15% 안쪽이면 적정, 15~50% 높으면 다소 고평가, 50% 이상 높으면 과열로 표시합니다. PER이 없는 종목은 PBR로 대신합니다. 성장 기대가 큰 기업은 구조적으로 고평가로 보이므로 매수·매도 판단이 아니라 비교용으로 봐 주세요.</p></details>
   <details class="faq"><summary>내 포트폴리오 정보가 서버로 전송되나요?</summary><p>아니요. 입력한 종목과 비중은 브라우저 안에서만 계산되며 서버로 보내지 않습니다. 로그인도, 계좌 연동도 없습니다. 다만 '링크 복사'로 만든 주소에는 종목과 비중이 담기므로, 공유하고 싶지 않다면 링크를 남기지 마세요. 브라우저를 닫아도 최근 구성은 이 기기에만 저장됩니다.</p></details>
   <details class="faq"><summary>진단 점수가 높으면 무조건 좋은 포트폴리오인가요?</summary><p>아닙니다. 점수는 분산·밸류에이션·섹터 균형을 기계적으로 채점한 값입니다. 투자 목표에 따라 좋은 구성은 완전히 달라집니다. 장기 성장을 노린다면 점수가 낮게 나오는 기술주 집중 구성이 오히려 맞을 수 있습니다. 점수보다 '왜 그런 점수가 나왔는지' 설명을 읽고 판단하세요.</p></details>
   <details class="faq"><summary>맞춤 보완 제안은 어떻게 정해지나요?</summary><p>진단에서 나온 다섯 가지 신호(상위 종목 집중도·섹터 쏠림·방어 자산 비중·시장 대비 밸류에이션·지역 편중)를 정해진 기준으로 점검해, 급한 것부터 2~4개를 카드로 보여 줍니다. 카드에는 왜 그 제안이 나왔는지 수치를 함께 적고, '이 보완안 미리보기'를 누르면 제안 자산을 넣은 구성을 다시 계산해 종합 점수와 세부 점수가 어떻게 바뀌는지 보여 줍니다. 특정 종목의 매수 권유가 아니라 구조 비교용 예시입니다.</p></details>
@@ -787,6 +787,6 @@ html[data-theme="dark"] .tgl.hot{background:color-mix(in srgb,var(--down) 18%,tr
 </footer>
 <script src="assets/kit.js"></script>
 <script>KIT.theme();</script>
-<script src="assets/portfolio-check.js?v=20261126N"></script>
+<script src="assets/portfolio-check.js?v=20261126P"></script>
 </body>
 </html>

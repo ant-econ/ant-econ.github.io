@@ -795,11 +795,10 @@
 
   function stockGrade(h) {
     if (h.sector === 'ETF' || h.sector === 'BOND') return { key: 'na', label: '지수 상품', cls: 'na' };
-    var b = benchOf(h), p = [];
-    if (h.per > 0 && b.per) p.push(h.per / b.per - 1);
-    if (h.pbr > 0 && b.pbr) p.push(h.pbr / b.pbr - 1);
-    if (!p.length) return { key: 'na', label: '판단불가', cls: 'na' };
-    return gradeOf(p.reduce(function (a, v) { return a + v; }, 0) / p.length);
+    var b = benchOf(h);
+    if (h.per > 0 && b.per) return gradeOf(h.per / b.per - 1);
+    if (h.pbr > 0 && b.pbr) return gradeOf(h.pbr / b.pbr - 1);
+    return { key: 'na', label: '판단불가', cls: 'na' };
   }
 
   function stockTableHtml(r) {
@@ -1187,7 +1186,7 @@
 
       '<section class="card rep-card wide" id="pcStocks">' +
       '<h3><span class="h3badge">5</span>종목별 기여도·신호등<span class="h3sub">' + r.n + '종목</span></h3>' +
-      '<p class="miniline muted">비중이 큰 순서입니다. 판정은 종목의 PER·PBR을 해당 시장 평균(코스피 또는 S&amp;P500)과 비교한 단순 신호입니다. 성장주는 구조적으로 ‘고평가’로, 업황 정점 기업은 ‘저평가’로 보일 수 있으니 절대 판단이 아니라 비교용으로 보세요.</p>' +
+      '<p class="miniline muted">비중이 큰 순서입니다. 판정은 종목의 PER을 해당 시장 평균(코스피 또는 S&amp;P500)과 비교한 신호이고, PER이 없는 종목만 PBR로 대신했습니다. 성장주는 구조적으로 ‘고평가’로, 업황 정점 기업은 ‘저평가’로 보일 수 있으니 절대 판단이 아니라 비교용으로 보세요.</p>' +
       stockTableHtml(r) +
       '<div class="tglleg"><span><i class="tgl low">저평가</i>시장 평균보다 25% 이상 낮음</span><span><i class="tgl fair">적정</i>-25%~+15%</span><span><i class="tgl high">다소 고평가</i>+15%~+50%</span><span><i class="tgl hot">과열</i>+50% 이상</span><span><i class="tgl na">지수 상품</i>ETF·채권은 판정 제외</span></div>' +
       '</section>' +
