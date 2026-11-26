@@ -31,6 +31,7 @@
 /* 라이트 테마가 기본 — 밝은 화이트/쿨그레이 + 토스 블루 */
 html[data-theme="light"]{
   color-scheme:light;
+  color-scheme:only light;
   --bg:#f6f8fc;
   --bg-soft:#ffffff;
   --card:#ffffff;
@@ -46,7 +47,7 @@ html[data-theme="light"]{
   --radius:20px;
   --shadow:0 8px 24px rgba(15,23,42,.06);
 }
-html[data-theme="dark"]{color-scheme:dark}
+html[data-theme="dark"]{color-scheme:dark;color-scheme:only dark}
 html[data-theme="light"] .aura{
   background:
     radial-gradient(48vw 34vw at 4% -10%, rgba(37,99,235,.16), transparent 70%),
