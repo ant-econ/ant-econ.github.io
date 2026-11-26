@@ -178,7 +178,7 @@
 .secwrap{display:grid;grid-template-columns:190px 1fr;gap:18px;align-items:center}
 .donutwrap{position:relative;display:grid;place-items:center}
 .donut{width:170px;height:170px}
-.donutc{position:absolute;text-align:center;line-height:1.2}
+.donutc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1.2;pointer-events:none}
 .donutc b{display:block;font-size:19px;letter-spacing:-.03em}
 .donutc span{font-size:10.5px;color:var(--muted)}
 .seclist{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
