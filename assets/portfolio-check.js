@@ -621,9 +621,12 @@
     var m = /[?&]p=([^&]+)/.exec(q);
     if (!m) return null;
     try {
-      var raw = decodeURIComponent(escape(atob(m[1].replace(/-/g, '+').replace(/_/g, '/'))));
+      var b = m[1].replace(/-/g, '+').replace(/_/g, '/');
+      while (b.length % 4) b += '=';
+      var raw = decodeURIComponent(escape(atob(b)));
       var out = [];
       raw.split(',').forEach(function (tok) {
+        try {
         var i = tok.lastIndexOf(':');
         if (i < 0) return;
         var id = tok.slice(0, i), wv = num(tok.slice(i + 1)) / 1000;
@@ -636,6 +639,7 @@
           var h = makeHolding(id, wv * 100);
           if (h) out.push(h);
         }
+        } catch (e) {}
       });
       return out.length ? out : null;
     } catch (e) { return null; }
