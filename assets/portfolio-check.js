@@ -864,7 +864,8 @@
     });
 
     syncModeBtns();
-    render();
+    // 초기 render()는 load()의 두 경로(URL 복원/기기 저장 복원)에서 호출한다.
+    // 여기서 먼저 render()하면 save()가 빈 목록을 덮어써 저장된 구성이 사라진다.
   }
 
   document.addEventListener('DOMContentLoaded', function () {
