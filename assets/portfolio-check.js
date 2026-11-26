@@ -102,13 +102,23 @@
     return -1;
   }
 
+  function defaultAmt(unit) {
+    var base = moneyTotal() > 0 ? moneyTotal() : 10000000;
+    var amt = base * 0.1;
+    return Math.max(1, Math.round(unit === 'usd' ? amt / state.fx : amt / 10000));
+  }
+
   function addStock(code, weight) {
-    var h = makeHolding(code, weight);
-    if (!h) return;
+    var s = stockByCode(code);
+    if (!s) return;
     var i = existing(code);
     if (i >= 0) {
-      state.holdings[i].raw = Math.min(100, num(state.holdings[i].raw) + (weight == null ? 10 : weight));
+      var cur = state.holdings[i];
+      if (state.mode === 'money') cur.raw = num(cur.raw) + defaultAmt(cur.unit);
+      else cur.raw = Math.min(100, num(cur.raw) + (weight == null ? 10 : weight));
     } else {
+      var h = makeHolding(code, weight);
+      if (state.mode === 'money') { h.unit = (s.market === 'US' ? 'usd' : 'krw'); h.raw = defaultAmt(h.unit); }
       state.holdings.push(h);
     }
     clearSearch();
@@ -183,6 +193,7 @@
     el('pcTotal').innerHTML = '<span>총 ' + state.holdings.length + '종목</span><b>' + totalTxt + '</b>' + warn;
     el('pcRun').disabled = !state.holdings.length;
     save();
+    if (!el('pcReport').hidden && state.holdings.length) queueRerun();
   }
 
   /* ---------- search ---------- */
@@ -266,6 +277,7 @@
       div: num(el('pcCustomDiv').value) || null,
       beta: null, custom: true, raw: 10, unit: 'pct'
     };
+    if (state.mode === 'money') { h.unit = (market === 'US' ? 'usd' : 'krw'); h.raw = defaultAmt(h.unit); }
     state.holdings.push(h);
     ['pcCustomName', 'pcCustomPer', 'pcCustomPbr', 'pcCustomPsr', 'pcCustomDiv'].forEach(function (id) { el(id).value = ''; });
     el('pcCustom').hidden = true;
@@ -426,7 +438,12 @@
     };
   }
 
-  function run() { var r = diagnose(); if (r) renderReport(r); }
+  function run(scroll) { var r = diagnose(); if (r) renderReport(r, scroll); }
+  var rerunTimer = null;
+  function queueRerun() {
+    clearTimeout(rerunTimer);
+    rerunTimer = setTimeout(function () { var r = diagnose(); if (r) renderReport(r, false); }, 280);
+  }
 
   /* ---------- report rendering ---------- */
   function gaugeSvg(score) {
@@ -467,7 +484,7 @@
       '<div class="vscale"><span>싸다</span><span>시장 평균</span><span>비싸다</span></div>';
   }
 
-  function renderReport(r) {
+  function renderReport(r, scroll) {
     var valRows = r.metrics.map(function (m) {
       var val = m.mine == null ? '—' : num3(m.mine) + m.unit;
       var bench = m.bench == null ? '—' : num3(m.bench) + m.unit;
@@ -585,7 +602,7 @@
     box.hidden = false;
     state.lastReport = r;
     wireShare();
-    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (scroll !== false) box.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   /* ---------- share ---------- */
@@ -747,7 +764,7 @@
         var w = weights();
         $$('.hrow').forEach(function (row, idx) {
           var sh = row.querySelector('.share');
-          if (sh) sh.textContent = w[idx] ? pct(w[idx]) : '0%';
+          if (sh) sh.textContent = w[idx] ? (w[idx] > 0 && w[idx] < 0.001 ? '<0.1%' : pct(w[idx])) : '0%';
         });
         var s = state.holdings.reduce(function (a, h) { return a + (state.mode === 'pct' ? num(h.raw) : 0); }, 0);
         if (state.mode === 'pct') {
@@ -787,7 +804,7 @@
     el('pcCustomSave').onclick = addCustom;
     el('pcCustomCancel').onclick = function () { el('pcCustom').hidden = true; };
 
-    el('pcRun').onclick = run;
+    el('pcRun').onclick = function () { run(true); };
 
     el('pcPresets').addEventListener('click', function (e) {
       var b = e.target.closest('[data-preset]');
