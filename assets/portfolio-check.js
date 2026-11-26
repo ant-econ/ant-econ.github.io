@@ -641,12 +641,18 @@
       var assetsV = [];
       if (lows[0]) assetsV.push({ code: lows[0], w: 0.10 });
       if (lows[1]) assetsV.push({ code: lows[1], w: 0.05 });
+      var hotList = r.metrics.filter(function (m) { return m.premium != null && m.premium >= 0.25; })
+        .map(function (m) { return m.label + ' ' + num3(m.mine) + m.unit + '(시장 ' + num3(m.bench) + m.unit + ')'; });
+      var cheapPer = perM.premium != null && perM.premium < 0.25;
       out.push({
         id: 'valuation', level: urgentV ? 'urgent' : 'rec',
-        title: '가중 PER 낮추기',
-        why: '가중 PER이 <b>' + num3(perM.mine) + '배</b>로 시장 평균(' + num3(perM.bench) + '배)보다 ' + pct(r.avgPrem) +
-          ' 비쌉니다. 성장 기대가 이미 가격에 많이 반영돼 있어 실적이 어긋나면 조정 폭이 커질 수 있습니다.',
-        act: 'PER이 시장 평균보다 낮은 자산을 10~15% 섞으면 전체 가중 PER이 내려갑니다. 성장주를 다 팔지 않고 밸류에이션 부담만 낮추는 방법입니다. 싼 데는 이유가 있는지(이익 감소·업황)는 함께 확인하세요.',
+        title: '밸류에이션 부담 낮추기',
+        why: (hotList.length ? esc(hotList.join(' · ')) + '로 ' : '') + '밸류에이션 지표가 시장 평균보다 평균 <b>' +
+          (r.avgPrem > 0 ? '+' : '') + pct(r.avgPrem) + '</b> 높은 수준입니다. ' +
+          (cheapPer
+            ? 'PER(' + num3(perM.mine) + '배)만 보면 시장과 비슷하지만, 자산·매출 대비로는 크게 앞서 있어 성장이 꺾이면 조정 폭이 커질 수 있습니다.'
+            : '성장 기대가 이미 가격에 많이 반영돼 있어 실적이 어긋나면 조정 폭이 커질 수 있습니다.'),
+        act: 'PER이 시장 평균보다 낮은 자산을 10~15% 섞으면 전체 가중 PER과 PBR이 함께 내려갑니다. 성장주를 다 팔지 않고 밸류에이션 부담만 낮추는 방법입니다. 싼 데는 이유가 있는지(이익 감소·업황)는 함께 확인하세요.',
         examples: lows.slice(0, 4),
         assets: assetsV
       });
@@ -692,10 +698,24 @@
     });
 
     // 카드에 "예상 효과"를 미리 적기 위해 각 보완안을 미리 계산해 둔다
+    function perOf(rep) {
+      var m = rep.metrics.filter(function (x) { return x.key === 'per'; })[0];
+      return m ? m.mine : null;
+    }
+    function effectText(id, base, sim) {
+      if (id === 'concentration') {
+        return '상위 1종목 ' + pct(base.top1) + ' → ' + pct(sim.top1) +
+          ' · HHI ' + Math.round(base.hhi * 10000).toLocaleString('ko-KR') + ' → ' + Math.round(sim.hhi * 10000).toLocaleString('ko-KR');
+      }
+      if (id === 'sector' && base.topSec && sim.topSec) return '최대 섹터 ' + pct(base.topSec.w) + ' → ' + pct(sim.topSec.w);
+      if (id === 'valuation') return '가중 PER ' + num3(perOf(base)) + '배 → ' + num3(perOf(sim)) + '배';
+      if (id === 'region') return '국내 ' + pct(base.krW) + ' / 미국 ' + pct(base.usW) + ' → 국내 ' + pct(sim.krW) + ' / 미국 ' + pct(sim.usW);
+      return '방어 자산 ' + pctx(base.defensive) + ' → ' + pctx(sim.defensive) + ' · 가중 베타 ' + num3(base.betaW, 2) + ' → ' + num3(sim.betaW, 2);
+    }
     list.forEach(function (s) {
       if (!s.assets || !s.assets.length) return;
       var r2 = diagnose(simHoldings(s.assets));
-      if (r2) s.sim = r2;
+      if (r2) { s.sim = r2; s.effect = effectText(s.id, r, r2); }
     });
     return list;
   }
@@ -840,7 +860,7 @@
         var dT = s.sim.scores.total - r.scores.total;
         prev = '<span class="sugprev">예상 종합 ' + r.scores.total + ' → <b>' + s.sim.scores.total + '점</b>' +
           ' <em class="' + (dT > 0 ? 'up' : dT < 0 ? 'down' : 'flat') + '">' + (dT > 0 ? '+' + dT : dT < 0 ? '−' + Math.abs(dT) : '0') + '</em>' +
-          ' · 방어 자산 ' + pctx(r.defensive) + ' → ' + pctx(s.sim.defensive) + '</span>';
+          (s.effect ? ' · ' + s.effect : '') + '</span>';
       }
       return '<article class="sugcard ' + pr.cls + (on ? ' on' : '') + '">' +
         '<div class="sugtop"><span class="pribadge ' + pr.cls + '">' + pr.label + '</span><h4>' + esc(s.title) + '</h4></div>' +
