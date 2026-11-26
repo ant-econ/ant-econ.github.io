@@ -55,6 +55,7 @@
   function num(v) { var n = parseFloat(String(v == null ? '' : v).replace(/[,\s%$원]/g, '')); return isFinite(n) ? n : 0; }
   function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
   function pct(v, d) { return (v * 100).toFixed(d == null ? 1 : d) + '%'; }
+  function pctx(v) { var n = Math.round(v * 1000) / 10; return (n % 1 === 0 ? n.toFixed(0) : n.toFixed(1)) + '%'; }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function won(v) { return Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원'; }
   function num3(v, d) { return (v == null || !isFinite(v)) ? '—' : Number(v).toFixed(d == null ? 1 : d); }
@@ -545,11 +546,11 @@
     var topW = r.topSec ? r.topSec.w : 0;
     var secCls = topW >= 0.6 ? 'bad' : topW >= 0.45 ? 'warn' : topW >= 0.3 ? 'mid' : 'good';
     var secWord = topW >= 0.6 ? '집중' : topW >= 0.45 ? '쏠림' : topW >= 0.3 ? '편중' : '고른 편';
-    var secMain = r.topSec ? r.topSec.label + ' ' + pct(topW) + ' ' + secWord : '섹터 정보 없음';
-    var secSub = '상위 3개 섹터 ' + pct(secTop3) + ' · 방어 자산 ' + pct(r.defensive);
+    var secMain = r.topSec ? r.topSec.label + ' ' + pctx(topW) + ' ' + secWord : '섹터 정보 없음';
+    var secSub = '상위 3개 섹터 ' + pctx(secTop3) + ' · 방어 자산 ' + pctx(r.defensive);
     var betaCls = r.betaW == null ? 'mid' : r.betaW < 0.8 ? 'good' : r.betaW < 1.2 ? 'mid' : r.betaW < 1.8 ? 'warn' : 'bad';
     var divMain = '배당 ' + num3(r.divW, 2) + '% · 변동성 ' + r.betaLabel;
-    var divSub = '가중 베타 ' + (r.betaW == null ? '—' : num3(r.betaW, 2)) + ' · 방어 자산 ' + pct(r.defensive);
+    var divSub = '가중 베타 ' + (r.betaW == null ? '—' : num3(r.betaW, 2)) + ' · 방어 자산 ' + pctx(r.defensive);
     function scoreBar(label, v) {
       return '<div><span>' + label + '</span><b>' + v + '</b><i><u style="width:' + clamp(v, 0, 100) + '%"></u></i></div>';
     }
@@ -572,7 +573,7 @@
       '<div class="rep-grid">' +
       '<section class="card rep-card">' +
       '<h3><span class="h3badge">1</span>분산효과</h3>' +
-      '<div class="keyline ' + disp.c + '"><b>' + disp.t + '</b><span>실질 ' + num3(r.effN) + '종목 · 상위 1종목 ' + pct(r.top1) + '</span></div>' +
+      '<div class="keyline ' + disp.c + '"><b>' + disp.t + '</b><span>실질 ' + num3(r.effN) + '종목 · 상위 1종목 ' + pctx(r.top1) + '</span></div>' +
       '<div class="statgrid">' +
       '<div><span>종목 수</span><b>' + r.n + '개</b></div>' +
       '<div><span>실질 분산 종목 수</span><b>' + num3(r.effN) + '개</b></div>' +
