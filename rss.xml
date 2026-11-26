@@ -6,8 +6,16 @@
     <description>미국주식 양도소득세·배당소득세·ISA·연금·환율·평단가·ETF 비용을 직접 계산하는 무료 금융 계산기와 2026년 기준 세법 가이드</description>
     <language>ko</language>
     <copyright>개미일지 계산기</copyright>
-    <lastBuildDate>Wed, 25 Nov 2026 00:30:00 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 26 Nov 2026 09:00:00 +0900</lastBuildDate>
     <atom:link href="https://ant-econ.github.io/rss.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>AI 포트폴리오 진단기 — 분산효과·PER·PBR·PSR·섹터 치중도 무료 분석</title>
+      <link>https://ant-econ.github.io/portfolio-check.html</link>
+      <guid isPermaLink="true">https://ant-econ.github.io/portfolio-check.html</guid>
+      <description>내 주식 포트폴리오의 종목과 비중만 넣으면 분산효과(허핀달 지수), 코스피·S&amp;P500 시장 평균과 비교한 가중 PER·PBR·PSR, 섹터 치중도, 배당수익률과 변동성까지 분석해 0~100점 리포트를 만듭니다. 국내·미국 149종목 수록, 회원가입 없이 무료.</description>
+      <category>진단</category>
+      <pubDate>Thu, 26 Nov 2026 09:00:00 +0900</pubDate>
+    </item>
     <item>
       <title>어제 장 실전 트레이딩 게임 — 실제 5분봉 리플레이, 1,000만 원으로</title>
       <link>https://ant-econ.github.io/market-replay.html</link>

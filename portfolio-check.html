@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI 포트폴리오 진단기 — 분산효과·PER·PBR·PSR·섹터 치중도 무료 분석 | 개미일지 계산기</title>
+<meta name="description" content="내 주식 포트폴리오를 종목·비중만 넣으면 분산효과(HHI), 가중 PER·PBR·PSR 밸류에이션, 섹터 치중도, 배당·변동성까지 한 번에 진단합니다. 코스피·S&amp;P500 시장 평균과 비교한 0~100점 리포트, 회원가입·설치 없이 무료.">
+<meta name="keywords" content="포트폴리오 진단, 분산효과, HHI 허핀달지수, PER PBR PSR, 섹터 편중, 포트폴리오 분석, 자산배분, 밸류에이션, 주식 포트폴리오 점검, 미국주식 국내주식 비중">
+<meta name="author" content="개미일지 계산기">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="naver-site-verification" content="cdb28886cc67b8325db51e7ed2cb076ad8123aeb">
+<meta name="naver-site-verification" content="ad395d8f5a244191d970977240f0743daef43cdb">
+<link rel="canonical" href="https://ant-econ.github.io/portfolio-check.html">
+<link rel="alternate" type="application/rss+xml" title="개미일지 계산기 RSS" href="https://ant-econ.github.io/rss.xml">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="개미일지 계산기">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="AI 포트폴리오 진단기 — 분산효과·밸류에이션·섹터 쏠림 한 번에">
+<meta property="og:description" content="종목과 비중만 넣으면 0~100점 리포트. HHI 분산등급, 코스피·S&amp;P500 대비 PER·PBR·PSR, 섹터 치중도까지 무료로 진단합니다.">
+<meta property="og:url" content="https://ant-econ.github.io/portfolio-check.html">
+<meta property="og:image" content="https://ant-econ.github.io/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AI 포트폴리오 진단기 — 분산·밸류에이션·섹터 쏠림">
+<meta name="twitter:description" content="내 포트폴리오를 0~100점으로 진단. HHI 분산등급과 시장 평균 대비 PER·PBR·PSR까지 한 화면에서.">
+<meta name="theme-color" content="#070b14">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+/* ===== 포트폴리오 진단기 전용 ===== */
+.pc-hero{padding:34px 0 8px}
+.pc-hero .crumbtab{display:inline-block;font-size:12.5px;font-weight:800;color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);padding:5px 11px;border-radius:999px;margin-bottom:14px}
+.pc-hero h1{font-size:clamp(25px,4.4vw,40px);line-height:1.28;letter-spacing:-.035em;margin:0 0 12px}
+.pc-hero h1 em{font-style:normal;color:var(--accent-2)}
+.pc-hero .lede{color:var(--muted);font-size:15.5px;margin:0 0 16px;max-width:760px}
+.hero-stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.chipstat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:12px;color:var(--muted)}
+.chipstat b{display:block;color:var(--text);font-size:15px;letter-spacing:-.02em}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.pc-step{margin:20px 0 18px}
+.pc-step h2{font-size:18px;margin:0 0 4px;letter-spacing:-.03em}
+.pc-step .sub{color:var(--muted);font-size:13.5px;margin:0 0 14px}
+.stepno{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:8px;background:var(--accent);color:#04101f;font-weight:900;font-size:13px;margin-right:8px;vertical-align:2px}
+
+.presets{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.preset{display:flex;flex-direction:column;gap:3px;text-align:left;cursor:pointer;background:var(--card-2);border:1px solid var(--line);color:var(--text);border-radius:14px;padding:13px 14px;transition:.15s}
+.preset:hover{border-color:var(--accent);transform:translateY(-1px)}
+.preset b{font-size:14px;letter-spacing:-.02em}
+.preset span{font-size:12px;color:var(--muted);line-height:1.45}
+.preset i{font-style:normal;font-size:11.5px;font-weight:800;color:var(--accent);margin-top:4px}
+
+.modebar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0 10px}
+.modebar .lbl{font-size:12.5px;color:var(--muted);font-weight:700}
+.modetog{display:inline-flex;background:var(--card-2);border:1px solid var(--line);border-radius:11px;padding:3px}
+.modetog button{border:0;background:transparent;color:var(--muted);font-weight:800;font-size:12.5px;padding:7px 13px;border-radius:8px;cursor:pointer}
+.modetog button.on{background:var(--accent);color:#04101f}
+.modehint{font-size:12px;color:var(--muted)}
+
+.searchwrap{position:relative}
+#pcSearch{width:100%;background:var(--card-2);border:1px solid var(--line);border-radius:13px;color:var(--text);font-size:15px;padding:14px 16px;outline:none;font-family:inherit}
+#pcSearch:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+#pcResults{position:absolute;z-index:30;left:0;right:0;top:calc(100% + 6px);background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 24px 50px -22px rgba(0,0,0,.85);display:none;overflow:hidden}
+#pcResults.open{display:block}
+.sres{display:flex;align-items:center;gap:8px;width:100%;background:none;border:0;border-bottom:1px solid var(--line);color:var(--text);font-size:14px;padding:11px 14px;cursor:pointer;text-align:left;font-family:inherit}
+.sres:last-child{border-bottom:0}
+.sres:hover{background:var(--card-2)}
+.sres b{font-weight:800;letter-spacing:-.02em}
+.sres .tick{font-size:11.5px;color:var(--muted);font-family:ui-monospace,monospace}
+.sres .sec{font-size:11.5px;color:var(--muted);margin-left:auto}
+.sres .pers{font-size:11.5px;color:var(--muted);min-width:74px;text-align:right}
+.sres.hint{justify-content:center;color:var(--muted);font-size:12.5px;cursor:default}
+.sres.hint:hover{background:none}
+.nores{padding:14px;font-size:13px;color:var(--muted)}
+.linkbtn{background:none;border:0;color:var(--accent);font:inherit;cursor:pointer;padding:0;text-decoration:underline}
+.mkt{font-size:10.5px;font-weight:900;padding:2px 6px;border-radius:6px;letter-spacing:-.01em}
+.mkt.kr{background:color-mix(in srgb,#3182f6 22%,transparent);color:#8ab4ff}
+.mkt.us{background:color-mix(in srgb,#22c55e 20%,transparent);color:#6ee7a8}
+.mkt.etc{background:color-mix(in srgb,#fbbf24 20%,transparent);color:#fbbf24}
+
+.holdings{margin-top:14px;border-top:1px solid var(--line)}
+.hrow{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+.hinfo{display:flex;align-items:center;gap:7px;flex:1;min-width:0;flex-wrap:wrap}
+.hinfo b{font-size:14.5px;letter-spacing:-.02em}
+.hinfo .tick{font-size:11px;color:var(--muted);font-family:ui-monospace,monospace}
+.hinfo .sec{font-size:11.5px;color:var(--muted);width:100%;margin-left:2px}
+.hinput{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+.hinput input{width:86px;background:var(--card-2);border:1px solid var(--line);border-radius:9px;color:var(--text);font-size:14px;font-weight:700;padding:8px 10px;text-align:right;font-family:inherit;outline:none}
+.hinput input:focus{border-color:var(--accent)}
+.hinput .unit{font-size:12.5px;color:var(--muted);font-weight:800}
+.hinput select{background:var(--card-2);border:1px solid var(--line);border-radius:9px;color:var(--text);font-size:12.5px;padding:8px 6px;font-family:inherit}
+.hinput .share{font-size:11.5px;color:var(--accent-2);font-weight:800;min-width:44px;text-align:right}
+.del{background:none;border:0;color:var(--muted);font-size:15px;cursor:pointer;padding:6px 4px;border-radius:8px}
+.del:hover{color:var(--down);background:var(--card-2)}
+.empty{padding:26px 6px;text-align:center;color:var(--muted);font-size:13.5px;line-height:1.7}
+.holdfoot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+#pcTotal{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-left:auto}
+#pcTotal b{color:var(--text);font-size:15px}
+.warn{color:var(--warn);font-size:12px}
+
+.custombox{margin-top:12px;padding:14px;border:1px dashed var(--line);border-radius:14px;background:var(--bg-soft)}
+.custombox h4{margin:0 0 2px;font-size:14px}
+.custombox p{margin:0 0 10px;font-size:12px;color:var(--muted)}
+.cgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.cgrid label{display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:var(--muted);font-weight:700}
+.cgrid input,.cgrid select{background:var(--card-2);border:1px solid var(--line);border-radius:9px;color:var(--text);font-size:13.5px;padding:9px 10px;font-family:inherit;width:100%}
+.cgrid .span2{grid-column:span 2}
+.btn{background:var(--card-2);border:1px solid var(--line);color:var(--text);font-weight:800;font-size:13.5px;padding:11px 16px;border-radius:12px;cursor:pointer;font-family:inherit}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#04101f}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:none}
+.btnbig{display:block;width:100%;margin-top:16px;font-size:15.5px;padding:16px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border:0;color:#04101f;font-weight:900;letter-spacing:-.02em;cursor:pointer}
+.btnbig:disabled{opacity:.45;cursor:not-allowed}
+
+#pcReport{margin-top:26px;scroll-margin-top:80px}
+.rep-card{margin-bottom:16px}
+.rep-card h3{font-size:16px;margin:0 0 12px;letter-spacing:-.025em}
+.rep-card h3 .h3sub{font-size:11.5px;font-weight:700;color:var(--muted);margin-left:6px}
+.scorecard{display:grid;grid-template-columns:150px 1fr;gap:20px;align-items:center;background:linear-gradient(150deg,color-mix(in srgb,var(--accent) 10%,var(--card)),var(--card) 55%)}
+.score-left{display:flex;flex-direction:column;align-items:center;gap:6px}
+.gauge{width:132px;height:132px}
+.gauge .gscore{fill:var(--text);font-size:30px;font-weight:900;letter-spacing:-.04em}
+.gauge .gcap{fill:var(--muted);font-size:10px;font-weight:700}
+.score-chip{font-size:11.5px;font-weight:900;padding:3px 10px;border-radius:999px;background:var(--card-2);color:var(--muted)}
+.kicker{font-size:11px;font-weight:900;color:var(--accent);letter-spacing:.08em;margin-bottom:4px}
+.pname{font-size:21px;margin:0 0 6px;letter-spacing:-.035em}
+.pdesc{font-size:13.5px;color:var(--muted);margin:0 0 12px}
+.c3{list-style:none;padding:0;margin:0 0 12px;display:flex;flex-direction:column;gap:7px}
+.c3 li{position:relative;padding-left:20px;font-size:13.5px;line-height:1.6}
+.c3 li:before{content:'✓';position:absolute;left:0;top:0;color:var(--accent-2);font-weight:900}
+.score-parts{display:flex;gap:8px;flex-wrap:wrap}
+.score-parts span{font-size:11.5px;color:var(--muted);background:var(--card-2);border:1px solid var(--line);border-radius:9px;padding:5px 10px}
+.score-parts b{color:var(--text);font-size:13px}
+
+.rep-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.rep-grid .wide{grid-column:1/-1}
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:14px}
+.statgrid.four{grid-template-columns:repeat(4,1fr)}
+.statgrid div{background:var(--card-2);border-radius:11px;padding:10px 12px}
+.statgrid span{display:block;font-size:11px;color:var(--muted);margin-bottom:2px}
+.statgrid b{font-size:16px;letter-spacing:-.03em}
+.statgrid b.good{color:var(--up)}.statgrid b.mid{color:var(--warn)}.statgrid b.bad{color:var(--down)}
+.minihead{font-size:11px;font-weight:900;color:var(--muted);letter-spacing:.03em;margin:12px 0 5px}
+.miniline{font-size:12.5px;line-height:1.65;margin:0 0 4px}
+.miniline.muted{color:var(--muted)}
+.regionbar{display:flex;height:11px;border-radius:6px;overflow:hidden;background:var(--card-2)}
+.regionbar i.kr{background:#3182f6}.regionbar i.us{background:#22c55e}
+.regionlegend{display:flex;gap:14px;font-size:11.5px;color:var(--muted);margin-top:5px}
+.regionlegend i{display:inline-block;width:8px;height:8px;border-radius:3px;margin-right:4px}
+.regionlegend i.kr{background:#3182f6}.regionlegend i.us{background:#22c55e}
+.tchips{display:flex;gap:6px;flex-wrap:wrap}
+.tchip{font-size:11.5px;background:var(--card-2);border:1px solid var(--line);border-radius:8px;padding:3px 8px;color:var(--muted)}
+.tchip b{color:var(--text)}
+
+.valgrade{display:flex;align-items:baseline;gap:8px;font-size:20px;font-weight:900;letter-spacing:-.03em;margin-bottom:14px}
+.valgrade span{font-size:12px;font-weight:700;color:var(--muted)}
+.valgrade.low{color:var(--up)}.valgrade.fair{color:var(--accent)}.valgrade.high{color:var(--warn)}.valgrade.hot{color:var(--down)}.valgrade.na{color:var(--muted)}
+.vrow{margin-bottom:14px}
+.vhead{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-size:12.5px}
+.vlab{font-weight:900;color:var(--muted);min-width:34px}
+.vhead b{font-size:15px;letter-spacing:-.02em}
+.vs{font-size:11.5px;color:var(--muted)}
+.chip{font-size:10.5px;font-weight:900;padding:2px 8px;border-radius:999px;margin-left:auto}
+.chip.low{background:color-mix(in srgb,var(--up) 18%,transparent);color:var(--up)}
+.chip.fair{background:color-mix(in srgb,var(--accent) 20%,transparent);color:var(--accent)}
+.chip.high{background:color-mix(in srgb,var(--warn) 20%,transparent);color:var(--warn)}
+.chip.hot{background:color-mix(in srgb,var(--down) 20%,transparent);color:var(--down)}
+.chip.na{background:var(--card-2);color:var(--muted)}
+.vbar{position:relative;height:12px;border-radius:7px;margin-top:7px;background:var(--card-2);overflow:visible}
+.vbar .ztrack{position:absolute;inset:0;display:flex;border-radius:7px;overflow:hidden;opacity:.55}
+.vbar .z{display:block;height:100%}
+.vbar .z.low{background:var(--up)}.vbar .z.fair{background:var(--accent)}.vbar .z.high{background:var(--warn)}.vbar .z.hot{background:var(--down)}
+.vbar .bmk{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--text);opacity:.75;transform:translateX(-1px);border-radius:2px}
+.vbar .mark{position:absolute;top:-5px;width:14px;height:22px;border-radius:5px;background:var(--text);border:2px solid var(--bg);transform:translateX(-7px);box-shadow:0 2px 8px rgba(0,0,0,.5)}
+.vbar.empty{display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted)}
+.vscale{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:5px}
+.vnote{font-size:10.5px;color:var(--muted);margin-top:4px}
+.secwrap{display:grid;grid-template-columns:190px 1fr;gap:18px;align-items:center}
+.donutwrap{position:relative;display:grid;place-items:center}
+.donut{width:170px;height:170px}
+.donutc{position:absolute;text-align:center;line-height:1.2}
+.donutc b{display:block;font-size:19px;letter-spacing:-.03em}
+.donutc span{font-size:10.5px;color:var(--muted)}
+.seclist{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+.seclist li{display:flex;align-items:center;gap:8px;font-size:12.5px}
+.seclist i{width:9px;height:9px;border-radius:3px;flex:0 0 auto}
+.seclist .nm{min-width:76px;color:var(--muted)}
+.seclist .bw{flex:1;height:8px;background:var(--card-2);border-radius:5px;overflow:hidden}
+.seclist .bw b{display:block;height:100%;border-radius:5px}
+.seclist .pctv{min-width:46px;text-align:right;font-weight:800;font-size:12px}
+.warnbox{margin-top:14px;background:color-mix(in srgb,var(--warn) 8%,transparent);border:1px solid color-mix(in srgb,var(--warn) 28%,transparent);border-radius:12px;padding:12px 14px}
+.warnbox .minihead{margin-top:0;color:var(--warn)}
+.warnbox ul{margin:0;padding-left:16px;display:flex;flex-direction:column;gap:5px}
+.warnbox li{font-size:12.5px;line-height:1.6}
+.warnbox li b{display:inline-block;margin-right:3px}
+.warnbox li.ok{color:var(--muted);list-style:none;margin-left:-16px}
+.suggest{margin-top:12px;font-size:12.5px;line-height:1.65;background:var(--card-2);border-radius:12px;padding:11px 13px}
+.suggest b{color:var(--accent-2)}
+.suggest.ok b{color:var(--up)}
+.sharecard{margin-top:4px}
+.sharebtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.toast{font-size:12.5px;color:var(--up);font-weight:800;min-height:18px;margin-top:8px;opacity:0;transition:.2s}
+.toast.show{opacity:1}
+.ctagrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.cta{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;text-decoration:none;color:var(--text)}
+.cta:hover{border-color:var(--accent);text-decoration:none}
+.cta .ic{font-size:24px}
+.cta b{display:block;font-size:14px;letter-spacing:-.02em}
+.cta p{margin:2px 0 0;font-size:12px;color:var(--muted);line-height:1.5}
+.cta .go{margin-left:auto;font-size:12.5px;font-weight:900;color:var(--accent);white-space:nowrap}
+
+.guide{margin:30px 0 10px}
+.guide h2{font-size:19px;margin:0 0 10px;letter-spacing:-.03em}
+.guide h3{font-size:15.5px;margin:20px 0 8px}
+.guide p,.guide li{font-size:14px;line-height:1.75;color:color-mix(in srgb,var(--text) 88%,var(--muted))}
+.guide ul{padding-left:18px}
+.guide .tblwrap{overflow-x:auto;margin:10px 0}
+.guide table{width:100%;border-collapse:collapse;font-size:13px}
+.guide th,.guide td{border-bottom:1px solid var(--line);padding:9px 10px;text-align:left}
+.guide th{color:var(--muted);font-size:12px;font-weight:800;background:var(--card-2)}
+.formula{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--card-2);border-radius:9px;padding:10px 12px;font-size:12.5px;overflow-x:auto;margin:8px 0}
+details.faq{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:12px 16px;margin-bottom:8px}
+details.faq summary{cursor:pointer;font-weight:800;font-size:14px;letter-spacing:-.02em}
+details.faq p{margin:8px 0 0;font-size:13.5px;color:var(--muted);line-height:1.7}
+.disclaimer{font-size:12px;color:var(--muted);line-height:1.7;margin:22px 0 40px;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:14px 16px}
+
+@media (max-width:860px){
+  .presets{grid-template-columns:1fr}
+  .scorecard{grid-template-columns:1fr}
+  .score-left{flex-direction:row;justify-content:center;gap:14px}
+  .rep-grid{grid-template-columns:1fr}
+  .statgrid.four{grid-template-columns:1fr 1fr}
+  .secwrap{grid-template-columns:1fr}
+  .donutwrap{justify-self:center}
+  .ctagrid{grid-template-columns:1fr}
+  .cgrid{grid-template-columns:1fr 1fr}
+}
+@media (max-width:520px){
+  .statgrid{grid-template-columns:1fr 1fr}
+  .hrow{flex-wrap:wrap}
+  .hinput{margin-left:auto}
+  .hinfo .sec{width:auto}
+  .sres .pers{display:none}
+  .card{padding:17px}
+  .cgrid{grid-template-columns:1fr}
+}
+</style>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "WebApplication",
+   "name": "AI 포트폴리오 진단기",
+   "url": "https://ant-econ.github.io/portfolio-check.html",
+   "applicationCategory": "FinanceApplication",
+   "operatingSystem": "Web",
+   "inLanguage": "ko-KR",
+   "isAccessibleForFree": true,
+   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "KRW" },
+   "description": "종목과 비중을 넣으면 분산효과(HHI)·가중 PER/PBR/PSR·섹터 치중도·배당과 변동성을 분석해 0~100점 리포트를 만드는 무료 포트폴리오 진단 도구. 모든 계산은 브라우저 안에서만 이루어집니다.",
+   "publisher": { "@type": "Organization", "name": "개미일지 계산기", "url": "https://ant-econ.github.io/" }
+  },
+  {
+   "@type": "BreadcrumbList",
+   "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "계산기 홈", "item": "https://ant-econ.github.io/" },
+    { "@type": "ListItem", "position": 2, "name": "AI 포트폴리오 진단기", "item": "https://ant-econ.github.io/portfolio-check.html" }
+   ]
+  },
+  {
+   "@type": "FAQPage",
+   "mainEntity": [
+    {
+     "@type": "Question",
+     "name": "포트폴리오 진단은 무엇을 보나요?",
+     "acceptedAnswer": { "@type": "Answer", "text": "크게 네 가지를 봅니다. 첫째 분산효과(종목 수, 상위 1·3종목 집중도, 허핀달 지수), 둘째 밸류에이션(가중 PER·PBR·PSR을 코스피·S&P500 시장 평균과 비교), 셋째 섹터 치중도(어느 업종에 얼마나 몰렸는지), 넷째 배당수익률과 변동성(가중 베타)입니다. 이 네 가지를 합쳐 0~100점과 포트폴리오 성격을 제시합니다." }
+    },
+    {
+     "@type": "Question",
+     "name": "허핀달 지수(HHI)는 어떻게 읽나요?",
+     "acceptedAnswer": { "@type": "Answer", "text": "각 종목 비중을 제곱해 모두 더한 값입니다. 한 종목 100%면 10,000, 10종목을 10%씩 담으면 1,000입니다. 즉 숫자가 작을수록 분산이 잘 된 것입니다. 이 진단기는 1,500 미만을 '매우 분산', 1,500~2,500을 '양호', 2,500~4,000을 '보통', 4,000 이상을 '집중'으로 표시합니다. HHI의 역수(1÷HHI)는 '실질 분산 종목 수'로, 20종목을 담아도 한 종목이 60%면 실질적으로는 2~3종목과 다를 바 없다는 것을 보여줍니다." }
+    },
+    {
+     "@type": "Question",
+     "name": "시장 평균 PER·PBR은 어떤 기준인가요?",
+     "acceptedAnswer": { "@type": "Answer", "text": "코스피는 한국거래소가 발표하는 지수 후행 PER·PBR(2026년 11월 25일 종가 기준 PER 7.76배, PBR 1.24배)을, 미국은 S&P500 구성 종목 합산 기준 후행 PER 22.8배·PBR 5.0배·PSR 3.4배(2026년 11월 25일 종가)를 씁니다. 포트폴리오의 국내·미국 비중으로 두 기준을 섞어 비교합니다. 시장 배수는 매일 바뀌므로 절대적 기준이 아니라 참고선으로 보세요." }
+    },
+    {
+     "@type": "Question",
+     "name": "종목 데이터는 언제 기준이고 어떻게 계산했나요?",
+     "acceptedAnswer": { "@type": "Answer", "text": "2026년 11월 26일 기준 시세와 최근 공시 재무제표로 계산했습니다. PER은 시가총액을 최근 4개 분기 순이익으로, PBR은 최근 분기 말 자기자본으로, PSR은 최근 4개 분기 매출로 나눈 값입니다. 적자 기업은 PER이 표시되지 않고, 자본잠식 기업은 PBR에서 제외됩니다. 개별 종목 수치는 증권사 앱과 소수점 단위에서 다를 수 있습니다." }
+    },
+    {
+     "@type": "Question",
+     "name": "내 종목이 목록에 없으면 어떻게 하나요?",
+     "acceptedAnswer": { "@type": "Answer", "text": "검색창에 이름을 입력했을 때 결과가 없으면 '직접 입력'으로 종목명·시장·섹터·PER·PBR·PSR을 넣어 진단에 포함할 수 있습니다. 배당수익률과 베타는 비워도 되고, 비우면 해당 지표 계산에서만 빠집니다." }
+    },
+    {
+     "@type": "Question",
+     "name": "내 포트폴리오 정보가 서버로 전송되나요?",
+     "acceptedAnswer": { "@type": "Answer", "text": "아니요. 입력한 종목과 비중은 브라우저 안에서만 계산되며 서버로 보내지 않습니다. 로그인도, 계좌 연동도 없습니다. 다만 '링크 복사'로 만든 주소에는 종목과 비중이 담기므로, 공유하고 싶지 않다면 링크를 남기지 마세요. 브라우저를 닫아도 최근 구성은 이 기기에만 저장됩니다." }
+    },
+    {
+     "@type": "Question",
+     "name": "진단 점수가 높으면 무조건 좋은 포트폴리오인가요?",
+     "acceptedAnswer": { "@type": "Answer", "text": "아닙니다. 점수는 분산·밸류에이션·섹터 균형을 기계적으로 채점한 값입니다. 투자 목표(은퇴 준비, 단기 수익, 배당 생활비)에 따라 좋은 구성은 완전히 달라집니다. 예를 들어 장기 성장을 노린다면 점수가 낮게 나오는 기술주 집중 구성이 오히려 맞을 수 있습니다. 점수보다 '왜 그런 점수가 나왔는지' 설명을 읽고 판단하세요." }
+    }
+   ]
+  }
+ ]
+}
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5969786760477948" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="aura" aria-hidden="true"></div>
+<header class="site">
+  <div class="wrap bar">
+    <a class="brand" href="index.html"><span class="dot">🐜</span> 개미일지 계산기</a>
+    <nav class="top">
+      <a href="index.html">계산기 홈</a>
+      <a href="market-replay.html">🎮 트레이딩 게임</a>
+      <a href="portfolio-check.html" class="on">📊 포트폴리오 진단</a>
+      <a href="us-stock-tax-guide.html">미국주식 세금</a>
+      <a href="dividend-health-insurance.html">배당·건보</a>
+      <a href="isa-pension-tax.html">ISA·연금</a>
+      <a href="about.html">소개</a>
+    </nav>
+    <button class="themebtn" id="themebtn" aria-label="화면 테마 바꾸기" title="다크/라이트 전환">☾</button>
+  </div>
+</header>
+
+<main class="wrap">
+<nav class="breadcrumb" aria-label="현재 위치"><a href="index.html">계산기 홈</a><span>›</span>포트폴리오 진단</nav>
+
+<section class="pc-hero">
+  <div class="crumbtab">📊 진단 · 포트폴리오</div>
+  <h1>내 포트폴리오,<br><em>얼마나 위험한지</em> 숫자로 확인하세요</h1>
+  <p class="lede">종목과 비중만 넣으면 분산효과(HHI), 시장 평균과 비교한 밸류에이션(PER·PBR·PSR), 섹터 쏠림, 배당과 변동성까지 한 번에 진단합니다. 회원가입도 계좌 연동도 없고, 입력한 내용은 브라우저 밖으로 나가지 않습니다.</p>
+  <div class="hero-stats">
+    <div class="chipstat"><b id="pcCount">149</b>수록 종목·ETF</div>
+    <div class="chipstat"><b>0~100점</b>종합 진단 점수</div>
+    <div class="chipstat"><b>3가지</b>프리셋으로 3초 체험</div>
+    <div class="chipstat"><b id="pcDataNote">기준일 2026-11-26</b></div>
+  </div>
+</section>
+
+<!-- ===== 1. 입력 ===== -->
+<section class="card pc-step" aria-labelledby="step1">
+  <h2 id="step1"><span class="stepno">1</span>빠른 체험 — 프리셋으로 3초 만에</h2>
+  <p class="sub">자주 나오는 세 가지 구성을 그대로 불러옵니다. 누른 뒤 비중만 고치면 됩니다.</p>
+  <div class="presets" id="pcPresets"></div>
+</section>
+
+<section class="card pc-step" aria-labelledby="step2">
+  <h2 id="step2"><span class="stepno">2</span>내 종목 담기</h2>
+  <p class="sub">종목명 또는 티커를 검색해 추가하고, 비중(%)이나 투자금액(만원·달러)을 넣으세요. 금액을 넣으면 비중으로 자동 환산됩니다.</p>
+
+  <div class="modebar">
+    <span class="lbl">입력 방식</span>
+    <div class="modetog" role="group" aria-label="입력 방식 선택">
+      <button type="button" data-mode="pct" class="on" aria-pressed="true">비중 %</button>
+      <button type="button" data-mode="money" aria-pressed="false">금액 (만원·$)</button>
+    </div>
+    <span class="modehint" id="pcTotalRow">지금은 비중(%) 입력 모드입니다.</span>
+  </div>
+
+  <div class="searchwrap">
+    <input id="pcSearch" type="search" autocomplete="off" placeholder="종목명·티커 검색 (예: 삼성전자, NVDA, 배당)" aria-label="종목 검색" aria-controls="pcResults" aria-expanded="false">
+    <div id="pcResults" role="listbox" aria-label="검색 결과"></div>
+  </div>
+
+  <div class="holdings" id="pcHoldings"></div>
+
+  <div class="holdfoot">
+    <button type="button" class="btn" id="pcAddCustom">＋ 직접 입력으로 종목 추가</button>
+    <div id="pcTotal"></div>
+  </div>
+
+  <div class="custombox" id="pcCustom" hidden>
+    <h4>목록에 없는 종목 직접 입력</h4>
+    <p>증권사 앱에서 확인한 값을 그대로 넣으면 됩니다. 모르는 항목은 비워 두세요.</p>
+    <div class="cgrid">
+      <label class="span2">종목명<input id="pcCustomName" type="text" placeholder="예: 로켓랩" autocomplete="off"></label>
+      <label>시장<select id="pcCustomMarket"><option value="KR">국내</option><option value="US" selected>미국</option><option value="ETC">기타</option></select></label>
+      <label>섹터<select id="pcCustomSector">
+        <option value="IT">정보기술</option><option value="COMM">커뮤니케이션</option><option value="CYC">경기소비재</option>
+        <option value="CYD">필수소비재</option><option value="HLTH">헬스케어</option><option value="FIN">금융</option>
+        <option value="IND">산업재</option><option value="MAT">소재</option><option value="ENR">에너지</option>
+        <option value="UTIL">유틸리티</option><option value="RE">부동산</option><option value="ETF">ETF·지수</option>
+        <option value="BOND">채권</option><option value="ETC">기타</option>
+      </select></label>
+      <label>PER<input id="pcCustomPer" type="text" inputmode="decimal" placeholder="예: 18.4"></label>
+      <label>PBR<input id="pcCustomPbr" type="text" inputmode="decimal" placeholder="예: 2.1"></label>
+      <label>PSR<input id="pcCustomPsr" type="text" inputmode="decimal" placeholder="예: 3.5"></label>
+      <label>배당수익률 %<input id="pcCustomDiv" type="text" inputmode="decimal" placeholder="예: 1.8"></label>
+    </div>
+    <div class="sharebtns">
+      <button type="button" class="btn primary" id="pcCustomSave">추가하기</button>
+      <button type="button" class="btn ghost" id="pcCustomCancel">취소</button>
+    </div>
+  </div>
+
+  <button type="button" class="btnbig" id="pcRun" disabled>내 포트폴리오 진단하기 →</button>
+</section>
+
+<!-- ===== 2. 리포트 ===== -->
+<section id="pcReport" hidden aria-live="polite"></section>
+
+<!-- ===== 가이드 ===== -->
+<section class="guide">
+  <h2>진단은 이렇게 계산합니다</h2>
+  <p>이 도구는 계좌를 읽지 않습니다. 직접 넣은 종목과 비중, 그리고 공개된 시세·재무 지표만 가지고 계산합니다. 계산식과 기준을 모두 공개하니, 결과가 이상하다 싶으면 어느 단계에서 그렇게 나왔는지 확인해 보세요.</p>
+
+  <h3>1. 가중평균 밸류에이션</h3>
+  <p>포트폴리오 전체의 PER은 종목별 PER을 <strong>비중으로 가중해 더한 값</strong>입니다. 단순 평균이 아닙니다.</p>
+  <div class="formula">가중 PER = Σ(종목 비중 × 종목 PER) ÷ Σ(지표가 있는 종목의 비중)</div>
+  <p>예를 들어 A종목(PER 10배) 60%, B종목(PER 40배) 40%라면 가중 PER은 0.6×10 + 0.4×40 = <strong>22배</strong>입니다. 같은 두 종목을 단순 평균하면 25배가 되지만, 실제 돈이 더 많이 들어간 종목의 영향이 커야 하므로 가중평균을 씁니다. 적자라서 PER이 없는 종목은 분모에서도 빼고, 화면에 반영 비중을 따로 표시합니다.</p>
+
+  <h3>2. 시장 평균 비교</h3>
+  <p>비교 기준은 국내·미국 비중으로 섞은 시장 평균입니다. 국내 주식만 있으면 코스피와, 미국 주식만 있으면 S&amp;P500과 비교합니다.</p>
+  <div class="tblwrap">
+    <table>
+      <caption class="minihead" style="text-align:left">시장 평균 기준 (2026-11-26 조회)</caption>
+      <thead><tr><th>지표</th><th>코스피</th><th>S&amp;P 500</th><th>출처</th></tr></thead>
+      <tbody>
+        <tr><td>후행 PER</td><td>7.76배</td><td>22.8배</td><td>한국거래소(11-25 종가) / S&amp;P500 구성 종목 합산</td></tr>
+        <tr><td>PBR</td><td>1.24배</td><td>5.0배</td><td>한국거래소(11-25 종가) / 동일 집계</td></tr>
+        <tr><td>PSR</td><td>1.07배</td><td>3.4배</td><td>코스피 수록 종목 합산(자체 산출) / 동일 집계</td></tr>
+        <tr><td>배당수익률</td><td>1.43%</td><td>1.1%</td><td>DART·KRX 집계 / 동일 집계</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>시장 배수는 매일 바뀝니다. 특히 국내 증시는 2026년 상반기 급등 뒤 조정을 거치며 PER이 역사적 저점 부근까지 내려온 상태라, '시장 평균보다 비싸다'는 판정이 곧 '위험하다'는 뜻은 아닙니다.</p>
+
+  <h3>3. 분산효과와 허핀달 지수(HHI)</h3>
+  <div class="formula">HHI = Σ(종목 비중)² × 10,000 · 실질 분산 종목 수 = 1 ÷ Σ(종목 비중)²</div>
+  <div class="tblwrap">
+    <table>
+      <thead><tr><th>HHI</th><th>등급</th><th>해석</th></tr></thead>
+      <tbody>
+        <tr><td>~1,000</td><td>매우 분산</td><td>10종목 이상 고르게 담은 수준</td></tr>
+        <tr><td>1,000~1,500</td><td>양호</td><td>상위 종목이 있어도 전체가 무너지진 않는 구조</td></tr>
+        <tr><td>1,500~2,500</td><td>보통</td><td>5~7종목에 고르게 담은 정도</td></tr>
+        <tr><td>2,500~4,000</td><td>집중</td><td>3~4종목에 몰린 수준, 개별 악재에 취약</td></tr>
+        <tr><td>4,000 이상</td><td>매우 집중</td><td>사실상 한두 종목에 거는 구조</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>종목 수가 많다고 분산이 되는 것은 아닙니다. 20종목을 담아도 삼성전자 50%, 나머지 19종목이 2~3%씩이면 실질 분산 종목 수는 3개 남짓입니다. 또 같은 업종(예: 반도체) 종목을 여러 개 담으면 종목 수는 늘지만 실제로는 한 테마에 걸린 것과 같습니다. 그래서 이 진단기는 종목 수와 함께 <strong>테마 노출</strong>을 따로 보여 줍니다.</p>
+
+  <h3>4. 섹터 치중도와 점수</h3>
+  <p>섹터는 정보기술·커뮤니케이션·경기소비재·필수소비재·헬스케어·금융·산업재·소재·에너지·유틸리티·부동산·ETF·채권으로 나눕니다. 종합 점수는 세 항목을 다음 비중으로 합산합니다.</p>
+  <ul>
+    <li><strong>분산 점수 40%</strong> — 실질 분산 종목 수가 많을수록, 상위 1종목 비중이 낮을수록 높습니다.</li>
+    <li><strong>밸류에이션 점수 35%</strong> — 시장 평균과 같으면 50점, 시장보다 싸면 올라가고 비싸면 내려갑니다.</li>
+    <li><strong>섹터 균형 점수 25%</strong> — 최대 섹터 비중이 25%를 넘으면 감점, 방어 섹터(필수소비재·헬스케어·유틸리티·채권)를 15% 이상 갖추면 가점입니다.</li>
+  </ul>
+  <p>점수는 좋고 나쁨의 절대 기준이 아닙니다. 배당으로 생활비를 만드는 사람과 20년 성장을 노리는 사람은 좋은 구성이 다릅니다. 점수와 함께 나오는 <strong>성격 규정</strong>과 <strong>경고</strong>를 먼저 읽고, 점수는 같은 포트폴리오를 조금 바꿨을 때 어떻게 달라지는지 비교하는 용도로 쓰세요.</p>
+
+  <h3>데이터 한계</h3>
+  <ul>
+    <li>수록 종목은 국내·미국 주요 149종목(ETF 포함)입니다. 시가총액 상위 종목 위주라 소형주는 직접 입력해야 합니다.</li>
+    <li>PER·PBR은 후행(최근 4개 분기) 기준입니다. 성장 기대가 큰 기업은 후행 지표가 비싸게 보이고, 업황 정점 기업은 싸게 보입니다.</li>
+    <li>지주회사·금융업은 PBR·PSR 해석이 일반 제조업과 다릅니다. 업종 평균과 함께 보세요.</li>
+    <li>ETF는 지수 배수(코스피·S&amp;P500 등)를 대신 넣었고, PBR·PSR이 없는 상품은 해당 지표 평균에서 제외됩니다.</li>
+    <li>상관관계는 개별 종목 간 실제 상관계수를 계산하지 않고, 섹터·테마 중복으로 추정합니다.</li>
+  </ul>
+
+  <h2 style="margin-top:28px">자주 묻는 질문</h2>
+  <details class="faq"><summary>포트폴리오 진단은 무엇을 보나요?</summary><p>크게 네 가지를 봅니다. 첫째 분산효과(종목 수, 상위 1·3종목 집중도, 허핀달 지수), 둘째 밸류에이션(가중 PER·PBR·PSR을 코스피·S&amp;P500 시장 평균과 비교), 셋째 섹터 치중도(어느 업종에 얼마나 몰렸는지), 넷째 배당수익률과 변동성(가중 베타)입니다. 이 네 가지를 합쳐 0~100점과 포트폴리오 성격을 제시합니다.</p></details>
+  <details class="faq"><summary>허핀달 지수(HHI)는 어떻게 읽나요?</summary><p>각 종목 비중을 제곱해 모두 더한 값입니다. 한 종목 100%면 10,000, 10종목을 10%씩 담으면 1,000입니다. 즉 숫자가 작을수록 분산이 잘 된 것입니다. HHI의 역수(1÷HHI)는 '실질 분산 종목 수'로, 20종목을 담아도 한 종목이 60%면 실질적으로는 2~3종목과 다를 바 없다는 것을 보여줍니다.</p></details>
+  <details class="faq"><summary>시장 평균 PER·PBR은 어떤 기준인가요?</summary><p>코스피는 한국거래소가 발표하는 지수 후행 PER·PBR(2026년 11월 25일 종가 기준 PER 7.76배, PBR 1.24배)을, 미국은 S&amp;P500 구성 종목 합산 기준 후행 PER 22.8배·PBR 5.0배·PSR 3.4배(2026년 11월 25일 종가)를 씁니다. 포트폴리오의 국내·미국 비중으로 두 기준을 섞어 비교합니다. 시장 배수는 매일 바뀌므로 절대적 기준이 아니라 참고선으로 보세요.</p></details>
+  <details class="faq"><summary>종목 데이터는 언제 기준이고 어떻게 계산했나요?</summary><p>2026년 11월 26일 기준 시세와 최근 공시 재무제표로 계산했습니다. PER은 시가총액을 최근 4개 분기 순이익으로, PBR은 최근 분기 말 자기자본으로, PSR은 최근 4개 분기 매출로 나눈 값입니다. 적자 기업은 PER이 표시되지 않고, 자본잠식 기업은 PBR에서 제외됩니다. 개별 종목 수치는 증권사 앱과 소수점 단위에서 다를 수 있습니다.</p></details>
+  <details class="faq"><summary>내 종목이 목록에 없으면 어떻게 하나요?</summary><p>검색창에 이름을 입력했을 때 결과가 없으면 '직접 입력'으로 종목명·시장·섹터·PER·PBR·PSR을 넣어 진단에 포함할 수 있습니다. 배당수익률과 베타는 비워도 되고, 비우면 해당 지표 계산에서만 빠집니다.</p></details>
+  <details class="faq"><summary>내 포트폴리오 정보가 서버로 전송되나요?</summary><p>아니요. 입력한 종목과 비중은 브라우저 안에서만 계산되며 서버로 보내지 않습니다. 로그인도, 계좌 연동도 없습니다. 다만 '링크 복사'로 만든 주소에는 종목과 비중이 담기므로, 공유하고 싶지 않다면 링크를 남기지 마세요. 브라우저를 닫아도 최근 구성은 이 기기에만 저장됩니다.</p></details>
+  <details class="faq"><summary>진단 점수가 높으면 무조건 좋은 포트폴리오인가요?</summary><p>아닙니다. 점수는 분산·밸류에이션·섹터 균형을 기계적으로 채점한 값입니다. 투자 목표에 따라 좋은 구성은 완전히 달라집니다. 장기 성장을 노린다면 점수가 낮게 나오는 기술주 집중 구성이 오히려 맞을 수 있습니다. 점수보다 '왜 그런 점수가 나왔는지' 설명을 읽고 판단하세요.</p></details>
+
+  <div class="disclaimer">
+    <strong>투자 유의사항</strong><br>
+    이 페이지는 공개된 시세·재무 데이터를 정리해 보여 주는 참고용 도구이며, 특정 종목의 매수·매도를 권유하거나 투자 자문을 제공하지 않습니다. 진단 결과는 입력한 비중과 기준일 데이터에 따라 달라지고, 미래 수익률을 예측하지 않습니다. 표시된 PER·PBR·PSR·배당수익률은 증권사·데이터 제공사에 따라 소수점 단위로 다를 수 있고, 시장 평균 배수는 매일 변합니다. 투자 판단과 그 결과에 대한 책임은 투자자 본인에게 있습니다. © 2026 개미일지 계산기.
+  </div>
+</section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="fnav">
+      <a href="market-replay.html">🎮 어제 장 트레이딩 게임</a>
+      <a href="portfolio-check.html">📊 AI 포트폴리오 진단</a>
+      <a href="us-stock-tax-guide.html">미국주식 양도세</a>
+      <a href="dividend-health-insurance.html">배당소득세·건보료</a>
+      <a href="sp500-vs-nasdaq100.html">S&amp;P500 vs 나스닥100</a>
+      <a href="isa-pension-tax.html">ISA·연금저축</a>
+    </div>
+    <div class="fnav">
+      <a href="fx-breakeven.html">환율·손익분기</a>
+      <a href="avg-price-water.html">물타기·평단가</a>
+      <a href="etf-fee-drag.html">국내 vs 미국 ETF</a>
+      <a href="about.html">사이트 소개</a>
+      <a href="privacy.html">개인정보처리방침</a>
+      <a href="terms.html">이용약관·면책</a>
+    </div>
+    <p class="fine">개미일지 계산기는 2026년 기준 세법·시장 데이터를 바탕으로 한 참고용 계산 도구입니다. 실제 세액·수익률은 개인별 조건과 시장 상황에 따라 달라질 수 있으며, 투자 판단의 최종 책임은 이용자에게 있습니다. © 2026 개미일지 계산기.</p>
+  </div>
+</footer>
+<script src="assets/kit.js"></script>
+<script src="assets/portfolio-check.js"></script>
+</body>
+</html>

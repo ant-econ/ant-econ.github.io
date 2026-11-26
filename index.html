@@ -97,6 +97,20 @@
    ]
   },
   {
+   "@type": "WebApplication",
+   "name": "AI 포트폴리오 진단기",
+   "url": "https://ant-econ.github.io/portfolio-check.html",
+   "applicationCategory": "FinanceApplication",
+   "operatingSystem": "Web",
+   "inLanguage": "ko-KR",
+   "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "KRW"
+   },
+   "description": "종목과 비중을 넣으면 분산효과(HHI)·가중 PER/PBR/PSR·섹터 치중도·배당과 변동성을 분석해 0~100점 리포트를 만드는 무료 포트폴리오 진단 도구."
+  },
+  {
    "@type": "FAQPage",
    "mainEntity": [
     {
@@ -220,6 +234,7 @@
       <a href="#compound" data-tab="compound">복리</a>
       <a href="#dividend" data-tab="dividend">배당</a>
       <a href="market-replay.html">🎮 트레이딩 게임</a>
+      <a href="portfolio-check.html">📊 포트폴리오 진단</a>
       <a href="#calculators">계산기 7종</a>
       <a href="about.html">소개</a>
     </nav>
@@ -252,6 +267,18 @@
       <div style="font-size:13px;color:#8B95A1;line-height:1.55">코스피·코스닥·나스닥·S&amp;P500·다우존스 146종목 중 하나를 골라, 직전 거래일 실제 시세를 시간순으로 다시 거래합니다. 첫 시드 1,000만 원을 한 번 받고, 그다음부터는 내 계좌 잔고 그대로 이어서 매매하세요.</div>
     </div>
     <div style="flex:0 0 auto;background:#3182F6;color:#fff;font-size:13.5px;font-weight:800;padding:12px 20px;border-radius:14px">내 계좌로 시작 →</div>
+  </a>
+</div>
+
+<div class="wrap">
+  <a href="portfolio-check.html" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;text-decoration:none;margin-top:12px;padding:20px 22px;border-radius:20px;border:1px solid #31313A;background:linear-gradient(135deg,#141B2C 0%,#1B2440 55%,#0F2A33 100%);box-shadow:0 20px 44px -30px rgba(0,0,0,.9)">
+    <div style="font-size:30px;line-height:1">📊</div>
+    <div style="flex:1 1 320px;min-width:0">
+      <div style="font-size:11.5px;font-weight:800;color:#22D3EE;letter-spacing:.02em">NEW · 무료 진단</div>
+      <div style="font-size:18px;font-weight:800;color:#F2F4F6;letter-spacing:-.03em;margin:3px 0 4px">내 포트폴리오 AI 진단기</div>
+      <div style="font-size:13px;color:#8B95A1;line-height:1.55">종목과 비중만 넣으면 분산효과(HHI)·시장 대비 PER·PBR·PSR·섹터 쏠림을 0~100점 리포트로. 국내·미국 149종목, 입력한 내용은 서버로 전송되지 않습니다.</div>
+    </div>
+    <div style="flex:0 0 auto;background:#0EA5B7;color:#04121A;font-size:13.5px;font-weight:800;padding:12px 20px;border-radius:14px">3초 만에 진단 →</div>
   </a>
 </div>
 
@@ -523,7 +550,7 @@
 
   <section class="card" style="margin-top:22px">
     <h2 style="font-size:19px;margin:0 0 8px">계산기를 함께 쓰는 법</h2>
-    <p style="color:var(--muted);font-size:15px;margin:0 0 10px">투자 계획은 보통 이렇게 이어집니다. <strong>복리 계산기</strong>로 목표 금액까지 필요한 월 적립액을 정하고, <strong>배당 계산기</strong>로 현금 흐름을 확인한 뒤, 매도할 때는 <strong>양도세 계산기</strong>로 세후 수익을 확인합니다. 세 계산기 모두 입력값이 즉시 반영되며, 입력한 금액은 서버로 전송되지 않고 브라우저 안에서만 계산됩니다.</p>
+    <p style="color:var(--muted);font-size:15px;margin:0 0 10px">투자 계획은 보통 이렇게 이어집니다. <a href="portfolio-check.html">포트폴리오 진단기</a>로 지금 구성의 분산·밸류에이션부터 점검하고, <strong>복리 계산기</strong>로 목표 금액까지 필요한 월 적립액을 정하고, <strong>배당 계산기</strong>로 현금 흐름을 확인한 뒤, 매도할 때는 <strong>양도세 계산기</strong>로 세후 수익을 확인합니다. 세 계산기 모두 입력값이 즉시 반영되며, 입력한 금액은 서버로 전송되지 않고 브라우저 안에서만 계산됩니다.</p>
     <p style="color:var(--muted);font-size:15px;margin:0">더 자세한 계산 원리와 세법 기준은 <a href="about.html">사이트 소개</a>와 각 도구 아래 가이드를 참고하세요. 본 계산기는 참고용이며 세무 신고를 대신하지 않습니다.</p>
   </section>
 </div>
@@ -534,6 +561,7 @@
     <div class="fnav">
       <a href="index.html">계산기</a>
       <a href="market-replay.html">🎮 어제 장 트레이딩 게임</a>
+      <a href="portfolio-check.html">📊 AI 포트폴리오 진단</a>
       <a href="us-stock-tax-guide.html">미국주식 양도세</a>
       <a href="dividend-health-insurance.html">배당·건보료</a>
       <a href="isa-pension-tax.html">ISA·연금</a>
