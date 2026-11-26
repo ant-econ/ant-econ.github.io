@@ -311,10 +311,11 @@
     var thList = Object.keys(thW).map(function (k) { return { key: k, w: thW[k] }; }).sort(function (a, b) { return b.w - a.w; });
 
     // valuation (weighted, renormalised by coverage)
+    // 조화평균(총 투자금 ÷ 총 이익) — 시장 지수 PER·PBR·PSR 집계와 같은 방식
     function wavg(key) {
-      var s = 0, c = 0;
-      H.forEach(function (x) { var v = x.h[key]; if (v != null && isFinite(v) && v > 0) { s += x.w * v; c += x.w; } });
-      return c > 0 ? { v: s / c, cov: c } : { v: null, cov: 0 };
+      var inv = 0, c = 0;
+      H.forEach(function (x) { var v = x.h[key]; if (v != null && isFinite(v) && v > 0) { inv += x.w / v; c += x.w; } });
+      return (c > 0 && inv > 0) ? { v: 1 / inv, cov: c } : { v: null, cov: 0 };
     }
     var mPer = wavg('per'), mPbr = wavg('pbr'), mPsr = wavg('psr');
     var regionSum = (krW + usW) || 1;
@@ -538,7 +539,7 @@
       '<h3>② 밸류에이션 <span class="h3sub">시장 평균 대비</span></h3>' +
       '<div class="valgrade ' + r.valGrade.cls + '">' + r.valGrade.label + '<span>시장 대비 ' + (r.avgPrem == null ? '—' : (r.avgPrem > 0 ? '+' : '') + pct(r.avgPrem)) + '</span></div>' +
       valRows +
-      '<p class="miniline muted">가중평균은 각 종목의 PER·PBR·PSR을 비중으로 가중해 더한 값입니다. 비교 기준은 국내·미국 비중으로 섞은 시장 평균(코스피 ' + num3(state.bm.KR.per, 2) + '배 · S&amp;P500 ' + num3(state.bm.US.per, 1) + '배)입니다.</p>' +
+      '<p class="miniline muted">가중평균은 각 종목의 PER·PBR·PSR을 조화평균(총 투자금 ÷ 총 이익·순자산·매출)으로 합친 값입니다. 비교 기준은 국내·미국 비중으로 섞은 시장 평균(코스피 ' + num3(state.bm.KR.per, 2) + '배 · S&amp;P500 ' + num3(state.bm.US.per, 1) + '배)입니다.</p>' +
       '</section>' +
 
       '<section class="card rep-card wide">' +
