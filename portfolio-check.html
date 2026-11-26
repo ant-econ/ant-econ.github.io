@@ -281,6 +281,74 @@ html[data-theme="light"] .warnbox{background:#fff9ef;border-color:#fbe3b8}
 html[data-theme="light"] .suggest{background:#f4f8ff;border-color:#e3ecfb}
 .suggest b{color:var(--accent-2)}
 .suggest.ok b{color:var(--up)}
+/* ===== ⑤ 맞춤 보완 제안 ===== */
+.suglist{display:flex;flex-direction:column;gap:12px}
+.sugcard{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:16px;padding:15px 17px 15px 20px;background:var(--card);transition:.16s}
+.sugcard:before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--line)}
+.sugcard.urgent:before{background:linear-gradient(180deg,#f43f5e,#be123c)}
+.sugcard.rec:before{background:linear-gradient(180deg,#2563eb,#0ea5e9)}
+.sugcard.ok:before{background:linear-gradient(180deg,#10b981,#047857)}
+.sugcard.on{border-color:#93c5fd;box-shadow:0 14px 34px -26px rgba(37,99,235,.9)}
+html[data-theme="light"] .sugcard.on{background:linear-gradient(180deg,#f5f9ff,#fff 70%);border-color:#93c5fd}
+.sugtop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:7px}
+.sugtop h4{margin:0;font-size:15px;font-weight:900;letter-spacing:-.025em;line-height:1.35}
+.pribadge{font-size:10.5px;font-weight:900;padding:4px 9px;border-radius:999px;white-space:nowrap;letter-spacing:-.01em}
+.pribadge.urgent{background:#fdecef;color:#be123c;border:1px solid #f8c8d3}
+.pribadge.rec{background:#e9f1ff;color:#1d4ed8;border:1px solid #c9dbff}
+.pribadge.ok{background:#e7f8ef;color:#047857;border:1px solid #b9ecd3}
+html[data-theme="dark"] .pribadge.urgent{background:color-mix(in srgb,var(--down) 16%,transparent);color:var(--down);border-color:color-mix(in srgb,var(--down) 34%,transparent)}
+html[data-theme="dark"] .pribadge.rec{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);border-color:color-mix(in srgb,var(--accent) 34%,transparent)}
+html[data-theme="dark"] .pribadge.ok{background:color-mix(in srgb,var(--up) 16%,transparent);color:var(--up);border-color:color-mix(in srgb,var(--up) 34%,transparent)}
+.sugwhy{margin:0 0 9px;font-size:13px;line-height:1.68;color:var(--muted)}
+.sugwhy b{color:var(--text)}
+.sugact{font-size:12.8px;line-height:1.72;border:1px solid var(--line);background:var(--card-2);border-radius:11px;padding:10px 12px;color:color-mix(in srgb,var(--text) 90%,var(--muted))}
+html[data-theme="light"] .sugact{background:#f4f8ff;border-color:#e3ecfb}
+.sugact b{display:block;font-size:10.5px;font-weight:900;letter-spacing:.06em;color:var(--accent-2);margin-bottom:3px}
+.sugex{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.tchip.ex{background:var(--card);border-color:color-mix(in srgb,var(--accent) 22%,var(--line));color:var(--muted)}
+html[data-theme="light"] .tchip.ex{background:#fff;border-color:#dce7fb}
+.tchip.ex b{color:var(--accent-2)}
+.sugfoot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+.sugprev{font-size:11.5px;font-weight:700;color:var(--muted)}
+.sugprev b{color:var(--text);font-size:12.5px}
+.sugprev em{font-style:normal;font-weight:900;padding:2px 7px;border-radius:999px;background:var(--card-2)}
+.sugprev em.up{background:#e7f8ef;color:#047857}
+.sugprev em.down{background:#fdecef;color:#be123c}
+.sugprev em.flat{background:var(--card-2);color:var(--muted)}
+.sugbtn{margin-left:auto;padding:9px 14px;font-size:12.5px;border-radius:11px}
+.sugkeep{font-size:11.5px;font-weight:900;color:#047857;margin-left:auto;background:#e7f8ef;border:1px solid #b9ecd3;border-radius:999px;padding:5px 11px}
+html[data-theme="dark"] .sugkeep{background:color-mix(in srgb,var(--up) 16%,transparent);color:var(--up);border-color:color-mix(in srgb,var(--up) 32%,transparent)}
+.simpanel{margin:0 0 15px;border:1.5px solid color-mix(in srgb,var(--accent) 28%,var(--line));border-radius:16px;padding:16px;background:var(--card-2);box-shadow:0 16px 38px -30px rgba(37,99,235,.9)}
+html[data-theme="light"] .simpanel{background:linear-gradient(160deg,#eff6ff 0%,#ffffff 62%);border-color:#bfdbfe;box-shadow:0 20px 44px -32px rgba(37,99,235,.85),0 2px 6px rgba(15,23,42,.03)}
+.simtop{display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.simkicker{font-size:10.5px;font-weight:900;letter-spacing:.09em;color:var(--accent)}
+.simtitle{font-size:14.5px;font-weight:900;letter-spacing:-.025em;margin-top:3px;line-height:1.35}
+.simtop .btn{margin-left:auto;padding:8px 12px;font-size:12px;border-radius:10px;white-space:nowrap}
+.simbig{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:11px 14px;margin-bottom:10px}
+html[data-theme="light"] .simbig{background:#fff;border-color:#dbeafe}
+.simbig>span{font-size:12px;font-weight:800;color:var(--muted);margin-right:auto}
+.simbig b{font-size:26px;font-weight:900;letter-spacing:-.045em;color:var(--muted)}
+.simbig b.after{color:var(--accent-2)}
+.simbig i{font-style:normal;color:color-mix(in srgb,var(--muted) 70%,transparent);font-weight:900;font-size:15px}
+.simbig em{font-style:normal;font-size:13px;font-weight:900;padding:4px 10px;border-radius:999px;background:var(--card-2);color:var(--muted)}
+.simbig em.up{background:#e7f8ef;color:#047857}
+.simbig em.down{background:#fdecef;color:#be123c}
+html[data-theme="dark"] .simbig em.up{background:color-mix(in srgb,var(--up) 18%,transparent);color:var(--up)}
+html[data-theme="dark"] .simbig em.down{background:color-mix(in srgb,var(--down) 18%,transparent);color:var(--down)}
+.simgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.simcell{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:9px 11px}
+html[data-theme="light"] .simcell{background:#fff;border-color:#e6edf9}
+.simcell span{display:block;font-size:10.5px;font-weight:700;color:var(--muted);margin-bottom:3px}
+.simcell b{font-size:13.5px;font-weight:800;letter-spacing:-.02em;color:var(--text);display:block;line-height:1.3}
+.simcell b i{font-style:normal;font-weight:700;font-size:11.5px;color:color-mix(in srgb,var(--muted) 65%,transparent);margin:0 3px}
+.simcell u{display:inline-block;text-decoration:none;font-size:10.5px;font-weight:900;margin-top:2px}
+.simcell u.up{color:#047857}.simcell u.down{color:#be123c}.simcell u.flat{color:var(--muted)}
+html[data-theme="dark"] .simcell u.up{color:var(--up)}
+html[data-theme="dark"] .simcell u.down{color:var(--down)}
+.simnote{margin:10px 0 0;font-size:11.5px;line-height:1.62;color:var(--muted)}
+.simdisclaimer{margin:14px 0 0;padding-top:11px;border-top:1px dashed var(--line);font-size:11.5px;line-height:1.68;color:var(--muted)}
+.simdisclaimer b{color:var(--text)}
+
 .sharecard{margin-top:4px}
 .sharebtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .toast{font-size:12.5px;color:var(--up);font-weight:800;min-height:18px;margin-top:8px;opacity:0;transition:.2s}
@@ -321,6 +389,7 @@ details.faq p{margin:8px 0 0;font-size:13.5px;color:var(--muted);line-height:1.7
   .donutwrap{justify-self:center}
   .ctagrid{grid-template-columns:1fr}
   .cgrid{grid-template-columns:1fr 1fr}
+  .simgrid{grid-template-columns:1fr 1fr}
 }
 @media (max-width:640px){
   header.site .bar{padding:9px 20px;column-gap:10px}
@@ -411,6 +480,11 @@ details.faq p{margin:8px 0 0;font-size:13.5px;color:var(--muted);line-height:1.7
      "@type": "Question",
      "name": "진단 점수가 높으면 무조건 좋은 포트폴리오인가요?",
      "acceptedAnswer": { "@type": "Answer", "text": "아닙니다. 점수는 분산·밸류에이션·섹터 균형을 기계적으로 채점한 값입니다. 투자 목표(은퇴 준비, 단기 수익, 배당 생활비)에 따라 좋은 구성은 완전히 달라집니다. 예를 들어 장기 성장을 노린다면 점수가 낮게 나오는 기술주 집중 구성이 오히려 맞을 수 있습니다. 점수보다 '왜 그런 점수가 나왔는지' 설명을 읽고 판단하세요." }
+    },
+    {
+     "@type": "Question",
+     "name": "맞춤 보완 제안은 어떻게 정해지나요?",
+     "acceptedAnswer": { "@type": "Answer", "text": "진단에서 나온 다섯 가지 신호(상위 종목 집중도, 섹터 쏠림, 방어 자산 비중, 시장 대비 밸류에이션, 지역 편중)를 정해진 기준으로 점검해 급한 것부터 2~4개를 카드로 보여 줍니다. '이 보완안 미리보기'를 누르면 제안 자산을 넣고 기존 비중을 비례 축소한 구성을 다시 계산해 종합 점수와 분산·밸류에이션·섹터 균형·가중 베타가 어떻게 바뀌는지 보여 줍니다. 특정 종목의 매수 권유가 아니라 구조 비교용 시뮬레이션 예시입니다." }
     }
    ]
   }
@@ -443,11 +517,11 @@ details.faq p{margin:8px 0 0;font-size:13.5px;color:var(--muted);line-height:1.7
 <section class="pc-hero">
   <div class="crumbtab">📊 진단 · 포트폴리오</div>
   <h1>내 포트폴리오,<br><em>얼마나 위험한지</em> 숫자로 확인하세요</h1>
-  <p class="lede">종목과 비중만 넣으면 분산효과(HHI), 시장 평균과 비교한 밸류에이션(PER·PBR·PSR), 섹터 쏠림, 배당과 변동성까지 한 번에 진단합니다. 회원가입도 계좌 연동도 없고, 입력한 내용은 브라우저 밖으로 나가지 않습니다.</p>
+  <p class="lede">종목과 비중만 넣으면 분산효과(HHI), 시장 평균과 비교한 밸류에이션(PER·PBR·PSR), 섹터 쏠림, 배당과 변동성까지 한 번에 진단합니다. 진단이 끝나면 <b>어떤 식으로 보완하면 좋을지 우선순위 제안</b>과 <b>보완 후 점수 시뮬레이션</b>까지 이어서 보여 줍니다. 회원가입도 계좌 연동도 없고, 입력한 내용은 브라우저 밖으로 나가지 않습니다.</p>
   <div class="hero-stats">
     <div class="chipstat"><b id="pcCount">149</b>수록 종목·ETF</div>
     <div class="chipstat"><b>0~100점</b>종합 진단 점수</div>
-    <div class="chipstat"><b>3가지</b>프리셋으로 3초 체험</div>
+    <div class="chipstat"><b>원클릭</b>보완 시뮬레이션</div>
     <div class="chipstat"><b id="pcDataNote">기준일 2026-11-26</b></div>
   </div>
 </section>
@@ -565,6 +639,17 @@ details.faq p{margin:8px 0 0;font-size:13.5px;color:var(--muted);line-height:1.7
   </ul>
   <p>점수는 좋고 나쁨의 절대 기준이 아닙니다. 배당으로 생활비를 만드는 사람과 20년 성장을 노리는 사람은 좋은 구성이 다릅니다. 점수와 함께 나오는 <strong>성격 규정</strong>과 <strong>경고</strong>를 먼저 읽고, 점수는 같은 포트폴리오를 조금 바꿨을 때 어떻게 달라지는지 비교하는 용도로 쓰세요.</p>
 
+  <h3>5. 맞춤 보완 제안과 시뮬레이션</h3>
+  <p>진단 결과는 점수로 끝나지 않고, <strong>가장 먼저 손볼 순서</strong>를 카드로 정리해 보여 줍니다. 카드는 다섯 가지 신호를 정해진 기준으로 점검해 만들어집니다.</p>
+  <ul>
+    <li><strong>집중도</strong> — 상위 1종목이 25%를 넘거나 HHI가 2,500을 넘으면 비중 축소와 지수 ETF 분산을 제안합니다.</li>
+    <li><strong>섹터·테마 쏠림</strong> — 최대 섹터가 45%를 넘으면 비중이 5% 미만인 업종(금융·헬스케어·필수소비재·에너지·유틸리티)을 예시와 함께 채우도록 안내합니다.</li>
+    <li><strong>방어 자산</strong> — 채권·배당 ETF·방어 섹터 합계가 10% 미만이면 TLT·SCHD 같은 완충 자산을 제안합니다.</li>
+    <li><strong>밸류에이션</strong> — 시장 평균보다 25% 이상 비싸면 가중 PER을 낮출 수 있는 저평가·배당 자산을 예시로 듭니다.</li>
+    <li><strong>지역 편중</strong> — 국내 또는 미국 비중이 90%를 넘으면 반대 시장 대표 ETF를 제안합니다.</li>
+  </ul>
+  <p>카드의 <strong>이 보완안 미리보기</strong>를 누르면, 제안한 자산을 넣는 만큼 기존 종목 비중을 같은 비율로 줄인 가상 구성을 만들어 종합 점수·분산·밸류에이션·섹터 균형·가중 베타를 다시 계산합니다. <strong>원래대로 되돌리기</strong>를 누르면 진단 전으로 돌아갑니다. 계산은 미리보기일 뿐 저장된 구성은 바뀌지 않으며, 제안에 쓰인 자산은 이 페이지에 수록된 종목·ETF 가운데 예시로 고른 것입니다.</p>
+
   <h3>데이터 한계</h3>
   <ul>
     <li>수록 종목은 국내·미국 주요 149종목(ETF 포함)입니다. 시가총액 상위 종목 위주라 소형주는 직접 입력해야 합니다.</li>
@@ -582,6 +667,7 @@ details.faq p{margin:8px 0 0;font-size:13.5px;color:var(--muted);line-height:1.7
   <details class="faq"><summary>내 종목이 목록에 없으면 어떻게 하나요?</summary><p>검색창에 이름을 입력했을 때 결과가 없으면 '직접 입력'으로 종목명·시장·섹터·PER·PBR·PSR을 넣어 진단에 포함할 수 있습니다. 배당수익률과 베타는 비워도 되고, 비우면 해당 지표 계산에서만 빠집니다.</p></details>
   <details class="faq"><summary>내 포트폴리오 정보가 서버로 전송되나요?</summary><p>아니요. 입력한 종목과 비중은 브라우저 안에서만 계산되며 서버로 보내지 않습니다. 로그인도, 계좌 연동도 없습니다. 다만 '링크 복사'로 만든 주소에는 종목과 비중이 담기므로, 공유하고 싶지 않다면 링크를 남기지 마세요. 브라우저를 닫아도 최근 구성은 이 기기에만 저장됩니다.</p></details>
   <details class="faq"><summary>진단 점수가 높으면 무조건 좋은 포트폴리오인가요?</summary><p>아닙니다. 점수는 분산·밸류에이션·섹터 균형을 기계적으로 채점한 값입니다. 투자 목표에 따라 좋은 구성은 완전히 달라집니다. 장기 성장을 노린다면 점수가 낮게 나오는 기술주 집중 구성이 오히려 맞을 수 있습니다. 점수보다 '왜 그런 점수가 나왔는지' 설명을 읽고 판단하세요.</p></details>
+  <details class="faq"><summary>맞춤 보완 제안은 어떻게 정해지나요?</summary><p>진단에서 나온 다섯 가지 신호(상위 종목 집중도·섹터 쏠림·방어 자산 비중·시장 대비 밸류에이션·지역 편중)를 정해진 기준으로 점검해, 급한 것부터 2~4개를 카드로 보여 줍니다. 카드에는 왜 그 제안이 나왔는지 수치를 함께 적고, '이 보완안 미리보기'를 누르면 제안 자산을 넣은 구성을 다시 계산해 종합 점수와 세부 점수가 어떻게 바뀌는지 보여 줍니다. 특정 종목의 매수 권유가 아니라 구조 비교용 예시입니다.</p></details>
 
   <div class="disclaimer">
     <strong>투자 유의사항</strong><br>
@@ -613,6 +699,6 @@ details.faq p{margin:8px 0 0;font-size:13.5px;color:var(--muted);line-height:1.7
 </footer>
 <script src="assets/kit.js"></script>
 <script>KIT.theme();</script>
-<script src="assets/portfolio-check.js?v=20261126h"></script>
+<script src="assets/portfolio-check.js?v=20261126i"></script>
 </body>
 </html>

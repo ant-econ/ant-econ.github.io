@@ -135,8 +135,8 @@
   }
 
   // weights (sum 1)
-  function weights() {
-    var vals = state.holdings.map(function (h) {
+  function weightsOf(list) {
+    var vals = list.map(function (h) {
       var r = num(h.raw);
       if (state.mode === 'pct' || h.unit === 'pct') return r;
       if (h.unit === 'usd') return r * state.fx;
@@ -146,6 +146,7 @@
     if (!(sum > 0)) return vals.map(function () { return 0; });
     return vals.map(function (v) { return v / sum; });
   }
+  function weights() { return weightsOf(state.holdings); }
 
   function moneyTotal() {
     var t = 0;
@@ -158,6 +159,7 @@
 
   /* ---------- rendering: holdings ---------- */
   function render() {
+    state.sim = null;
     var box = el('pcHoldings');
     var w = weights();
     if (!state.holdings.length) {
@@ -299,9 +301,10 @@
     return { key: 'hot', label: '과열', cls: 'hot' };
   }
 
-  function diagnose() {
-    var w = weights();
-    var H = state.holdings.map(function (h, i) { return { h: h, w: w[i] }; }).filter(function (x) { return x.w > 0; });
+  function diagnose(list) {
+    list = list || state.holdings;
+    var w = weightsOf(list);
+    var H = list.map(function (h, i) { return { h: h, w: w[i] }; }).filter(function (x) { return x.w > 0; });
     if (!H.length) return null;
 
     var n = H.length;
@@ -443,6 +446,276 @@
     };
   }
 
+  /* ---------- ⑤ 맞춤 보완 제안 ---------- */
+  var PRI = {
+    urgent: { label: '우선 보완', cls: 'urgent', rank: 0 },
+    rec:    { label: '권장',      cls: 'rec',    rank: 1 },
+    ok:     { label: '유지 양호', cls: 'ok',     rank: 2 }
+  };
+  var GAP_LABEL = { FIN: '금융', HLTH: '헬스케어', CYD: '필수소비재', ENR: '에너지', UTIL: '유틸리티' };
+  var SEC_EXAMPLES = {
+    FIN:  { US: ['JPM', 'GS', 'V'],            KR: ['105560', '086790', '316140'] },
+    HLTH: { US: ['JNJ', 'UNH', 'MRK', 'PFE'],  KR: ['000100', '128940', '214150'] },
+    CYD:  { US: ['KO', 'PEP', 'PG', 'WMT'],    KR: ['033780', '004370', '271560'] },
+    ENR:  { US: ['XOM', 'CVX'],                KR: ['096770'] },
+    UTIL: { US: [],                            KR: ['015760', '036460'] }
+  };
+
+  function secMap(r) {
+    var m = {};
+    r.secList.forEach(function (s) { m[s.key] = s.w; });
+    return m;
+  }
+
+  function pickList(cands) {
+    var out = [];
+    (cands || []).forEach(function (c) {
+      var s = stockByCode(c);
+      if (s && out.indexOf(s.sym) < 0) out.push(s.sym);
+    });
+    return out;
+  }
+
+  function exampleChips(codes) {
+    return (codes || []).filter(function (c) { return stockByCode(c); }).slice(0, 4).map(function (c) {
+      var s = stockByCode(c);
+      return '<span class="tchip ex">' + esc(s.name) + ' <b>' + esc(s.sym) + '</b>' +
+        (s.per != null ? ' · PER ' + num3(s.per) : '') + '</span>';
+    }).join('');
+  }
+
+  function withWeight(h, frac) {
+    var c = {};
+    for (var k in h) if (Object.prototype.hasOwnProperty.call(h, k)) c[k] = h[k];
+    c.raw = Math.round(frac * 10000) / 100;
+    c.unit = 'pct';
+    return c;
+  }
+
+  // 제안 자산을 넣는 만큼 기존 종목 비중을 같은 비율로 축소한 가상 구성
+  function simHoldings(assets) {
+    var w = weights();
+    var inject = assets.reduce(function (a, x) { return a + x.w; }, 0);
+    var out = [];
+    state.holdings.forEach(function (h, i) {
+      if (!(w[i] > 0)) return;
+      out.push(withWeight(h, w[i] * (1 - inject)));
+    });
+    assets.forEach(function (a) {
+      var hit = null;
+      for (var i = 0; i < out.length; i++) if (out[i].code === a.code) { hit = out[i]; break; }
+      if (hit) hit.raw = Math.round((hit.raw + a.w * 100) * 100) / 100;
+      else {
+        var nh = makeHolding(a.code, a.w * 100);
+        if (nh) out.push(withWeight(nh, a.w));
+      }
+    });
+    return out;
+  }
+
+  function simLabel(assets) {
+    return assets.map(function (a) {
+      var s = stockByCode(a.code);
+      return (s ? s.name : a.code) + ' ' + pctx(a.w);
+    }).join(' + ');
+  }
+
+  function buildSuggestions(r) {
+    var out = [], oks = [];
+    var hhiPts = r.hhi * 10000;
+    var sw = secMap(r);
+    var usSide = r.usW >= r.krW;
+    var topSec = r.topSec;
+    var perM = r.metrics.filter(function (m) { return m.key === 'per'; })[0] || {};
+
+    /* 1) 단일 종목·상위 종목 과집중 */
+    if (r.top1 > 0.25 || hhiPts > 2500) {
+      var urgentC = (r.top1 >= 0.4 || hhiPts >= 4000);
+      var codeC = usSide ? 'SPY' : '069500';
+      var shrink = r.top1 >= 0.4 ? 0.20 : 0.15;
+      out.push({
+        id: 'concentration', level: urgentC ? 'urgent' : 'rec',
+        title: '상위 종목 비중을 25% 이하로',
+        why: '<b>' + esc(r.sorted[0].h.name) + '</b> 한 종목이 ' + pct(r.top1) + ', 상위 3종목이 ' + pct(r.top3) +
+          '입니다. 실질 분산 종목 수는 ' + num3(r.effN) + '개로 담은 ' + r.n + '종목보다 적습니다(HHI ' +
+          Math.round(hhiPts).toLocaleString('ko-KR') + ').',
+        act: '가장 큰 종목의 비중을 20~25% 이하로 낮추고, 덜어낸 금액은 ' +
+          (usSide ? 'S&amp;P500 지수 ETF(SPY)' : '코스피200 지수 ETF(KODEX 200)') +
+          '처럼 여러 종목이 담긴 상품으로 넓게 나눠 담으세요. 한 종목 악재가 전체 수익률을 흔드는 구조를 끊는 것이 먼저입니다.',
+        examples: usSide ? ['SPY', '069500', 'QQQ'] : ['069500', 'SPY', 'SCHD'],
+        assets: [{ code: codeC, w: shrink }]
+      });
+    } else {
+      oks.push({
+        id: 'ok-concentration', level: 'ok', title: '분산은 지금 수준 유지',
+        why: '상위 1종목 ' + pct(r.top1) + ', 실질 분산 종목 수 ' + num3(r.effN) + '개(HHI ' +
+          Math.round(hhiPts).toLocaleString('ko-KR') + ')로 한두 종목에 거는 구조가 아닙니다.',
+        act: '종목을 더 늘리기보다 지금 비중을 유지하면서, 연 1회 정도 흐트러진 비중만 되돌리는 리밸런싱이 효율적입니다.'
+      });
+    }
+
+    /* 2) 섹터·테마 쏠림 */
+    if (topSec && topSec.w >= 0.45) {
+      var urgentS = (topSec.w >= 0.6 || (r.itW >= 0.7));
+      var gaps = Object.keys(SEC_EXAMPLES).filter(function (k) { return (sw[k] || 0) < 0.05; });
+      var first = usSide ? 'US' : 'KR', second = usSide ? 'KR' : 'US';
+      var picks = [];
+      for (var gi = 0; gi < gaps.length && picks.length < 2; gi++) {
+        var e = SEC_EXAMPLES[gaps[gi]];
+        var cand = pickList(e[first]).concat(pickList(e[second]));
+        if (cand.length && picks.indexOf(cand[0]) < 0) picks.push(cand[0]);
+      }
+      var chipCodes = [];
+      gaps.forEach(function (k) {
+        chipCodes = chipCodes.concat(pickList(SEC_EXAMPLES[k][first]), pickList(SEC_EXAMPLES[k][second]));
+      });
+      chipCodes = chipCodes.filter(function (c, i) { return chipCodes.indexOf(c) === i; }).slice(0, 4);
+      var assetsS = [];
+      if (picks[0]) assetsS.push({ code: picks[0], w: picks[1] ? 0.08 : 0.12 });
+      if (picks[1]) assetsS.push({ code: picks[1], w: 0.07 });
+      var pickNames = picks.map(function (c) { return stockByCode(c).name; }).join('·');
+      var gapNames = gaps.map(function (k) { return GAP_LABEL[k]; }).join('·');
+      out.push({
+        id: 'sector', level: urgentS ? 'urgent' : 'rec',
+        title: topSec.label + ' 쏠림 완화',
+        why: '<b>' + esc(topSec.label) + ' ' + pct(topSec.w) + '</b>' +
+          (r.topTheme && r.topTheme.w >= 0.45 && r.topTheme.key !== topSec.label ? ' · 테마로는 ' + esc(r.topTheme.key) + ' ' + pct(r.topTheme.w) : '') +
+          '입니다. 비중이 5% 미만인 영역은 ' + (gapNames || '없음') + '로, 같은 업황을 공유하는 자산이 대부분이라 함께 움직일 가능성이 큽니다.',
+        act: '쏠린 ' + esc(topSec.label) + '에서 5~10%p를 덜어 ' + (pickNames || '다른 업종') +
+          ' 쪽으로 옮기면 업황 사이클이 다른 자산이 생깁니다. 업종을 고를 때는 이미 담은 종목과 매출 구조가 겹치지 않는지 먼저 보세요.',
+        examples: chipCodes.length ? chipCodes : picks,
+        assets: assetsS
+      });
+    } else if (topSec) {
+      oks.push({
+        id: 'ok-sector', level: 'ok', title: '섹터는 고르게 퍼져 있음',
+        why: '가장 큰 섹터가 ' + esc(topSec.label) + ' ' + pct(topSec.w) + '로 45% 미만이고, 상위 3개 섹터 합계도 ' +
+          pctx(r.secList.filter(function (s) { return s.key !== 'ETF' && s.key !== 'BOND'; }).slice(0, 3).reduce(function (a, s) { return a + s.w; }, 0)) + '입니다.',
+        act: '지금의 업종 배분을 유지하세요. 새 종목을 담을 때만 기존 섹터와 겹치지 않는지 확인하면 됩니다.'
+      });
+    }
+
+    /* 3) 방어 자산 부재 */
+    if (r.defensive < 0.10) {
+      var urgentD = (r.defensive < 0.03 && (r.betaW == null || r.betaW >= 1.1));
+      var codeD = (sw['BOND'] || 0) < 0.08 ? 'TLT' : 'SCHD';
+      out.push({
+        id: 'defensive', level: urgentD ? 'urgent' : 'rec',
+        title: '하락장 완충 자산 채우기',
+        why: '채권·배당 ETF·방어 섹터(필수소비재·헬스케어·유틸리티)를 다 합쳐도 <b>' + pct(r.defensive) + '</b>입니다. 가중 베타는 ' +
+          (r.betaW == null ? '—' : num3(r.betaW, 2)) + '로, 시장이 크게 빠질 때 이 포트폴리오도 같이 밀리는 구조입니다.',
+        act: 'TLT(미국 20년+ 국채) 10~15% 또는 SCHD(미국 배당주) 10%를 넣어 보세요. TLT는 금리가 내릴 때, SCHD는 배당이 꾸준할 때 각각 주식과 다른 방향으로 움직이는 경향이 있습니다.',
+        examples: ['TLT', 'SCHD', 'KO', '015760'],
+        assets: [{ code: codeD, w: codeD === 'TLT' ? 0.15 : 0.12 }]
+      });
+    } else {
+      oks.push({
+        id: 'ok-defensive', level: 'ok', title: '방어 자산은 충분',
+        why: '채권·배당 ETF·방어 섹터 합계가 ' + pct(r.defensive) + '로 10%를 넘습니다. 하락장에서 일부를 받쳐 줄 자산이 있습니다.',
+        act: '지금 수준을 유지하세요. 주식 비중을 크게 늘릴 때만 방어 자산 비중이 10% 아래로 내려가지 않는지 확인하면 됩니다.'
+      });
+    }
+
+    /* 4) 밸류에이션 과열 */
+    if (r.avgPrem != null && r.avgPrem >= 0.25) {
+      var urgentV = r.avgPrem >= 0.5;
+      var pool = usSide
+        ? ['JPM', 'XOM', 'CVX', 'GS', 'SCHD', '105560', '005930', '069500']
+        : ['105560', '005930', '069500', '000270', '033780', 'SCHD', 'JPM'];
+      var lows = pickList(pool).filter(function (c) {
+        var s = stockByCode(c);
+        return s && s.per != null && perM.bench && s.per < perM.bench;
+      });
+      if (!lows.length) lows = pickList(['SCHD', 'JPM', 'XOM']);
+      var assetsV = [];
+      if (lows[0]) assetsV.push({ code: lows[0], w: 0.10 });
+      if (lows[1]) assetsV.push({ code: lows[1], w: 0.05 });
+      out.push({
+        id: 'valuation', level: urgentV ? 'urgent' : 'rec',
+        title: '가중 PER 낮추기',
+        why: '가중 PER이 <b>' + num3(perM.mine) + '배</b>로 시장 평균(' + num3(perM.bench) + '배)보다 ' + pct(r.avgPrem) +
+          ' 비쌉니다. 성장 기대가 이미 가격에 많이 반영돼 있어 실적이 어긋나면 조정 폭이 커질 수 있습니다.',
+        act: 'PER이 시장 평균보다 낮은 자산을 10~15% 섞으면 전체 가중 PER이 내려갑니다. 성장주를 다 팔지 않고 밸류에이션 부담만 낮추는 방법입니다. 싼 데는 이유가 있는지(이익 감소·업황)는 함께 확인하세요.',
+        examples: lows.slice(0, 4),
+        assets: assetsV
+      });
+    } else if (r.avgPrem != null) {
+      oks.push({
+        id: 'ok-valuation', level: 'ok', title: '밸류에이션 부담은 낮은 편',
+        why: '가중 PER이 시장 평균(' + num3(perM.bench) + '배)보다 ' + (r.avgPrem < 0 ? pct(Math.abs(r.avgPrem)) + ' 낮은 ' : '비슷한 ') +
+          num3(perM.mine) + '배입니다.',
+        act: '지금의 밸류에이션 수준을 유지하세요. 비싼 종목을 새로 담을 때만 전체 PER이 얼마나 올라가는지 확인하면 됩니다.'
+      });
+    }
+
+    /* 5) 지역 편중 */
+    if (r.krW >= 0.9 || r.usW >= 0.9) {
+      var usOnly = r.usW >= 0.9;
+      out.push({
+        id: 'region', level: 'rec',
+        title: '한 시장 의존 줄이기',
+        why: usOnly
+          ? '미국 비중이 <b>' + pct(r.usW) + '</b>입니다. 달러 자산만 있으면 원/달러 환율이 내릴 때 원화로 환산한 평가액이 그만큼 줄어듭니다.'
+          : '국내 비중이 <b>' + pct(r.krW) + '</b>입니다. 원화 자산만 있으면 환율·국내 정책 리스크를 나눌 상대가 없습니다.',
+        act: usOnly
+          ? '코스피200 ETF(KODEX 200) 15%를 함께 담으면 원화 자산이 생겨 환율과 미국 경기 사이클을 나눌 수 있습니다. 국내 대형주는 PER이 낮아 전체 밸류에이션도 함께 내려갑니다.'
+          : 'S&amp;P500 ETF(SPY) 15%를 함께 담으면 달러 자산이 생겨 환율과 국내 정책 리스크를 나눌 수 있습니다.',
+        examples: usOnly ? ['069500', 'SPY', 'SCHD'] : ['SPY', 'QQQ', 'SCHD'],
+        assets: [{ code: usOnly ? '069500' : 'SPY', w: 0.15 }]
+      });
+    } else {
+      oks.push({
+        id: 'ok-region', level: 'ok', title: '국내·미국 균형',
+        why: '국내 ' + pct(r.krW) + ' · 미국 ' + pct(r.usW) + '로 두 시장에 나눠 담겨 있습니다.',
+        act: '지금의 지역 배분을 유지하세요. 환율이 크게 움직일 때 한쪽으로 더 치우치지 않았는지만 확인하면 됩니다.'
+      });
+    }
+
+    out.sort(function (a, b) { return PRI[a.level].rank - PRI[b.level].rank; });
+    var list = out.slice(0, 4);
+    for (var oi = 0; list.length < 2 && oi < oks.length; oi++) list.push(oks[oi]);
+    if (!list.length) list.push({
+      id: 'ok-keep', level: 'ok', title: '지금 구성 유지',
+      why: '분산·섹터·방어 자산·밸류에이션·지역 어디에서도 두드러진 쏠림이 잡히지 않았습니다.',
+      act: '이 구성을 유지하면서 연 1회 정도 비중만 맞춰 주세요.'
+    });
+
+    // 카드에 "예상 효과"를 미리 적기 위해 각 보완안을 미리 계산해 둔다
+    list.forEach(function (s) {
+      if (!s.assets || !s.assets.length) return;
+      var r2 = diagnose(simHoldings(s.assets));
+      if (r2) s.sim = r2;
+    });
+    return list;
+  }
+
+  function applySim(id) {
+    if (state.sim && state.sim.id === id) { clearSim(); return; }
+    var r = diagnose();
+    if (!r) return;
+    r.suggestions = buildSuggestions(r);
+    var s = r.suggestions.filter(function (x) { return x.id === id; })[0];
+    if (!s || !s.assets || !s.assets.length) return;
+    state.sim = {
+      id: id,
+      assets: s.assets,
+      label: simLabel(s.assets),
+      inject: s.assets.reduce(function (a, x) { return a + x.w; }, 0)
+    };
+    renderReport(r, false);
+    var p = el('pcSimPanel');
+    if (p) setTimeout(function () { p.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 40);
+  }
+
+  function clearSim() {
+    if (!state.sim) return;
+    state.sim = null;
+    var r = diagnose();
+    if (r) renderReport(r, false);
+    var s = el('pcSuggest');
+    if (s) setTimeout(function () { s.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 40);
+  }
+
   function run(scroll) { var r = diagnose(); if (r) renderReport(r, scroll); }
   var rerunTimer = null;
   function queueRerun() {
@@ -491,7 +764,78 @@
       '<div class="vscale"><span>싸다</span><span>시장 평균</span><span>비싸다</span></div>';
   }
 
+  function simPanelHtml(base, simR, sim) {
+    function fmtv(v, d) { return (v == null || !isFinite(v)) ? '—' : num3(v, d); }
+    function cell(label, b, a, unit, dir, d) {
+      var body;
+      if (b == null || a == null || !isFinite(b) || !isFinite(a)) {
+        body = '<b>' + fmtv(b, d) + '<i>→</i>' + fmtv(a, d) + '</b>';
+      } else {
+        var diff = a - b, eps = Math.pow(10, -d) / 2;
+        var cls = Math.abs(diff) < eps ? 'flat' : ((diff * dir) > 0 ? 'up' : 'down');
+        var txt = Math.abs(diff) < eps ? '변화 없음' : (diff > 0 ? '+' : '−') + num3(Math.abs(diff), d) + unit;
+        body = '<b>' + fmtv(b, d) + '<i>→</i>' + fmtv(a, d) + '</b><u class="' + cls + '">' + txt + '</u>';
+      }
+      return '<div class="simcell"><span>' + label + '</span>' + body + '</div>';
+    }
+    var dTotal = simR.scores.total - base.scores.total;
+    var bigCls = dTotal > 0 ? 'up' : dTotal < 0 ? 'down' : 'flat';
+    var basePer = (base.metrics.filter(function (m) { return m.key === 'per'; })[0] || {}).mine;
+    var simPer = (simR.metrics.filter(function (m) { return m.key === 'per'; })[0] || {}).mine;
+    return '<div class="simpanel" id="pcSimPanel">' +
+      '<div class="simtop"><div><div class="simkicker">시뮬레이션 결과</div>' +
+      '<div class="simtitle">' + esc(sim.label) + ' 편입 · 기존 비중 비례 축소</div></div>' +
+      '<button type="button" class="btn ghost" id="pcSimReset">↺ 원래대로 되돌리기</button></div>' +
+      '<div class="simbig"><span>종합 점수</span><b>' + base.scores.total + '</b><i>→</i>' +
+      '<b class="after">' + simR.scores.total + '</b>' +
+      '<em class="' + bigCls + '">' + (dTotal > 0 ? '+' + dTotal + '점' : dTotal < 0 ? '−' + Math.abs(dTotal) + '점' : '변화 없음') + '</em></div>' +
+      '<div class="simgrid">' +
+      cell('분산 점수', base.scores.d, simR.scores.d, '점', 1, 0) +
+      cell('밸류에이션 점수', base.scores.v, simR.scores.v, '점', 1, 0) +
+      cell('섹터 균형 점수', base.scores.b, simR.scores.b, '점', 1, 0) +
+      cell('실질 분산 종목', base.effN, simR.effN, '개', 1, 1) +
+      cell('상위 1종목 비중', base.top1 * 100, simR.top1 * 100, '%p', -1, 1) +
+      cell('HHI 지수', base.hhi * 10000, simR.hhi * 10000, '', -1, 0) +
+      cell('가중 PER', basePer, simPer, '배', -1, 1) +
+      cell('방어 자산 비중', base.defensive * 100, simR.defensive * 100, '%p', 1, 1) +
+      cell('가중 베타', base.betaW, simR.betaW, '', -1, 2) +
+      '</div>' +
+      '<p class="simnote">기존 ' + base.n + '종목 비중을 ' + pctx(1 - sim.inject) + '씩 비례 축소하고 ' + esc(sim.label) +
+      '을(를) 더한 구성입니다. 세금·수수료·매매 단가는 반영하지 않았고, 실제 저장된 보유 구성은 바뀌지 않습니다.</p>' +
+      '</div>';
+  }
+
   function renderReport(r, scroll) {
+    var sug = r.suggestions || buildSuggestions(r);
+    r.suggestions = sug;
+    var simR = null;
+    if (state.sim) {
+      simR = diagnose(simHoldings(state.sim.assets));
+      if (!simR) state.sim = null;
+    }
+    var sugCards = sug.map(function (s) {
+      var pr = PRI[s.level];
+      var on = !!(state.sim && state.sim.id === s.id);
+      var btn = (s.assets && s.assets.length)
+        ? '<button type="button" class="btn sugbtn' + (on ? ' primary' : '') + '" data-sim="' + s.id + '">' +
+          (on ? '미리보는 중 ✓' : '이 보완안 미리보기 →') + '</button>'
+        : '<span class="sugkeep">✓ 지금 구성 유지</span>';
+      var prev = '';
+      if (s.sim) {
+        var dT = s.sim.scores.total - r.scores.total;
+        prev = '<span class="sugprev">예상 종합 ' + r.scores.total + ' → <b>' + s.sim.scores.total + '점</b>' +
+          ' <em class="' + (dT > 0 ? 'up' : dT < 0 ? 'down' : 'flat') + '">' + (dT > 0 ? '+' + dT : dT < 0 ? '−' + Math.abs(dT) : '0') + '</em>' +
+          ' · 방어 자산 ' + pctx(r.defensive) + ' → ' + pctx(s.sim.defensive) + '</span>';
+      }
+      return '<article class="sugcard ' + pr.cls + (on ? ' on' : '') + '">' +
+        '<div class="sugtop"><span class="pribadge ' + pr.cls + '">' + pr.label + '</span><h4>' + esc(s.title) + '</h4></div>' +
+        '<p class="sugwhy">' + s.why + '</p>' +
+        (s.act ? '<div class="sugact"><b>이렇게 해보세요</b>' + s.act + '</div>' : '') +
+        (s.examples && s.examples.length ? '<div class="sugex">' + exampleChips(s.examples) + '</div>' : '') +
+        '<div class="sugfoot">' + prev + btn + '</div>' +
+        '</article>';
+    }).join('');
+
     var valRows = r.metrics.map(function (m) {
       var val = m.mine == null ? '—' : num3(m.mine) + m.unit;
       var bench = m.bench == null ? '—' : num3(m.bench) + m.unit;
@@ -619,6 +963,14 @@
       '<div><span>방어 자산 비중</span><b>' + pct(r.defensive) + '</b></div>' +
       '</div>' +
       '<p class="miniline muted">배당수익률은 연 100만 원 투자 시 세전 ' + Math.round(r.divW / 100 * 1000000).toLocaleString('ko-KR') + '원 수준입니다(세금·환전 비용 제외). 베타는 시장이 1% 움직일 때 이 포트폴리오가 평균 몇 % 움직이는지를 나타냅니다.</p>' +
+      '</section>' +
+
+      '<section class="card rep-card wide" id="pcSuggest">' +
+      '<h3><span class="h3badge">5</span>맞춤 보완 제안<span class="h3sub">손볼 순서 ' + sug.length + '개</span></h3>' +
+      '<p class="miniline muted">진단에서 나온 약점을 손보기 쉬운 순서로 정리했습니다. <b>이 보완안 미리보기</b>를 누르면 그 자산을 넣은 구성으로 점수를 다시 계산해 보여 줍니다. 실제 저장된 구성은 바뀌지 않습니다.</p>' +
+      (simR ? simPanelHtml(r, simR, state.sim) : '') +
+      '<div class="suglist">' + sugCards + '</div>' +
+      '<p class="simdisclaimer">※ 이 제안은 특정 종목의 매수·매도를 권유하는 내용이 아니라, 입력한 비중을 기준으로 포트폴리오 구조를 비교해 보는 <b>시뮬레이션 예시</b>입니다. 예시로 쓴 종목·ETF는 이 페이지에 수록된 것 중에서 골랐고, 실제 투자 판단과 그 결과에 대한 책임은 투자자 본인에게 있습니다.</p>' +
       '</section>' +
       '</div>' +
 
@@ -850,6 +1202,13 @@
     el('pcCustomCancel').onclick = function () { el('pcCustom').hidden = true; };
 
     el('pcRun').onclick = function () { run(true); };
+
+    el('pcReport').addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('[data-sim]') : null;
+      if (b) { applySim(b.getAttribute('data-sim')); return; }
+      var rs = e.target.closest ? e.target.closest('#pcSimReset') : null;
+      if (rs) clearSim();
+    });
 
     el('pcPresets').addEventListener('click', function (e) {
       var b = e.target.closest('[data-preset]');
