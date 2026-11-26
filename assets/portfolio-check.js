@@ -559,7 +559,7 @@
       oks.push({
         id: 'ok-concentration', level: 'ok', title: '개별 종목 집중 없음',
         why: '가장 큰 개별 종목이 ' + pct(bigStock.w) + '로 25%를 넘지 않습니다. 실질 분산 종목 수 ' + num3(r.effN) + '개(HHI ' +
-          Math.round(hhiPts).toLocaleString('ko-KR') + ')로 한 종목에 거는 구조가 아니다.',
+          Math.round(hhiPts).toLocaleString('ko-KR') + ')로 한 종목에 거는 구조가 아닙니다.',
         act: '종목을 더 늘리기보다 지금 비중을 유지하면서, 연 1회 정도 흐트러진 비중만 되돌리는 리밸런싱이 효율적입니다.'
       });
     } else {
