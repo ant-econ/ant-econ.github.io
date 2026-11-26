@@ -341,7 +341,7 @@
     var valGrade = gradeOf(avgPrem);
 
     // dividend / beta
-    var divW = H.reduce(function (a, x) { return a + x.w * (x.h.div || 0); }, 0);
+    var divW = H.reduce(function (a, x) { return a + x.w * (x.h.div || 0); }, 0); // 단위: % (예: 2.5 = 2.5%)
     var betaS = 0, betaC = 0;
     H.forEach(function (x) { if (x.h.beta != null) { betaS += x.w * x.h.beta; betaC += x.w; } });
     var betaW = betaC > 0 ? betaS / betaC : null;
@@ -371,12 +371,13 @@
     var itW = (secW['IT'] || 0) + (secW['COMM'] || 0);
     var techTheme = ['반도체', 'AI반도체', '파운드리', '반도체장비', 'IT하드웨어', '소프트웨어', 'AI인프라', '플랫폼'];
     var techThemeW = thList.filter(function (t) { return techTheme.indexOf(t.key) >= 0; }).reduce(function (a, t) { return a + t.w; }, 0);
+    var chipW = thList.filter(function (t) { return ['반도체', 'AI반도체', '파운드리', '반도체장비'].indexOf(t.key) >= 0; }).reduce(function (a, t) { return a + t.w; }, 0);
+    var regionWord = usW >= 0.65 ? '미국 ' : (krW >= 0.65 ? '국장 ' : '국장+미장 ');
     var p;
     if (etfW >= 0.6) p = { name: '지수·패시브 코어형', desc: 'ETF·지수 상품이 절반 이상입니다. 개별 종목 리스크는 낮지만, 지수 전체가 빠지면 같이 빠집니다.' };
-    else if (usW >= 0.7 && techThemeW >= 0.5 && (betaW || 1) >= 1.25) p = { name: '초공격적 미국 기술주 집중형', desc: '미국 기술주에 크게 실려 있고 변동성도 높습니다. 상승장에서 강하지만 조정장 낙폭이 지수보다 훨씬 큽니다.' };
-    else if (krW >= 0.6 && (secW['IT'] || 0) >= 0.4) p = { name: '국장 기술주 집중형', desc: '국내 시장, 그중에서도 반도체·IT 비중이 큽니다. 환율과 메모리 업황에 손익이 함께 움직입니다.' };
-    else if (krW >= 0.5 && divW >= 0.03) p = { name: '국장 배당·가치형', desc: '국내 배당주 중심으로 현금 흐름을 챙기는 구성입니다. 성장보다 배당과 저평가에 무게가 실려 있습니다.' };
-    else if (usW >= 0.5 && divW >= 0.025 && (betaW || 1) < 1.05) p = { name: '미장 배당·방어형', desc: '미국 배당·우량주 중심에 변동성이 낮은 구성입니다. 지수 하락기에 상대적으로 버티는 편입니다.' };
+    else if (chipW >= 0.55) p = { name: regionWord + '반도체 집중형', desc: '반도체·장비 테마가 절반 이상입니다. 메모리 업황과 AI 설비투자 사이클이 수익률을 거의 전부 결정하는 구조입니다.' };
+    else if (itW >= 0.6 && techThemeW >= 0.45) p = { name: regionWord + '기술주 성장형', desc: '정보기술·플랫폼이 대부분입니다. 성장 기대가 큰 만큼 금리와 실적 전망에 민감하게 반응합니다.' };
+    else if (divW >= 2.5 && (betaW || 1) < 1.1) p = { name: regionWord + '배당·방어형', desc: '배당수익률이 높고 변동성이 낮은 구성입니다. 지수 하락기에 상대적으로 버티며 현금 흐름을 만듭니다.' };
     else if (sumTop(1) >= 0.4) p = { name: '한 종목 의존형', desc: '상위 한 종목이 포트폴리오의 절반 가까이를 차지합니다. 그 종목의 실적·악재가 전체 수익률을 좌우합니다.' };
     else if (effN >= 7 && topShare < 0.32 && (betaW || 1) <= 1.2) p = { name: '분산형 코어 포트폴리오', desc: '종목 수와 섹터가 고르게 퍼져 있고 변동성도 시장 수준입니다. 오래 들고 가기 좋은 구조입니다.' };
     else p = { name: '균형 성장형', desc: '성장주와 방어주, 국내와 미국이 섞여 있습니다. 어느 한쪽으로 크게 치우치지 않은 중간 성격입니다.' };
@@ -537,7 +538,7 @@
       '<h3>② 밸류에이션 <span class="h3sub">시장 평균 대비</span></h3>' +
       '<div class="valgrade ' + r.valGrade.cls + '">' + r.valGrade.label + '<span>시장 대비 ' + (r.avgPrem == null ? '—' : (r.avgPrem > 0 ? '+' : '') + pct(r.avgPrem)) + '</span></div>' +
       valRows +
-      '<p class="miniline muted">가중평균은 각 종목의 PER·PBR·PSR을 비중으로 가중해 더한 값입니다. 비교 기준은 국내·미국 비중으로 섞은 시장 평균(코스피 ' + num3(state.bm.KR.per) + '배 · S&amp;P500 ' + num3(state.bm.US.per) + '배)입니다.</p>' +
+      '<p class="miniline muted">가중평균은 각 종목의 PER·PBR·PSR을 비중으로 가중해 더한 값입니다. 비교 기준은 국내·미국 비중으로 섞은 시장 평균(코스피 ' + num3(state.bm.KR.per, 2) + '배 · S&amp;P500 ' + num3(state.bm.US.per, 1) + '배)입니다.</p>' +
       '</section>' +
 
       '<section class="card rep-card wide">' +
@@ -553,12 +554,12 @@
       '<section class="card rep-card wide">' +
       '<h3>④ 배당과 변동성</h3>' +
       '<div class="statgrid four">' +
-      '<div><span>가중 배당수익률</span><b>' + num3(r.divW * 100, 2) + '%</b></div>' +
+      '<div><span>가중 배당수익률</span><b>' + num3(r.divW, 2) + '%</b></div>' +
       '<div><span>가중 베타</span><b>' + (r.betaW == null ? '—' : num3(r.betaW, 2)) + '</b></div>' +
       '<div><span>변동성 그룹</span><b>' + r.betaLabel + '</b></div>' +
       '<div><span>방어 자산 비중</span><b>' + pct(r.defensive) + '</b></div>' +
       '</div>' +
-      '<p class="miniline muted">배당수익률은 연 100만 원 투자 시 세전 ' + Math.round(r.divW * 1000000).toLocaleString('ko-KR') + '원 수준입니다(세금·환전 비용 제외). 베타는 시장이 1% 움직일 때 이 포트폴리오가 평균 몇 % 움직이는지를 나타냅니다.</p>' +
+      '<p class="miniline muted">배당수익률은 연 100만 원 투자 시 세전 ' + Math.round(r.divW / 100 * 1000000).toLocaleString('ko-KR') + '원 수준입니다(세금·환전 비용 제외). 베타는 시장이 1% 움직일 때 이 포트폴리오가 평균 몇 % 움직이는지를 나타냅니다.</p>' +
       '</section>' +
       '</div>' +
 
