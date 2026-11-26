@@ -1,21 +1,11 @@
 /* 개미일지 계산기 — 공용 스타일 */
+/* 기본은 라이트. 다크 변수는 오직 html[data-theme="dark"]에서만 적용된다.
+   (data-theme 속성이 없거나 스크립트가 막혀도 다크로 뒤집히지 않도록 :root는 라이트 고정)
+   color-scheme: only light 는 삼성 인터넷·모바일 크롬의 '사이트 강제 다크모드'(Auto Dark Theme)를
+   끄는 선언이다. color-scheme:light 만으로는 브라우저가 임의로 어둡게 뒤집을 수 있다. */
 :root{
-  --bg:#070b14;
-  --bg-soft:#0b1220;
-  --card:#101a2c;
-  --card-2:#152136;
-  --line:#1e2c45;
-  --text:#e8eefc;
-  --muted:#8ea2c4;
-  --accent:#4c8dff;
-  --accent-2:#22d3ee;
-  --up:#22c55e;
-  --down:#f87171;
-  --warn:#fbbf24;
-  --radius:18px;
-  --shadow:0 18px 40px -24px rgba(0,0,0,.9);
-}
-[data-theme="light"]{
+  color-scheme:light;
+  color-scheme:only light;
   --bg:#f5f7fb;
   --bg-soft:#ffffff;
   --card:#ffffff;
@@ -28,7 +18,25 @@
   --up:#15803d;
   --down:#dc2626;
   --warn:#b45309;
+  --radius:18px;
   --shadow:0 18px 40px -26px rgba(15,23,42,.35);
+}
+html[data-theme="dark"]{
+  color-scheme:dark;
+  color-scheme:only dark;
+  --bg:#070b14;
+  --bg-soft:#0b1220;
+  --card:#101a2c;
+  --card-2:#152136;
+  --line:#1e2c45;
+  --text:#e8eefc;
+  --muted:#8ea2c4;
+  --accent:#4c8dff;
+  --accent-2:#22d3ee;
+  --up:#22c55e;
+  --down:#f87171;
+  --warn:#fbbf24;
+  --shadow:0 18px 40px -24px rgba(0,0,0,.9);
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
@@ -50,7 +58,7 @@ header.site{
   backdrop-filter:blur(14px);border-bottom:1px solid var(--line);
 }
 header.site .bar{display:flex;align-items:center;gap:14px;height:62px}
-.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:17px;color:var(--text);letter-spacing:-.02em}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:17px;color:var(--text);letter-spacing:-.02em;white-space:nowrap;flex:0 0 auto}
 .brand:hover{text-decoration:none}
 .brand .dot{width:26px;height:26px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;font-size:14px;color:#06101f}
 nav.top{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
@@ -66,13 +74,13 @@ nav.top a:hover,nav.top a.on{color:var(--text);background:var(--card-2);text-dec
 /* hero */
 .aura{position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:
-    radial-gradient(46vw 36vw at 6% -8%, rgba(76,141,255,.22), transparent 70%),
-    radial-gradient(40vw 32vw at 98% 108%, rgba(34,211,238,.13), transparent 70%);
-}
-[data-theme="light"] .aura{
-  background:
     radial-gradient(46vw 36vw at 6% -8%, rgba(29,92,246,.15), transparent 70%),
     radial-gradient(40vw 32vw at 98% 108%, rgba(14,155,179,.10), transparent 70%);
+}
+html[data-theme="dark"] .aura{
+  background:
+    radial-gradient(46vw 36vw at 6% -8%, rgba(76,141,255,.22), transparent 70%),
+    radial-gradient(40vw 32vw at 98% 108%, rgba(34,211,238,.13), transparent 70%);
 }
 .hero{padding:56px 0 30px;position:relative}
 .hero .inner{position:relative}
@@ -208,6 +216,19 @@ footer.site .fine{line-height:1.7;font-size:12.5px;max-width:760px}
 .doc th{background:var(--card-2);font-weight:750}
 .backlink{display:inline-block;margin-top:26px;font-weight:700}
 .adslot{display:none}
+
+/* 태블릿·폴드 폭(641~1000px): 로고가 두 줄로 꺾이거나 메뉴가 두 줄로 접히지 않도록
+   로고는 한 줄 고정, 메뉴는 한 줄 가로 스크롤로 내린다 */
+@media(max-width:1000px){
+  header.site .bar{height:auto;flex-wrap:wrap;padding:9px 0 6px;row-gap:2px}
+  nav.top{
+    order:3;flex:1 0 100%;margin-left:0;gap:2px;flex-wrap:nowrap;
+    overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+  }
+  nav.top::-webkit-scrollbar{display:none}
+  nav.top a{font-size:13.5px;padding:6px 9px;white-space:nowrap;flex:0 0 auto}
+  .themebtn{margin-left:auto;width:36px;height:36px;border-radius:11px}
+}
 
 /* 모바일 헤더 */
 @media(max-width:640px){
