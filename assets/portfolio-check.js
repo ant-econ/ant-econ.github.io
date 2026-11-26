@@ -476,6 +476,14 @@
     return out;
   }
 
+  function firstNew(cands) {
+    for (var i = 0; i < cands.length; i++) {
+      var s = stockByCode(cands[i]);
+      if (s && existing(s.sym) < 0) return s.sym;
+    }
+    return pickList(cands)[0] || null;
+  }
+
   function exampleChips(codes) {
     return (codes || []).filter(function (c) { return stockByCode(c); }).slice(0, 4).map(function (c) {
       var s = stockByCode(c);
@@ -531,7 +539,7 @@
     /* 1) 단일 종목·상위 종목 과집중 */
     if (r.top1 > 0.25 || hhiPts > 2500) {
       var urgentC = (r.top1 >= 0.4 || hhiPts >= 4000);
-      var codeC = usSide ? 'SPY' : '069500';
+      var codeC = usSide ? (firstNew(['SPY', 'QQQ', 'DIA']) || 'SPY') : (firstNew(['069500', 'SPY']) || '069500');
       var shrink = r.top1 >= 0.4 ? 0.20 : 0.15;
       out.push({
         id: 'concentration', level: urgentC ? 'urgent' : 'rec',
@@ -566,10 +574,13 @@
         if (cand.length && picks.indexOf(cand[0]) < 0) picks.push(cand[0]);
       }
       var chipCodes = [];
-      gaps.forEach(function (k) {
-        chipCodes = chipCodes.concat(pickList(SEC_EXAMPLES[k][first]), pickList(SEC_EXAMPLES[k][second]));
-      });
-      chipCodes = chipCodes.filter(function (c, i) { return chipCodes.indexOf(c) === i; }).slice(0, 4);
+      for (var ci = 0; ci < 2 && chipCodes.length < 4; ci++) {
+        for (var gj = 0; gj < gaps.length && chipCodes.length < 4; gj++) {
+          var cList = pickList(SEC_EXAMPLES[gaps[gj]][first]).concat(pickList(SEC_EXAMPLES[gaps[gj]][second]));
+          var pickOne = cList[ci];
+          if (pickOne && chipCodes.indexOf(pickOne) < 0) chipCodes.push(pickOne);
+        }
+      }
       var assetsS = [];
       if (picks[0]) assetsS.push({ code: picks[0], w: picks[1] ? 0.08 : 0.12 });
       if (picks[1]) assetsS.push({ code: picks[1], w: 0.07 });
@@ -765,16 +776,20 @@
   }
 
   function simPanelHtml(base, simR, sim) {
-    function fmtv(v, d) { return (v == null || !isFinite(v)) ? '—' : num3(v, d); }
-    function cell(label, b, a, unit, dir, d) {
+    function fmtv(v, d, comma) {
+      if (v == null || !isFinite(v)) return '—';
+      var s = Number(v).toFixed(d);
+      return comma ? s.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : s;
+    }
+    function cell(label, b, a, unit, dir, d, vunit, comma) {
       var body;
       if (b == null || a == null || !isFinite(b) || !isFinite(a)) {
-        body = '<b>' + fmtv(b, d) + '<i>→</i>' + fmtv(a, d) + '</b>';
+        body = '<b>' + fmtv(b, d, comma) + (vunit || '') + '<i>→</i>' + fmtv(a, d, comma) + (vunit || '') + '</b>';
       } else {
         var diff = a - b, eps = Math.pow(10, -d) / 2;
         var cls = Math.abs(diff) < eps ? 'flat' : ((diff * dir) > 0 ? 'up' : 'down');
-        var txt = Math.abs(diff) < eps ? '변화 없음' : (diff > 0 ? '+' : '−') + num3(Math.abs(diff), d) + unit;
-        body = '<b>' + fmtv(b, d) + '<i>→</i>' + fmtv(a, d) + '</b><u class="' + cls + '">' + txt + '</u>';
+        var txt = Math.abs(diff) < eps ? '변화 없음' : (diff > 0 ? '+' : '−') + fmtv(Math.abs(diff), d, comma) + unit;
+        body = '<b>' + fmtv(b, d, comma) + (vunit || '') + '<i>→</i>' + fmtv(a, d, comma) + (vunit || '') + '</b><u class="' + cls + '">' + txt + '</u>';
       }
       return '<div class="simcell"><span>' + label + '</span>' + body + '</div>';
     }
@@ -794,14 +809,14 @@
       cell('밸류에이션 점수', base.scores.v, simR.scores.v, '점', 1, 0) +
       cell('섹터 균형 점수', base.scores.b, simR.scores.b, '점', 1, 0) +
       cell('실질 분산 종목', base.effN, simR.effN, '개', 1, 1) +
-      cell('상위 1종목 비중', base.top1 * 100, simR.top1 * 100, '%p', -1, 1) +
-      cell('HHI 지수', base.hhi * 10000, simR.hhi * 10000, '', -1, 0) +
-      cell('가중 PER', basePer, simPer, '배', -1, 1) +
-      cell('방어 자산 비중', base.defensive * 100, simR.defensive * 100, '%p', 1, 1) +
+      cell('상위 1종목 비중', base.top1 * 100, simR.top1 * 100, '%p', -1, 1, '%') +
+      cell('HHI 지수', base.hhi * 10000, simR.hhi * 10000, '', -1, 0, '', true) +
+      cell('가중 PER', basePer, simPer, '배', -1, 1, '배') +
+      cell('방어 자산 비중', base.defensive * 100, simR.defensive * 100, '%p', 1, 1, '%') +
       cell('가중 베타', base.betaW, simR.betaW, '', -1, 2) +
       '</div>' +
-      '<p class="simnote">기존 ' + base.n + '종목 비중을 ' + pctx(1 - sim.inject) + '씩 비례 축소하고 ' + esc(sim.label) +
-      '을(를) 더한 구성입니다. 세금·수수료·매매 단가는 반영하지 않았고, 실제 저장된 보유 구성은 바뀌지 않습니다.</p>' +
+      '<p class="simnote">기존 ' + base.n + '종목 비중을 ' + pctx(1 - sim.inject) + '씩 비례 축소하고, 여기에 ' + esc(sim.label) +
+      '를 더한 구성입니다. 세금·수수료·매매 단가는 반영하지 않았고, 실제 저장된 보유 구성은 바뀌지 않습니다.</p>' +
       '</div>';
   }
 
