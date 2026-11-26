@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ko" data-theme="dark">
+<html lang="ko" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>미국주식 양도소득세·배당·ISA·연금 계산기 7종 | 개미일지 계산기</title>
-<meta name="description" content="미국주식 양도소득세(22%·기본공제 250만원), 배당소득세와 건강보험, ISA·연금저축 세액공제, S&amp;P500 vs 나스닥100, 환율 손익분기, 물타기 평단가, 국내 vs 미국 ETF 비용까지 7가지 계산기를 무료로 제공합니다.">
+<title>미국주식 양도소득세·배당 계산기 7종 · AI 포트폴리오 진단 | 개미일지 계산기</title>
+<meta name="description" content="미국주식 양도소득세(22%·기본공제 250만원), 배당소득세와 건강보험, ISA·연금저축 세액공제, S&amp;P500 vs 나스닥100, 환율 손익분기, 물타기 평단가, ETF 비용 계산기 7종을 무료로. 내 포트폴리오를 0~100점으로 진단하는 AI 포트폴리오 진단기와 어제 장 트레이딩 게임도 함께 제공합니다.">
 <meta name="keywords" content="미국주식 양도소득세 계산기, 해외주식 양도세, 배당소득세 계산기, 금융소득종합과세, 건강보험 피부양자, ISA 계산기, 연금저축 세액공제, S&P500 나스닥100 비교, 환율 손익분기, 물타기 계산기, ETF 보수 비교, 절세">
 <meta name="author" content="개미일지 계산기">
 <meta name="robots" content="index,follow,max-image-preview:large">
@@ -15,16 +15,107 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="개미일지 계산기">
 <meta property="og:locale" content="ko_KR">
-<meta property="og:title" content="미국주식 양도소득세·복리·배당 실수령액 계산기">
+<meta property="og:title" content="주식 세금·배당 계산기 7종 · AI 포트폴리오 진단 | 개미일지 계산기">
 <meta property="og:description" content="양도세 22%, 복리 적립식 시뮬레이션, 배당 실수령액까지 한 화면에서. 세법 원리와 절세 팁도 함께.">
 <meta property="og:url" content="https://ant-econ.github.io/">
 <meta property="og:image" content="https://ant-econ.github.io/assets/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="미국주식 양도소득세·복리·배당 계산기">
+<meta name="twitter:title" content="주식 세금·배당 계산기 7종 · AI 포트폴리오 진단">
 <meta name="twitter:description" content="미국주식 세금부터 배당 실수령액까지 한 번에 계산하는 무료 금융 계산기.">
-<meta name="theme-color" content="#070b14">
+<meta name="theme-color" content="#f6f8fc">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/style.css?v=20261126c">
+<style>
+/* ===== 홈 라이트 핀테크 허브 (2026-11 리뉴얼) ===== */
+html[data-theme="light"]{
+  color-scheme:light;
+  --bg:#f6f8fc; --bg-soft:#ffffff; --card:#ffffff; --card-2:#f3f6fc;
+  --line:#e6ebf3; --text:#0f172a; --muted:#5b6b85;
+  --accent:#2563eb; --accent-2:#0ea5e9;
+  --up:#0f9d58; --down:#e11d48; --warn:#d97706;
+  --radius:20px; --shadow:0 10px 30px rgba(15,23,42,.06);
+}
+html[data-theme="dark"]{color-scheme:dark}
+html[data-theme="light"] .aura{
+  background:
+    radial-gradient(46vw 34vw at 4% -10%, rgba(37,99,235,.15), transparent 70%),
+    radial-gradient(38vw 28vw at 100% -4%, rgba(14,165,233,.12), transparent 72%),
+    radial-gradient(44vw 36vw at 92% 108%, rgba(16,185,129,.08), transparent 72%);
+}
+html[data-theme="light"] header.site{background:rgba(255,255,255,.86);box-shadow:0 1px 0 rgba(15,23,42,.04)}
+html[data-theme="light"] .calcard:hover{box-shadow:0 18px 34px -26px rgba(15,23,42,.45)}
+
+.hub{padding:42px 0 6px}
+.hub .eyebrow{margin-bottom:14px}
+.hub h1{font-size:clamp(27px,4.6vw,45px);line-height:1.2;letter-spacing:-.042em;margin:0 0 12px;font-weight:900}
+.hub h1 em{font-style:normal;background:linear-gradient(100deg,#2563eb 6%,#0ea5e9 92%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hub .lede{max-width:700px;font-size:15.5px;line-height:1.72;color:var(--muted);margin:0}
+
+.hubgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-top:26px}
+.hubcard{
+  grid-column:span 2;position:relative;display:flex;flex-direction:column;
+  background:var(--card);border:1px solid var(--line);border-radius:22px;
+  padding:13px 13px 15px;color:var(--text);text-decoration:none;
+  box-shadow:var(--shadow);transition:transform .18s,border-color .18s,box-shadow .18s;
+}
+.hubcard:hover{text-decoration:none;transform:translateY(-3px);border-color:color-mix(in srgb,var(--accent) 40%,var(--line));box-shadow:0 22px 40px -28px rgba(15,23,42,.5)}
+.pv{position:relative;height:139px;border-radius:16px;overflow:hidden;background:linear-gradient(160deg,#eef4ff,#f8fbff 58%,#edfaf5);border:1px solid #e3ecfb;display:grid;place-items:center}
+html[data-theme="dark"] .pv{background:linear-gradient(160deg,#111c30,#0d1728 58%,#0d1f28);border-color:#1e2c45}
+.pv svg{width:100%;height:100%;display:block}
+.pvbadge{position:absolute;top:9px;left:9px;z-index:2;font-size:10px;font-weight:900;letter-spacing:.01em;color:#1d4ed8;background:#fff;border:1px solid #dbe7fb;border-radius:999px;padding:3px 9px}
+html[data-theme="dark"] .pvbadge{color:#9db8e8;background:#0f1a2c;border-color:#22334f}
+.pvfoot{position:absolute;bottom:8px;right:9px;font-size:9.5px;font-weight:800;color:#4a5b78;background:rgba(255,255,255,.82);border-radius:999px;padding:2px 8px}
+html[data-theme="dark"] .pvfoot{color:#9db0cc;background:rgba(10,18,32,.82)}
+.hbody{display:flex;flex-direction:column;gap:7px;padding:12px 4px 0;flex:1}
+.hkicker{font-size:10.5px;font-weight:900;letter-spacing:.07em;color:var(--accent)}
+.hubcard h2{font-size:17px;letter-spacing:-.03em;margin:0;line-height:1.32;font-weight:900}
+.hubcard p{margin:0;font-size:12.7px;line-height:1.62;color:var(--muted)}
+.hmeta{display:flex;gap:5px;flex-wrap:wrap;margin-top:1px}
+.hmeta span{font-size:10.5px;font-weight:800;color:var(--muted);background:var(--card-2);border:1px solid var(--line);border-radius:7px;padding:2px 7px}
+.hcta{margin-top:auto;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13.2px;font-weight:900;border-radius:13px;padding:11px 13px;background:var(--card-2);border:1px solid var(--line);color:var(--text)}
+.hcta i{font-style:normal;transition:transform .18s}
+.hubcard:hover .hcta i{transform:translateX(3px)}
+.hcta.primary{background:linear-gradient(135deg,#2563eb,#1d4ed8);border-color:transparent;color:#fff;box-shadow:0 12px 24px -16px rgba(37,99,235,.95)}
+.hcta.game{background:linear-gradient(135deg,#111827,#25324a);border-color:transparent;color:#fff;box-shadow:0 12px 24px -18px rgba(15,23,42,.9)}
+.hclinks{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:auto}
+.hclinks a{display:flex;align-items:center;gap:6px;font-size:11.6px;font-weight:800;color:var(--text);background:var(--card-2);border:1px solid var(--line);border-radius:10px;padding:7px 8px;text-decoration:none;transition:.14s}
+.hclinks a:hover{border-color:color-mix(in srgb,var(--accent) 50%,var(--line));color:var(--accent);text-decoration:none}
+.hclinks a em{font-style:normal;font-size:12px;line-height:1}
+.hclinks a.all{grid-column:1/-1;justify-content:center;color:var(--accent);border-style:dashed}
+
+.mkstrip{margin-top:16px}
+.mksbar{display:none;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:13px 15px;box-shadow:var(--shadow)}
+.mksbar.on{display:block}
+.mkshead{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:9px}
+.mkshead b{font-size:13px;letter-spacing:-.02em}
+.mkshead span{font-size:10.5px;color:var(--muted)}
+.mksgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.mkcell{background:var(--card-2);border:1px solid var(--line);border-radius:11px;padding:8px 10px}
+.mkcell span{display:block;font-size:10.3px;color:var(--muted);font-weight:700}
+.mkcell b{font-size:15px;letter-spacing:-.03em;line-height:1.35}
+.mkcell i{display:block;font-style:normal;font-size:9.8px;color:var(--muted);margin-top:1px}
+
+.factrow{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.factrow span{font-size:11.3px;color:var(--muted);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 11px}
+.factrow b{color:var(--text);font-weight:900}
+
+@media(max-width:960px){
+  .hubgrid{grid-template-columns:1fr 1fr}
+  .hubcard{grid-column:span 1}
+  .hubgrid .hubcard:nth-child(3){grid-column:1/-1}
+  .mksgrid{grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:640px){
+  .hub{padding:30px 0 4px}
+  .hub h1{font-size:27px}
+  .hub .lede{font-size:14px}
+  .hubgrid{grid-template-columns:1fr;gap:12px;margin-top:20px}
+  .hubgrid .hubcard:nth-child(3){grid-column:auto}
+  .pv{height:128px}
+  .mksgrid{grid-template-columns:1fr 1fr}
+  .factrow span{font-size:10.8px;padding:4px 9px}
+}
+</style>
 <script type="application/ld+json">
 {
  "@context": "https://schema.org",
@@ -230,12 +321,12 @@
   <div class="wrap bar">
     <a class="brand" href="index.html"><span class="dot">🐜</span> 개미일지 계산기</a>
     <nav class="top">
+      <a href="portfolio-check.html">📊 포트폴리오 진단</a>
+      <a href="market-replay.html">🎮 트레이딩 게임</a>
+      <a href="#calculators">계산기 7종</a>
       <a href="#tax" data-tab="tax">양도세</a>
       <a href="#compound" data-tab="compound">복리</a>
       <a href="#dividend" data-tab="dividend">배당</a>
-      <a href="market-replay.html">🎮 트레이딩 게임</a>
-      <a href="portfolio-check.html">📊 포트폴리오 진단</a>
-      <a href="#calculators">계산기 7종</a>
       <a href="about.html">소개</a>
     </nav>
     <button class="themebtn" id="themebtn" aria-label="화면 테마 바꾸기" title="다크/라이트 전환">☾</button>
@@ -243,48 +334,128 @@
 </header>
 
 <main>
-<section class="hero">
-  <div class="wrap inner">
-    <div class="eyebrow">2026년 기준 세법 반영</div>
-    <h1>세금 떼고 <em>얼마 남는지</em>,<br>숫자로 바로 확인하세요</h1>
-    <p class="lede">미국주식 양도세 22%, 적립식 복리 성장, 배당 실수령액부터 ISA·연금 절세, 환율 손익분기, 물타기 평단가, ETF 비용까지. 입력하면 즉시 계산되고 그래프로 보여 드립니다. 회원가입도, 앱 설치도 필요 없습니다.</p>
-    <div class="hero-stats">
-      <div class="chipstat"><b>250만원</b>연간 양도차익 기본공제</div>
-      <div class="chipstat"><b>22%</b>양도세율(지방세 포함)</div>
-      <div class="chipstat"><b>15%</b>미국 배당 원천징수</div>
-      <div class="chipstat"><b>2,000만원</b>금융소득 종합과세 기준</div>
+<section class="hub">
+  <div class="wrap">
+    <div class="eyebrow">무료 · 회원가입 없이 · 2026년 11월 기준</div>
+    <h1>내 주식 <em>위험한지</em>부터 <em>세금</em>까지,<br>1분이면 숫자로 확인</h1>
+    <p class="lede">포트폴리오 진단기로 0~100점을 매겨 보고, 어제 장 트레이딩 게임으로 감각을 확인하세요. 실제로 내야 할 금액은 양도세·배당·ISA·환율 계산기 7종이 바로 계산합니다. 회원가입도 앱 설치도 계좌 연동도 없고, 입력한 내용은 브라우저 밖으로 나가지 않습니다.</p>
+
+    <div class="hubgrid">
+
+      <!-- ① AI 포트폴리오 진단기 -->
+      <a class="hubcard" href="portfolio-check.html">
+        <div class="pv" aria-hidden="true">
+          <span class="pvbadge">NEW · 0~100점 진단</span>
+          <svg viewBox="0 0 200 150">
+            <g stroke="#c8d9f6" stroke-width="1" fill="none">
+              <polygon points="100,21 151.4,58.3 131.7,118.7 68.3,118.7 48.6,58.3"/>
+              <polygon points="100,39 134.2,63.9 121.2,104.1 78.8,104.1 65.8,63.9"/>
+              <polygon points="100,57 117.1,69.4 110.6,89.6 89.4,89.6 82.9,69.4"/>
+              <line x1="100" y1="75" x2="100" y2="21"/><line x1="100" y1="75" x2="151.4" y2="58.3"/>
+              <line x1="100" y1="75" x2="131.7" y2="118.7"/><line x1="100" y1="75" x2="68.3" y2="118.7"/>
+              <line x1="100" y1="75" x2="48.6" y2="58.3"/>
+            </g>
+            <polygon points="100,29.1 128.3,65.8 122.2,105.6 81,101.2 61.5,62.5" fill="rgba(37,99,235,.16)" stroke="#2563eb" stroke-width="2" stroke-linejoin="round"/>
+            <g fill="#2563eb">
+              <circle cx="100" cy="29.1" r="2.6"/><circle cx="128.3" cy="65.8" r="2.6"/>
+              <circle cx="122.2" cy="105.6" r="2.6"/><circle cx="81" cy="101.2" r="2.6"/>
+              <circle cx="61.5" cy="62.5" r="2.6"/>
+            </g>
+            <g font-size="7.6" font-weight="700" fill="#5b6b85" text-anchor="middle">
+              <text x="100" y="15">분산성</text><text x="168" y="55">밸류</text><text x="139" y="130">섹터</text>
+              <text x="61" y="130">배당</text><text x="32" y="55">안정성</text>
+            </g>
+          </svg>
+          <span class="pvfoot">5축 레이더 · 예시 화면</span>
+        </div>
+        <div class="hbody">
+          <div class="hkicker">AI 포트폴리오 진단</div>
+          <h2>내 포트폴리오, 얼마나 위험한가</h2>
+          <p>종목·비중만 넣으면 분산효과(HHI), 시장 대비 PER·PBR, 섹터 쏠림, 배당과 변동성을 한 번에 점수로. 보완안을 넣으면 점수가 몇 점 오르는지까지 비교합니다.</p>
+          <div class="hmeta"><span>3초 진단</span><span>149종목</span><span>서버 전송 없음</span></div>
+          <div class="hcta primary">내 포트폴리오 진단하기 <i>→</i></div>
+        </div>
+      </a>
+
+      <!-- ② 어제 장 트레이딩 게임 -->
+      <a class="hubcard" href="market-replay.html">
+        <div class="pv" aria-hidden="true">
+          <span class="pvbadge">NEW · 실제 5분봉</span>
+          <svg viewBox="0 0 200 150">
+            <g stroke="#dbe7f7" stroke-width="1" stroke-dasharray="3 4">
+              <line x1="8" y1="45" x2="192" y2="45"/><line x1="8" y1="75" x2="192" y2="75"/><line x1="8" y1="105" x2="192" y2="105"/>
+            </g>
+            <g stroke-width="1.2">
+              <line x1="17" y1="100" x2="17" y2="118" stroke="#0f9d58"/><rect x="14" y="104" width="6" height="10" rx="1" fill="#0f9d58"/>
+              <line x1="30" y1="96" x2="30" y2="112" stroke="#0f9d58"/><rect x="27" y="99" width="6" height="9" rx="1" fill="#0f9d58"/>
+              <line x1="43" y1="94" x2="43" y2="108" stroke="#e11d48"/><rect x="40" y="96" width="6" height="9" rx="1" fill="#e11d48"/>
+              <line x1="56" y1="92" x2="56" y2="106" stroke="#0f9d58"/><rect x="53" y="94" width="6" height="8" rx="1" fill="#0f9d58"/>
+              <line x1="69" y1="84" x2="69" y2="100" stroke="#0f9d58"/><rect x="66" y="87" width="6" height="10" rx="1" fill="#0f9d58"/>
+              <line x1="82" y1="78" x2="82" y2="96" stroke="#e11d48"/><rect x="79" y="82" width="6" height="10" rx="1" fill="#e11d48"/>
+              <line x1="95" y1="80" x2="95" y2="98" stroke="#0f9d58"/><rect x="92" y="84" width="6" height="11" rx="1" fill="#0f9d58"/>
+              <line x1="108" y1="70" x2="108" y2="90" stroke="#0f9d58"/><rect x="105" y="73" width="6" height="13" rx="1" fill="#0f9d58"/>
+              <line x1="121" y1="66" x2="121" y2="84" stroke="#0f9d58"/><rect x="118" y="70" width="6" height="10" rx="1" fill="#0f9d58"/>
+              <line x1="134" y1="60" x2="134" y2="80" stroke="#e11d48"/><rect x="131" y="64" width="6" height="12" rx="1" fill="#e11d48"/>
+              <line x1="147" y1="58" x2="147" y2="74" stroke="#0f9d58"/><rect x="144" y="61" width="6" height="9" rx="1" fill="#0f9d58"/>
+              <line x1="160" y1="50" x2="160" y2="70" stroke="#0f9d58"/><rect x="157" y="54" width="6" height="12" rx="1" fill="#0f9d58"/>
+              <line x1="173" y1="44" x2="173" y2="62" stroke="#0f9d58"/><rect x="170" y="48" width="6" height="10" rx="1" fill="#0f9d58"/>
+            </g>
+            <g font-size="8" font-weight="800" fill="#1d4ed8">
+              <rect x="120" y="24" width="66" height="15" rx="7" fill="#fff" stroke="#dbe7fb"/>
+              <text x="127" y="34.5">내 잔고 +12.4%</text>
+            </g>
+          </svg>
+          <span class="pvfoot">146종목 · 예시 화면</span>
+        </div>
+        <div class="hbody">
+          <div class="hkicker">실전 트레이딩 게임</div>
+          <h2>어제 장을 그대로 다시 거래</h2>
+          <p>코스피·코스닥·나스닥·S&amp;P500 146종목 중 하나를 골라 직전 거래일 5분봉을 시간순으로 재생합니다. 시드 1,000만 원으로 시작해 내 잔고 그대로 이어서 매매하세요.</p>
+          <div class="hmeta"><span>로그인 없음</span><span>5분봉 리플레이</span><span>모의투자</span></div>
+          <div class="hcta game">내 계좌로 시작하기 <i>→</i></div>
+        </div>
+      </a>
+
+      <!-- ③ 계산기 7종 -->
+      <div class="hubcard">
+        <div class="hbody" style="padding-top:2px">
+          <div class="hkicker">주식 · 세금 · 배당 계산기</div>
+          <h2>필요한 금액은 7종 계산기가</h2>
+          <p>양도소득세 22%, 배당 실수령액, ISA·연금 절세, 지수 비교, 환율 손익분기, 물타기 평단가, ETF 비용까지 — 각각 독립된 페이지에서 깊이 계산합니다.</p>
+          <div class="hclinks">
+            <a href="us-stock-tax-guide.html"><em>💰</em>양도소득세</a>
+            <a href="dividend-health-insurance.html"><em>🏥</em>배당·건보료</a>
+            <a href="sp500-vs-nasdaq100.html"><em>📈</em>S&amp;P500 vs 나스닥</a>
+            <a href="isa-pension-tax.html"><em>🧾</em>ISA·연금</a>
+            <a href="fx-breakeven.html"><em>💱</em>환율 손익분기</a>
+            <a href="avg-price-water.html"><em>📉</em>물타기·평단가</a>
+            <a href="etf-fee-drag.html"><em>🧮</em>국내 vs 미국 ETF</a>
+            <a class="all" href="#calculators">7종 한눈에 보기 ↓</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <section class="mkstrip" aria-label="오늘의 시장 지표">
+      <div class="mksbar" id="mksBar">
+        <div class="mkshead"><b>오늘의 시장 지표</b><span id="mksAsOf"></span></div>
+        <div class="mksgrid" id="mksGrid"></div>
+      </div>
+    </section>
+
+    <div class="factrow">
+      <span><b>250만원</b> 양도차익 기본공제</span>
+      <span><b>22%</b> 해외주식 양도세율</span>
+      <span><b>15%</b> 미국 배당 원천징수</span>
+      <span><b>2,000만원</b> 금융소득 종합과세</span>
     </div>
   </div>
 </section>
 
-
-<div class="wrap">
-  <a href="market-replay.html" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;text-decoration:none;margin-top:26px;padding:20px 22px;border-radius:20px;border:1px solid #31313A;background:linear-gradient(135deg,#17171C 0%,#23232E 60%,#1B2436 100%);box-shadow:0 20px 44px -30px rgba(0,0,0,.9)">
-    <div style="font-size:30px;line-height:1">🎮</div>
-    <div style="flex:1 1 320px;min-width:0">
-      <div style="font-size:11.5px;font-weight:800;color:#F04452;letter-spacing:.02em">NEW · 실제 5분봉 리플레이</div>
-      <div style="font-size:18px;font-weight:800;color:#F2F4F6;letter-spacing:-.03em;margin:3px 0 4px">어제 장 실전 트레이딩 게임</div>
-      <div style="font-size:13px;color:#8B95A1;line-height:1.55">코스피·코스닥·나스닥·S&amp;P500·다우존스 146종목 중 하나를 골라, 직전 거래일 실제 시세를 시간순으로 다시 거래합니다. 첫 시드 1,000만 원을 한 번 받고, 그다음부터는 내 계좌 잔고 그대로 이어서 매매하세요.</div>
-    </div>
-    <div style="flex:0 0 auto;background:#3182F6;color:#fff;font-size:13.5px;font-weight:800;padding:12px 20px;border-radius:14px">내 계좌로 시작 →</div>
-  </a>
-</div>
-
-<div class="wrap">
-  <a href="portfolio-check.html" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;text-decoration:none;margin-top:12px;padding:20px 22px;border-radius:20px;border:1px solid #31313A;background:linear-gradient(135deg,#141B2C 0%,#1B2440 55%,#0F2A33 100%);box-shadow:0 20px 44px -30px rgba(0,0,0,.9)">
-    <div style="font-size:30px;line-height:1">📊</div>
-    <div style="flex:1 1 320px;min-width:0">
-      <div style="font-size:11.5px;font-weight:800;color:#22D3EE;letter-spacing:.02em">NEW · 무료 진단</div>
-      <div style="font-size:18px;font-weight:800;color:#F2F4F6;letter-spacing:-.03em;margin:3px 0 4px">내 포트폴리오 AI 진단기</div>
-      <div style="font-size:13px;color:#8B95A1;line-height:1.55">종목과 비중만 넣으면 분산효과(HHI)·시장 대비 PER·PBR·PSR·섹터 쏠림을 0~100점 리포트로. 국내·미국 149종목, 입력한 내용은 서버로 전송되지 않습니다.</div>
-    </div>
-    <div style="flex:0 0 auto;background:#0EA5B7;color:#04121A;font-size:13.5px;font-weight:800;padding:12px 20px;border-radius:14px">3초 만에 진단 →</div>
-  </a>
-</div>
-
 <div class="wrap">
   <section id="calculators" style="padding-top:26px">
-    <h2 style="font-size:20px;margin:0 0 4px;letter-spacing:-.025em">전문 계산기 7종</h2>
+    <h2 style="font-size:20px;margin:0 0 4px;letter-spacing:-.025em">계산기 7종 — 무엇을 계산하나</h2>
     <p class="mini" style="margin:0">세금·배당·절세 계좌·지수 비교·환율·평단가·ETF 비용을 각각 독립된 페이지에서 깊이 있게 다룹니다.</p>
     <div class="calgrid">
       <a class="calcard" href="us-stock-tax-guide.html">
@@ -578,6 +749,36 @@
     <p class="fine">개미일지 계산기는 2026년 기준 세법을 바탕으로 한 참고용 계산 도구입니다. 실제 세액은 개인별 소득·환율·증권사 처리에 따라 달라질 수 있으며, 세무·투자 판단의 최종 책임은 이용자에게 있습니다. © 2026 개미일지 계산기.</p>
   </div>
 </footer>
+<script>
+/* 홈 — 오늘의 시장 지표 (data/portfolio-stocks.json 실데이터만 표시, 실패 시 블록 숨김) */
+(function () {
+  function fmt(v, d) { return (v == null || !isFinite(v)) ? '—' : Number(v).toFixed(d); }
+  function comma(v) { return Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+  fetch('data/portfolio-stocks.json', { cache: 'no-cache' })
+    .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function (d) {
+      var bm = d.benchmarks || {}, kr = bm.KR || {}, us = bm.US || {};
+      if (kr.per == null && us.per == null) return;
+      var fx = d.fx && d.fx.USDKRW;
+      var cells = [
+        ['코스피 PER', fmt(kr.per, 2) + '배', '배당 ' + fmt(kr.div, 2) + '%'],
+        ['S&amp;P 500 PER', fmt(us.per, 1) + '배', '배당 ' + fmt(us.div, 2) + '%'],
+        ['코스피 PBR', fmt(kr.pbr, 2) + '배', '코스피 200 기준'],
+        ['S&amp;P 500 PBR', fmt(us.pbr, 2) + '배', '구성 종목 합산'],
+        ['원/달러', fx ? comma(fx) + '원' : '—', '진단기 적용 환율'],
+        ['진단 수록 종목', (d.stocks || []).length + '개', '국내·미국'],
+        ['기준일', d.asOf || '—', '종가·재무 지표']
+      ];
+      document.getElementById('mksGrid').innerHTML = cells.map(function (c) {
+        return '<div class="mkcell"><span>' + c[0] + '</span><b>' + c[1] + '</b><i>' + c[2] + '</i></div>';
+      }).join('');
+      document.getElementById('mksAsOf').textContent = '코스피·S&P 500 집계 · ' + (d.asOf || '');
+      document.getElementById('mksBar').className = 'mksbar on';
+    })
+    .catch(function () { /* 데이터를 못 읽으면 지표 블록을 그리지 않는다 */ });
+})();
+</script>
+
 <script src="assets/app.js"></script>
 </body>
 </html>

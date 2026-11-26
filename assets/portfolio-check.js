@@ -361,8 +361,12 @@
     var avgPrem = withP.length ? withP.reduce(function (a, m) { return a + m.premium; }, 0) / withP.length : null;
     var valGrade = gradeOf(avgPrem);
 
-    // dividend / beta
-    var divW = H.reduce(function (a, x) { return a + x.w * (x.h.div || 0); }, 0); // 단위: % (예: 2.5 = 2.5%)
+    // dividend / beta — 배당 데이터가 없는 종목을 0%로 깎지 않고, 값이 있는 종목 비중으로 재정규화
+    var divS = 0, divC = 0;
+    H.forEach(function (x) {
+      if (x.h.div != null && isFinite(x.h.div) && x.h.div >= 0) { divS += x.w * x.h.div; divC += x.w; }
+    });
+    var divW = divC > 0 ? divS / divC : 0; // 단위: % (예: 2.5 = 2.5%)
     var betaS = 0, betaC = 0;
     H.forEach(function (x) { if (x.h.beta != null) { betaS += x.w * x.h.beta; betaC += x.w; } });
     var betaW = betaC > 0 ? betaS / betaC : null;
@@ -387,6 +391,11 @@
     if (defensive >= 0.15) bScore = Math.min(100, bScore + 8);
     bScore = clamp(bScore, 0, 100);
     var total = Math.round(0.4 * dScore + 0.35 * vScore + 0.25 * bScore);
+
+    // ---- 5축 레이더 (위 점수와 같은 데이터에서 계산, 0~100 / 데이터 없으면 null) ----
+    var benchDiv = blend('div');
+    var divScore = (divC > 0 && benchDiv > 0) ? clamp(100 * divW / (2 * benchDiv), 0, 100) : null;
+    var stabScore = (betaC > 0 && betaW != null) ? clamp(100 - (betaW - 0.5) * 50, 0, 100) : null;
 
     // ---- personality ----
     var itW = (secW['IT'] || 0) + (secW['COMM'] || 0);
@@ -440,7 +449,8 @@
       n: n, hhi: hhi, effN: effN, top1: sumTop(1), top3: sumTop(3), sorted: sorted,
       krW: krW, usW: usW, secList: secList, thList: thList, topSec: topSec, topTheme: topTheme,
       metrics: metrics, avgPrem: avgPrem, valGrade: valGrade,
-      divW: divW, betaW: betaW, betaLabel: betaLabel, defensive: defensive, etfW: etfW,
+      divW: divW, divC: divC, betaW: betaW, betaC: betaC, betaLabel: betaLabel, defensive: defensive, etfW: etfW,
+      benchDiv: benchDiv, divScore: divScore, stabScore: stabScore,
       scores: { total: total, d: Math.round(dScore), v: Math.round(vScore), b: Math.round(bScore) },
       personality: p, comments: c, warns: warn, gaps: gaps, techThemeW: techThemeW, itW: itW
     };
@@ -770,6 +780,148 @@
     rerunTimer = setTimeout(function () { var r = diagnose(); if (r) renderReport(r, false); }, 280);
   }
 
+  /* ---------- 5축 레이더 · 예상 배당금 · 종목별 신호등 ---------- */
+  function benchOf(h) {
+    var bm = state.bm || {};
+    if (h.market === 'KR' && bm.KR) return bm.KR;
+    if (h.market === 'US' && bm.US) return bm.US;
+    var kr = bm.KR || {}, us = bm.US || {}, out = {};
+    ['per', 'pbr', 'psr', 'div'].forEach(function (k) {
+      if (kr[k] != null && us[k] != null) out[k] = (kr[k] + us[k]) / 2;
+      else out[k] = kr[k] != null ? kr[k] : us[k];
+    });
+    return out;
+  }
+
+  function stockGrade(h) {
+    if (h.sector === 'ETF' || h.sector === 'BOND') return { key: 'na', label: '지수 상품', cls: 'na' };
+    var b = benchOf(h), p = [];
+    if (h.per > 0 && b.per) p.push(h.per / b.per - 1);
+    if (h.pbr > 0 && b.pbr) p.push(h.pbr / b.pbr - 1);
+    if (!p.length) return { key: 'na', label: '판단불가', cls: 'na' };
+    return gradeOf(p.reduce(function (a, v) { return a + v; }, 0) / p.length);
+  }
+
+  function stockTableHtml(r) {
+    var rows = r.sorted.map(function (x) {
+      var h = x.h, g = stockGrade(h);
+      var sec = (SECTOR[h.sector] || SECTOR.ETC).label;
+      var mkt = h.market === 'KR' ? '국내' : (h.market === 'US' ? '미국' : '직접');
+      return '<tr>' +
+        '<td class="nm"><b>' + esc(h.name) + '</b><span class="mk">' + mkt + '</span></td>' +
+        '<td class="num"><span class="wbar"><i style="width:' + clamp(x.w * 100, 2, 100).toFixed(1) + '%"></i></span><span class="wnum">' + pct(x.w) + '</span></td>' +
+        '<td class="sec">' + esc(sec) + '</td>' +
+        '<td class="num">' + (h.per == null ? '—' : num3(h.per, 2)) + '</td>' +
+        '<td class="num">' + (h.pbr == null ? '—' : num3(h.pbr, 2)) + '</td>' +
+        '<td class="num">' + (h.div == null ? '—' : num3(h.div, 2) + '%') + '</td>' +
+        '<td class="num">' + (h.beta == null ? '—' : num3(h.beta, 2)) + '</td>' +
+        '<td class="vd"><span class="tgl ' + g.cls + '">' + g.label + '</span></td>' +
+        '</tr>';
+    }).join('');
+    return '<div class="stblwrap"><table class="stbl">' +
+      '<thead><tr><th>종목</th><th>비중</th><th>섹터</th><th>PER</th><th>PBR</th><th>배당률</th><th>베타</th><th>판정</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table></div>';
+  }
+
+  function dividendData(r) {
+    var base = moneyTotal(), assumed = !(base > 0);
+    if (assumed) base = 10000000;
+    var scale = r.divC > 0 ? 1 / r.divC : 0;
+    var annual = base * r.divW / 100;
+    var krY = 0, usY = 0, tot = 0;
+    r.sorted.forEach(function (x) {
+      var d = x.h.div;
+      if (d == null || !isFinite(d) || d < 0) return;
+      var c = x.w * d;
+      tot += c;
+      if (x.h.market === 'KR') krY += c; else usY += c;
+    });
+    var effRate = tot > 0 ? (krY * 0.154 + usY * 0.15) / tot : 0.15;
+    var tops = r.sorted.map(function (x) {
+      var d = (x.h.div == null || !isFinite(x.h.div)) ? null : x.h.div;
+      return { h: x.h, w: x.w, d: d, amt: (d == null || d <= 0) ? null : base * x.w * d * scale / 100 };
+    }).filter(function (o) { return o.amt != null && o.amt > 0; })
+      .sort(function (a, b) { return b.amt - a.amt; });
+    return {
+      base: base, assumed: assumed, annual: annual, monthly: annual / 12,
+      usd: annual / (state.fx || 1342.77), effRate: effRate, net: annual * (1 - effRate),
+      tops: tops.slice(0, 5)
+    };
+  }
+
+  function dividendCardHtml(r) {
+    var d = dividendData(r);
+    function fw(v) { return Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '원'; }
+    var tops = d.tops.map(function (o) {
+      var share = d.annual > 0 ? o.amt / d.annual : 0;
+      return '<li><span class="dnm">' + esc(o.h.name) + '</span>' +
+        '<span class="dbar"><i style="width:' + clamp(share * 100, 2, 100).toFixed(1) + '%"></i></span>' +
+        '<span class="dval">' + fw(o.amt) + '<em>' + pctx(share) + '</em></span></li>';
+    }).join('');
+    return '<div class="divcard">' +
+      '<div class="divtop">' +
+      '<div class="divmain"><span class="dlabel">연간 예상 배당금 (세전)</span>' +
+      '<b class="dbig">' + fw(d.annual) + '</b>' +
+      '<span class="dsub">월 평균 <b>' + fw(d.monthly) + '</b> · 달러 환산 <b>$' + Math.round(d.usd).toLocaleString('ko-KR') + '</b></span></div>' +
+      '<div class="divside"><span>원천징수 후 추정</span><b>' + fw(d.net) + '</b>' +
+      '<i>국내 15.4% · 미국 15% 적용, 실효 ' + num3(d.effRate * 100, 1) + '%</i></div>' +
+      '</div>' +
+      '<div class="baseline">기준 투자금 <b>' + fw(d.base) + '</b>' +
+      (d.assumed ? ' · 금액 모드가 아니어서 1,000만 원을 가정했습니다' : ' · 입력한 금액 합계') +
+      ' · 가중 배당수익률 <b>' + num3(r.divW, 2) + '%</b></div>' +
+      (tops ? '<div class="dtoplist"><div class="minihead">배당 기여 상위 종목</div><ul>' + tops + '</ul></div>'
+        : '<p class="miniline muted" style="margin-top:10px">배당수익률 데이터가 있는 종목이 없어 기여도를 계산하지 못했습니다.</p>') +
+      (r.divC < 0.995 ? '<p class="vnote">가중 배당수익률은 배당 정보가 있는 종목(비중 ' + pct(r.divC) + ')만으로 계산했습니다. 나머지 종목은 배당 데이터가 없어 제외했습니다.</p>' : '') +
+      '</div>';
+  }
+
+  function radarAxes(r) {
+    return [
+      { label: '분산성', score: r.scores.d, basis: '실질 ' + num3(r.effN) + '종목 · 상위 1종목 ' + pctx(r.top1) },
+      { label: '밸류에이션', score: r.avgPrem == null ? null : r.scores.v,
+        basis: r.avgPrem == null ? 'PER·PBR 데이터 없음' : '시장 대비 ' + (r.avgPrem > 0 ? '+' : '−') + pct(Math.abs(r.avgPrem)) + ' ' + r.valGrade.label },
+      { label: '섹터 균형', score: r.scores.b,
+        basis: r.topSec ? '최대 ' + r.topSec.label + ' ' + pctx(r.topSec.w) + ' · 방어 ' + pctx(r.defensive) : '섹터 정보 없음' },
+      { label: '배당 매력', score: r.divScore == null ? null : Math.round(r.divScore),
+        basis: r.divScore == null ? '배당 데이터 없음' : '배당 ' + num3(r.divW, 2) + '% · 시장 평균 ' + num3(r.benchDiv, 2) + '%' },
+      { label: '안정성', score: r.stabScore == null ? null : Math.round(r.stabScore),
+        basis: r.betaW == null ? '베타 데이터 없음' : '가중 베타 ' + num3(r.betaW, 2) + ' · ' + r.betaLabel }
+    ];
+  }
+
+  function radarSvg(axes) {
+    var n = axes.length, cx = 150, cy = 126, R = 80;
+    function pt(i, f) {
+      var a = -Math.PI / 2 + i * 2 * Math.PI / n;
+      return [cx + Math.cos(a) * R * f, cy + Math.sin(a) * R * f];
+    }
+    function ring(f) {
+      var s = [];
+      for (var i = 0; i < n; i++) { var p = pt(i, f); s.push(p[0].toFixed(1) + ',' + p[1].toFixed(1)); }
+      return '<polygon points="' + s.join(' ') + '" fill="none" stroke="var(--line)" stroke-width="1"/>';
+    }
+    var spokes = axes.map(function (a, i) {
+      var p = pt(i, 1);
+      return '<line x1="' + cx + '" y1="' + cy + '" x2="' + p[0].toFixed(1) + '" y2="' + p[1].toFixed(1) + '" stroke="var(--line)" stroke-width="1"/>';
+    }).join('');
+    var pts = axes.map(function (a, i) {
+      return a.score == null ? null : pt(i, clamp(a.score, 0, 100) / 100);
+    });
+    var have = pts.filter(function (p) { return !!p; });
+    var shape = have.length >= 3 ? '<polygon points="' + have.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ') +
+      '" fill="rgba(37,99,235,.15)" stroke="#2563eb" stroke-width="2" stroke-linejoin="round"/>' : '';
+    var dots = have.map(function (p) {
+      return '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="3.4" fill="#2563eb" stroke="#fff" stroke-width="1.5"/>';
+    }).join('');
+    var labels = axes.map(function (a, i) {
+      var p = pt(i, 1.32);
+      return '<text x="' + p[0].toFixed(1) + '" y="' + (p[1] - 3).toFixed(1) + '" text-anchor="middle" class="rlab">' + a.label + '</text>' +
+        '<text x="' + p[0].toFixed(1) + '" y="' + (p[1] + 10).toFixed(1) + '" text-anchor="middle" class="rnum">' + (a.score == null ? '—' : a.score + '점') + '</text>';
+    }).join('');
+    return '<svg class="radar" viewBox="0 0 300 246" role="img" aria-label="포트폴리오 5축 레이더 차트">' +
+      ring(0.33) + ring(0.66) + ring(1) + spokes + shape + dots + labels + '</svg>';
+  }
+
   /* ---------- report rendering ---------- */
   function gaugeSvg(score) {
     var r = 68, c = 2 * Math.PI * r, off = c * (1 - clamp(score, 0, 100) / 100);
@@ -950,6 +1102,20 @@
       return '<div><span>' + label + '</span><b>' + v + '</b><i><u style="width:' + clamp(v, 0, 100) + '%"></u></i></div>';
     }
 
+    var axes = radarAxes(r);
+    var radarCard =
+      '<section class="card rep-card wide radar-card">' +
+      '<h3><span class="h3badge dot">◎</span>5축 레이더<span class="h3sub">포트폴리오 성격 한눈에</span></h3>' +
+      '<div class="radarwrap"><div class="radarbox">' + radarSvg(axes) + '</div>' +
+      '<ul class="radarleg">' + axes.map(function (a) {
+        return '<li><span class="rl">' + a.label + '</span>' +
+          '<b>' + (a.score == null ? '—' : a.score + '점') + '</b>' +
+          '<i><u style="width:' + clamp(a.score || 0, 0, 100) + '%"></u></i>' +
+          '<span class="rb">' + esc(a.basis) + '</span></li>';
+      }).join('') + '</ul></div>' +
+      '<p class="miniline muted">5축은 종합 점수와 같은 데이터에서 계산했습니다. <b>배당 매력</b>은 가중 배당수익률이 시장 평균과 같으면 50점, 두 배면 100점이 되도록, <b>안정성</b>은 가중 베타 0.5 이하를 100점·2.5 이상을 0점으로 두고 계산합니다. 축마다 근거 수치를 함께 봐 주세요.</p>' +
+      '</section>';
+
     var html =
       '<div class="card rep-card scorecard">' +
       '<div class="score-left"><div class="gaugewrap">' + gaugeSvg(r.scores.total) + '</div>' +
@@ -964,6 +1130,8 @@
       scoreBar('분산 점수', r.scores.d) + scoreBar('밸류에이션', r.scores.v) + scoreBar('섹터 균형', r.scores.b) +
       '</div>' +
       '</div></div>' +
+
+      radarCard +
 
       '<div class="rep-grid">' +
       '<section class="card rep-card">' +
@@ -1007,17 +1175,25 @@
       '<section class="card rep-card wide">' +
       '<h3><span class="h3badge">4</span>배당과 변동성</h3>' +
       '<div class="keyline ' + betaCls + '"><b>' + divMain + '</b><span>' + divSub + '</span></div>' +
-      '<div class="statgrid four">' +
+      dividendCardHtml(r) +
+      '<div class="statgrid four" style="margin-top:14px">' +
       '<div><span>가중 배당수익률</span><b>' + num3(r.divW, 2) + '%</b></div>' +
       '<div><span>가중 베타</span><b>' + (r.betaW == null ? '—' : num3(r.betaW, 2)) + '</b></div>' +
       '<div><span>변동성 그룹</span><b>' + r.betaLabel + '</b></div>' +
       '<div><span>방어 자산 비중</span><b>' + pct(r.defensive) + '</b></div>' +
       '</div>' +
-      '<p class="miniline muted">배당수익률은 연 100만 원 투자 시 세전 ' + Math.round(r.divW / 100 * 1000000).toLocaleString('ko-KR') + '원 수준입니다(세금·환전 비용 제외). 베타는 시장이 1% 움직일 때 이 포트폴리오가 평균 몇 % 움직이는지를 나타냅니다.</p>' +
+      '<p class="miniline muted">베타는 시장이 1% 움직일 때 이 포트폴리오가 평균 몇 % 움직이는지를 나타냅니다. 배당금은 현재 구성과 배당수익률을 그대로 유지한다고 가정한 추정치이고, 실제 지급액은 기업의 배당 결정과 환율에 따라 달라집니다.</p>' +
+      '</section>' +
+
+      '<section class="card rep-card wide" id="pcStocks">' +
+      '<h3><span class="h3badge">5</span>종목별 기여도·신호등<span class="h3sub">' + r.n + '종목</span></h3>' +
+      '<p class="miniline muted">비중이 큰 순서입니다. 판정은 종목의 PER·PBR을 해당 시장 평균(코스피 또는 S&amp;P500)과 비교한 단순 신호입니다. 성장주는 구조적으로 ‘고평가’로, 업황 정점 기업은 ‘저평가’로 보일 수 있으니 절대 판단이 아니라 비교용으로 보세요.</p>' +
+      stockTableHtml(r) +
+      '<div class="tglleg"><span><i class="tgl low">저평가</i>시장 평균보다 25% 이상 낮음</span><span><i class="tgl fair">적정</i>-25%~+15%</span><span><i class="tgl high">다소 고평가</i>+15%~+50%</span><span><i class="tgl hot">과열</i>+50% 이상</span><span><i class="tgl na">지수 상품</i>ETF·채권은 판정 제외</span></div>' +
       '</section>' +
 
       '<section class="card rep-card wide" id="pcSuggest">' +
-      '<h3><span class="h3badge">5</span>맞춤 보완 제안<span class="h3sub">손볼 순서 ' + sug.length + '개</span></h3>' +
+      '<h3><span class="h3badge">6</span>맞춤 보완 제안<span class="h3sub">손볼 순서 ' + sug.length + '개</span></h3>' +
       '<p class="miniline muted">진단에서 나온 약점을 손보기 쉬운 순서로 정리했습니다. <b>이 보완안 미리보기</b>를 누르면 그 자산을 넣은 구성으로 점수를 다시 계산해 보여 줍니다. 실제 저장된 구성은 바뀌지 않습니다.</p>' +
       (simR ? simPanelHtml(r, simR, state.sim) : '') +
       '<div class="suglist">' + sugCards + '</div>' +
