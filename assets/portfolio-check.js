@@ -7,37 +7,40 @@
   var el = function (id) { return document.getElementById(id); };
 
   var SECTOR = {
-    IT:    { label: '정보기술',   color: '#4c8dff' },
-    COMM:  { label: '커뮤니케이션', color: '#22d3ee' },
-    CYC:   { label: '경기소비재', color: '#f59e0b' },
-    CYD:   { label: '필수소비재', color: '#34d399' },
-    HLTH:  { label: '헬스케어',   color: '#f472b6' },
-    FIN:   { label: '금융',       color: '#a78bfa' },
-    IND:   { label: '산업재',     color: '#94a3b8' },
-    MAT:   { label: '소재',       color: '#fb923c' },
-    ENR:   { label: '에너지',     color: '#eab308' },
-    UTIL:  { label: '유틸리티',   color: '#38bdf8' },
-    RE:    { label: '부동산',     color: '#c084fc' },
-    ETF:   { label: 'ETF·지수',   color: '#64748b' },
+    IT:    { label: '정보기술',   color: '#2563eb' },
+    COMM:  { label: '커뮤니케이션', color: '#0891b2' },
+    CYC:   { label: '경기소비재', color: '#d97706' },
+    CYD:   { label: '필수소비재', color: '#059669' },
+    HLTH:  { label: '헬스케어',   color: '#db2777' },
+    FIN:   { label: '금융',       color: '#7c3aed' },
+    IND:   { label: '산업재',     color: '#64748b' },
+    MAT:   { label: '소재',       color: '#ea580c' },
+    ENR:   { label: '에너지',     color: '#ca8a04' },
+    UTIL:  { label: '유틸리티',   color: '#0284c7' },
+    RE:    { label: '부동산',     color: '#a855f7' },
+    ETF:   { label: 'ETF·지수',   color: '#475569' },
     BOND:  { label: '채권',       color: '#94a3b8' },
-    ETC:   { label: '기타',       color: '#7c8aa5' }
+    ETC:   { label: '기타',       color: '#94a3b8' }
   };
 
   var PRESETS = [
     {
       id: 'bigtech',
+      icon: '🚀',
       name: '미장 빅테크 몰빵형',
       desc: '애플·엔비디아·MS 중심 6종목',
       items: [['AAPL', 25], ['MSFT', 20], ['NVDA', 25], ['GOOGL', 15], ['META', 10], ['AMZN', 5]]
     },
     {
       id: 'mix',
+      icon: '⚖️',
       name: '국장+미장 배당·성장 혼합형',
       desc: '삼전·하이닉스 + 배당 ETF·코카콜라',
       items: [['005930', 20], ['000660', 10], ['005380', 5], ['105560', 5], ['AAPL', 15], ['MSFT', 15], ['SCHD', 15], ['KO', 5], ['JPM', 5], ['TLT', 5]]
     },
     {
       id: 'semi',
+      icon: '🧠',
       name: '반도체 집중형',
       desc: '삼전·하이닉스·엔비디아·TSMC',
       items: [['005930', 30], ['000660', 25], ['NVDA', 20], ['TSM', 10], ['ASML', 5], ['AMD', 5], ['AVGO', 5]]
@@ -448,14 +451,16 @@
 
   /* ---------- report rendering ---------- */
   function gaugeSvg(score) {
-    var r = 52, c = 2 * Math.PI * r, off = c * (1 - clamp(score, 0, 100) / 100);
-    var col = score >= 70 ? '#22c55e' : score >= 55 ? '#4c8dff' : score >= 40 ? '#fbbf24' : '#f87171';
-    return '<svg class="gauge" viewBox="0 0 120 120" role="img" aria-label="종합 점수 ' + score + '점">' +
-      '<circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="10"/>' +
-      '<circle cx="60" cy="60" r="52" fill="none" stroke="' + col + '" stroke-width="10" stroke-linecap="round" ' +
-      'stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + off.toFixed(1) + '" transform="rotate(-90 60 60)"/>' +
-      '<text x="60" y="58" text-anchor="middle" class="gscore">' + score + '</text>' +
-      '<text x="60" y="78" text-anchor="middle" class="gcap">/ 100점</text></svg>';
+    var r = 68, c = 2 * Math.PI * r, off = c * (1 - clamp(score, 0, 100) / 100);
+    var band = score >= 70 ? ['#10b981', '#047857'] : score >= 55 ? ['#3b82f6', '#1d4ed8'] : score >= 40 ? ['#f59e0b', '#d97706'] : ['#f43f5e', '#be123c'];
+    return '<svg class="gauge" viewBox="0 0 160 160" role="img" aria-label="종합 점수 ' + score + '점">' +
+      '<defs><linearGradient id="pcGaugeGrad" x1="0" y1="0" x2="1" y2="1">' +
+      '<stop offset="0" stop-color="' + band[0] + '"/><stop offset="1" stop-color="' + band[1] + '"/></linearGradient></defs>' +
+      '<circle cx="80" cy="80" r="68" fill="none" stroke="var(--card-2)" stroke-width="14"/>' +
+      '<circle cx="80" cy="80" r="68" fill="none" stroke="url(#pcGaugeGrad)" stroke-width="14" stroke-linecap="round" ' +
+      'stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + off.toFixed(1) + '" transform="rotate(-90 80 80)"/>' +
+      '<text x="80" y="88" text-anchor="middle" class="gscore">' + score + '</text>' +
+      '<text x="80" y="108" text-anchor="middle" class="gcap">/ 100점</text></svg>';
   }
 
   function donutSvg(items, size) {
@@ -519,29 +524,61 @@
       return (i + 1) + '. ' + esc(x.h.name) + ' ' + pct(x.w);
     }).join(' · ');
 
+    // ---- 1초에 읽히는 핵심 결론 ----
+    var bandKey = r.scores.total >= 70 ? 'good' : r.scores.total >= 55 ? 'mid' : r.scores.total >= 40 ? 'warn' : 'bad';
+    var bandTxt = { good: '양호', mid: '보통', warn: '주의', bad: '취약' }[bandKey];
+    var hhiPts = r.hhi * 10000;
+    var disp = hhiPts < 1000 ? { t: '매우 분산', c: 'good' }
+      : hhiPts < 1500 ? { t: '분산 양호', c: 'good' }
+      : hhiPts < 2500 ? { t: '분산 보통', c: 'mid' }
+      : hhiPts < 4000 ? { t: '분산 집중', c: 'warn' }
+      : { t: '매우 집중', c: 'bad' };
+    var valCls = r.valGrade.key === 'low' ? 'good' : r.valGrade.key === 'fair' ? 'mid'
+      : r.valGrade.key === 'high' ? 'warn' : r.valGrade.key === 'hot' ? 'bad' : 'mid';
+    var premTxt = r.avgPrem == null ? '—'
+      : (Math.abs(r.avgPrem) < 0.005 ? '시장 평균 수준' : '시장 대비 ' + (r.avgPrem > 0 ? '+' : '−') + pct(Math.abs(r.avgPrem)));
+    var valMain = r.avgPrem == null ? '밸류에이션 판단 불가' : premTxt + ' ' + r.valGrade.label;
+    var valSub = r.metrics.filter(function (m) { return m.mine != null; })
+      .map(function (m) { return m.label + ' ' + num3(m.mine) + m.unit; }).join(' · ') || 'PER·PBR이 있는 종목이 적습니다';
+    var coreSecs = r.secList.filter(function (s) { return s.key !== 'ETF' && s.key !== 'BOND'; });
+    var secTop3 = coreSecs.slice(0, 3).reduce(function (a, s) { return a + s.w; }, 0);
+    var topW = r.topSec ? r.topSec.w : 0;
+    var secCls = topW >= 0.6 ? 'bad' : topW >= 0.45 ? 'warn' : topW >= 0.3 ? 'mid' : 'good';
+    var secWord = topW >= 0.6 ? '집중' : topW >= 0.45 ? '쏠림' : topW >= 0.3 ? '편중' : '고른 편';
+    var secMain = r.topSec ? r.topSec.label + ' ' + pct(topW) + ' ' + secWord : '섹터 정보 없음';
+    var secSub = '상위 3개 섹터 ' + pct(secTop3) + ' · 방어 자산 ' + pct(r.defensive);
+    var betaCls = r.betaW == null ? 'mid' : r.betaW < 0.8 ? 'good' : r.betaW < 1.2 ? 'mid' : r.betaW < 1.8 ? 'warn' : 'bad';
+    var divMain = '배당 ' + num3(r.divW, 2) + '% · 변동성 ' + r.betaLabel;
+    var divSub = '가중 베타 ' + (r.betaW == null ? '—' : num3(r.betaW, 2)) + ' · 방어 자산 ' + pct(r.defensive);
+    function scoreBar(label, v) {
+      return '<div><span>' + label + '</span><b>' + v + '</b><i><u style="width:' + clamp(v, 0, 100) + '%"></u></i></div>';
+    }
+
     var html =
       '<div class="card rep-card scorecard">' +
-      '<div class="score-left">' + gaugeSvg(r.scores.total) +
-      '<div class="score-chip">' + (r.scores.total >= 70 ? '양호' : r.scores.total >= 55 ? '보통' : r.scores.total >= 40 ? '주의' : '취약') + '</div></div>' +
+      '<div class="score-left"><div class="gaugewrap">' + gaugeSvg(r.scores.total) + '</div>' +
+      '<div class="score-chip ' + bandKey + '">종합 ' + bandTxt + '</div></div>' +
       '<div class="score-right">' +
       '<div class="kicker">AI 진단 리포트</div>' +
-      '<h2 class="pname">' + esc(r.personality.name) + '</h2>' +
+      '<h2 class="pname"><span class="ptype">' + esc(r.personality.name) + '</span></h2>' +
       '<p class="pdesc">' + esc(r.personality.desc) + '</p>' +
-      '<ul class="c3">' + r.comments.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul>' +
+      '<div class="summary"><div class="sumhead">3줄 요약</div><ul class="c3">' +
+      r.comments.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ul></div>' +
       '<div class="score-parts">' +
-      '<span>분산 <b>' + r.scores.d + '</b></span><span>밸류에이션 <b>' + r.scores.v + '</b></span><span>섹터 균형 <b>' + r.scores.b + '</b></span>' +
+      scoreBar('분산 점수', r.scores.d) + scoreBar('밸류에이션', r.scores.v) + scoreBar('섹터 균형', r.scores.b) +
       '</div>' +
       '</div></div>' +
 
       '<div class="rep-grid">' +
       '<section class="card rep-card">' +
-      '<h3>① 분산효과</h3>' +
+      '<h3><span class="h3badge">1</span>분산효과</h3>' +
+      '<div class="keyline ' + disp.c + '"><b>' + disp.t + '</b><span>실질 ' + num3(r.effN) + '종목 · 상위 1종목 ' + pct(r.top1) + '</span></div>' +
       '<div class="statgrid">' +
       '<div><span>종목 수</span><b>' + r.n + '개</b></div>' +
       '<div><span>실질 분산 종목 수</span><b>' + num3(r.effN) + '개</b></div>' +
       '<div><span>상위 1종목</span><b>' + pct(r.top1) + '</b></div>' +
       '<div><span>상위 3종목</span><b>' + pct(r.top3) + '</b></div>' +
-      '<div><span>HHI 지수</span><b>' + Math.round(r.hhi * 10000).toLocaleString('ko-KR') + '</b></div>' +
+      '<div><span>HHI 지수</span><b>' + Math.round(hhiPts).toLocaleString('ko-KR') + '</b></div>' +
       '<div><span>분산 등급</span><b class="' + (r.hhi < 0.15 ? 'good' : r.hhi < 0.25 ? 'mid' : 'bad') + '">' +
       (r.hhi < 0.10 ? '매우 분산' : r.hhi < 0.15 ? '양호' : r.hhi < 0.25 ? '보통' : r.hhi < 0.4 ? '집중' : '매우 집중') + '</b></div>' +
       '</div>' +
@@ -554,14 +591,15 @@
       '</section>' +
 
       '<section class="card rep-card">' +
-      '<h3>② 밸류에이션 <span class="h3sub">시장 평균 대비</span></h3>' +
-      '<div class="valgrade ' + r.valGrade.cls + '">' + r.valGrade.label + '<span>시장 대비 ' + (r.avgPrem == null ? '—' : (r.avgPrem > 0 ? '+' : '') + pct(r.avgPrem)) + '</span></div>' +
+      '<h3><span class="h3badge">2</span>밸류에이션<span class="h3sub">시장 평균 대비</span></h3>' +
+      '<div class="keyline ' + valCls + '"><b>' + valMain + '</b><span>' + valSub + '</span></div>' +
       valRows +
       '<p class="miniline muted">가중평균은 각 종목의 PER·PBR·PSR을 조화평균(총 투자금 ÷ 총 이익·순자산·매출)으로 합친 값입니다. 비교 기준은 국내·미국 비중으로 섞은 시장 평균(코스피 ' + num3(state.bm.KR.per, 2) + '배 · S&amp;P500 ' + num3(state.bm.US.per, 1) + '배)입니다.</p>' +
       '</section>' +
 
       '<section class="card rep-card wide">' +
-      '<h3>③ 섹터 치중도</h3>' +
+      '<h3><span class="h3badge">3</span>섹터 치중도</h3>' +
+      '<div class="keyline ' + secCls + '"><b>' + secMain + '</b><span>' + secSub + '</span></div>' +
       '<div class="secwrap"><div class="donutwrap">' + donutSvg(r.secList) +
       '<div class="donutc"><b>' + (r.topSec ? pct(r.topSec.w) : '—') + '</b><span>' + (r.topSec ? esc(r.topSec.label) : '') + '</span></div></div>' +
       '<ul class="seclist">' + secRows + '</ul></div>' +
@@ -571,7 +609,8 @@
       '</section>' +
 
       '<section class="card rep-card wide">' +
-      '<h3>④ 배당과 변동성</h3>' +
+      '<h3><span class="h3badge">4</span>배당과 변동성</h3>' +
+      '<div class="keyline ' + betaCls + '"><b>' + divMain + '</b><span>' + divSub + '</span></div>' +
       '<div class="statgrid four">' +
       '<div><span>가중 배당수익률</span><b>' + num3(r.divW, 2) + '%</b></div>' +
       '<div><span>가중 베타</span><b>' + (r.betaW == null ? '—' : num3(r.betaW, 2)) + '</b></div>' +
@@ -829,7 +868,10 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     el('pcPresets').innerHTML = PRESETS.map(function (p) {
-      return '<button type="button" class="preset" data-preset="' + p.id + '"><b>' + esc(p.name) + '</b><span>' + esc(p.desc) + '</span><i>3초 진단 →</i></button>';
+      return '<button type="button" class="preset" data-preset="' + p.id + '">' +
+        '<span class="ptop"><span class="pic">' + (p.icon || '📊') + '</span><b>' + esc(p.name) + '</b></span>' +
+        '<span>' + esc(p.desc) + '</span>' +
+        '<i>' + p.items.length + '종목 · 3초 진단 →</i></button>';
     }).join('');
     load();
   });

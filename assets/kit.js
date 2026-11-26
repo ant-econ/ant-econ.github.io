@@ -76,16 +76,19 @@
     K.$$('.themebtn').forEach(function (b) { b.textContent = dark ? '☾' : '☀'; });
   }
   K.theme = function (onChange) {
+    var root = document.documentElement;
+    var key = root.getAttribute('data-theme-key') || 'ant-theme';
+    var fallback = root.getAttribute('data-theme-default') || 'dark';
     try {
-      var saved = localStorage.getItem('ant-theme');
-      if (saved) document.documentElement.setAttribute('data-theme', saved);
+      var saved = localStorage.getItem(key);
+      root.setAttribute('data-theme', saved || fallback);
     } catch (e) {}
     paintTheme();
     K.$$('.themebtn').forEach(function (b) {
       b.addEventListener('click', function () {
-        var dark = document.documentElement.getAttribute('data-theme') !== 'light';
-        document.documentElement.setAttribute('data-theme', dark ? 'light' : 'dark');
-        try { localStorage.setItem('ant-theme', dark ? 'light' : 'dark'); } catch (e) {}
+        var dark = root.getAttribute('data-theme') !== 'light';
+        root.setAttribute('data-theme', dark ? 'light' : 'dark');
+        try { localStorage.setItem(key, dark ? 'light' : 'dark'); } catch (e) {}
         paintTheme();
         if (onChange) onChange();
       });
