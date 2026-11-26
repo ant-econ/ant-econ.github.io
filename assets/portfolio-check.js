@@ -170,7 +170,8 @@
             '<option value="krw"' + (h.unit === 'krw' ? ' selected' : '') + '>만원</option>' +
             '<option value="usd"' + (h.unit === 'usd' ? ' selected' : '') + '>$</option></select>';
         }
-        var sub = (h.custom ? '직접 입력' : (SECTOR[h.sector] ? SECTOR[h.sector].label : '기타')) + (h.theme && h.theme !== '기타' ? ' · ' + h.theme : '');
+        var secLabel = h.custom ? '직접 입력' : (SECTOR[h.sector] ? SECTOR[h.sector].label : '기타');
+        var sub = secLabel + (h.theme && h.theme !== '기타' && h.theme !== secLabel ? ' · ' + h.theme : '');
         return '<div class="hrow" data-i="' + i + '">' +
           '<div class="hinfo">' + badge + '<b>' + esc(h.name) + '</b>' +
           '<span class="tick">' + esc(h.code) + '</span>' +
