@@ -137,6 +137,12 @@ input[type=range]{width:100%;height:26px;accent-color:var(--accent);background:t
   .cmptable{font-size:12.3px}
   .cmptable th,.cmptable td{padding:7px 8px}
 }
+.only-mobile{display:none}
+@media(max-width:640px){
+  .cmptable{min-width:470px}
+  .cmptable th:first-child,.cmptable td:first-child{min-width:132px}
+  .only-mobile{display:block}
+}
 </style>
 </head>
 <body>
@@ -260,6 +266,7 @@ input[type=range]{width:100%;height:26px;accent-color:var(--accent);background:t
       <tbody></tbody>
     </table>
   </div>
+  <p class="mini only-mobile" style="margin:4px 0 0">← 표를 옆으로 밀면 연평균 열까지 보입니다.</p>
   <p class="mini" style="margin:6px 0 0">같은 돈으로 계산해도 액면 18%는 시가 3%보다 크지만, 시가 5%와 비슷하고 시가 7%에는 크게 못 미칩니다. 액면 18%는 주가가 오를수록 실효 수익률이 떨어지기 때문입니다(1720년 주가 12배 → 실효 1.5%). 배당률 숫자가 크다고 수익률이 큰 것은 아니라는 뜻입니다.</p>
 </div>
 
@@ -308,8 +315,8 @@ input[type=range]{width:100%;height:26px;accent-color:var(--accent);background:t
   <h2>자주 묻는 질문</h2>
   <h3>100길더를 1799년까지 들고 있었으면 부자가 됐나요?</h3>
   <p>회사가 1796년 국유화되고 1799년 소멸하면서 주주가 받은 것은 사실상 없었습니다. 중간에 1720년 정점에서 팔았다면 이야기가 달라지지만, 그 시점을 맞히는 일은 지금 주식과 다르지 않았습니다.</p>
-  <h3>왜 18%가 3%보다 작게 나오나요?</h3>
-  <p>18%는 액면 대비, 3%는 시가 대비이기 때문입니다. 주가가 액면의 12배가 되면 액면 18%는 시가의 1.5%로 줄어듭니다. 배당률 숫자만 보면 안 되고 ‘무엇 대비’인지를 봐야 하는 이유입니다.</p>
+  <h3>액면 18%를 넣었는데 왜 시가 7%보다 작게 나오나요?</h3>
+  <p>18%는 액면 대비, 7%는 시가 대비이기 때문입니다. 주가가 액면의 12배가 되면 액면 18%는 시가의 1.5%로 줄지만, 시가 7%는 오른 주가에 계속 붙습니다. 배당률 숫자만 보면 안 되고 ‘무엇 대비’인지를 봐야 하는 이유입니다.</p>
   <h3>배당 재투자를 끄면 어떻게 되나요?</h3>
   <p>매년 받은 배당을 그대로 쓴 것으로 계산합니다. 원금 100길더는 그대로 있고, 1799년 평가액은 100길더 × 주가지수(450/100) = 450길더가 됩니다. 대신 197년간 받은 현금이 쌓입니다.</p>
 
@@ -415,12 +422,15 @@ input[type=range]{width:100%;height:26px;accent-color:var(--accent);background:t
   function gUnit(n){
     n = Math.max(0, n);
     if (n >= 1e8){
-      var eok = Math.floor(n/1e8), man = Math.round((n%1e8)/1e4);
-      return comma(eok) + '억' + (man ? ' ' + comma(man) + '만' : '') + ' 길더';
+      var eok = Math.floor(n/1e8), manA = Math.floor((n%1e8)/1e4), restA = Math.round(n%1e4);
+      return comma(eok) + '억' + (manA ? ' ' + comma(manA) + '만' : '') + (restA ? ' ' + comma(restA) : '') + '길더';
     }
-    if (n >= 1e4) return comma(Math.round(n/1e4)) + '만 길더';
+    if (n >= 1e4){
+      var manB = Math.floor(n/1e4), restB = Math.round(n%1e4);
+      return comma(manB) + '만' + (restB ? ' ' + comma(restB) : '') + '길더';
+    }
     if (n >= 1) return comma(n) + '길더';
-    return n.toFixed(2) + '길더';
+    return (n === 0 ? '0' : n.toFixed(2)) + '길더';
   }
   function gExact(n){ return comma(n) + '길더'; }
   function wonUnit(n){
@@ -539,8 +549,12 @@ input[type=range]{width:100%;height:26px;accent-color:var(--accent);background:t
     if (!svg) return;
     var main = res || sim(state.amount, state.mode==='face'?'face':'mkt', modeRate(), state.reinv, state.stop);
     var cashLine = sim(Math.max(1,state.amount), state.mode==='face'?'face':'mkt', modeRate(), false, state.stop);
-    var W = 720, H = 290, L = 58, R = 14, T = 16, B = 30;
+    var avail = (svg.parentNode && svg.parentNode.clientWidth) || 720;
+    var W = Math.max(300, Math.min(720, Math.round(avail)));
+    var H = W < 480 ? 240 : 290;
+    var L = W < 480 ? 40 : 58, R = 12, T = 18, B = 26;
     var iw = W-L-R, ih = H-T-B;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
 
     var vals = [];
     main.series.forEach(function(d){ vals.push(d.value); });
@@ -556,13 +570,19 @@ input[type=range]{width:100%;height:26px;accent-color:var(--accent);background:t
     function Y(v){ return T + ih * (1 - (Math.log10(Math.max(v,1))-lo)/(hi-lo)); }
 
     var grid = '';
+    var tickFont = W < 480 ? 10 : 10.5;
+    function tickLabel(t){
+      if (t >= 1e8) return (t/1e8) + '억';
+      if (t >= 1e4) return comma(t/1e4) + '만';
+      return comma(t);
+    }
     var ticks = [1,10,100,1000,10000,100000,1000000,10000000,100000000];
     ticks.forEach(function(t){
       var lg = Math.log10(t);
       if (lg < lo || lg > hi) return;
       var y = Y(t);
       grid += '<line x1="'+L+'" y1="'+y.toFixed(1)+'" x2="'+(W-R)+'" y2="'+y.toFixed(1)+'" stroke="currentColor" stroke-opacity="0.12" stroke-width="1"/>';
-      grid += '<text x="'+(L-7)+'" y="'+(y+3.5).toFixed(1)+'" text-anchor="end" font-size="10" fill="currentColor" fill-opacity="0.55">'+(t>=10000?(t/10000)+'만':t>=1?comma(t):t)+'</text>';
+      grid += '<text x="'+(L-6)+'" y="'+(y+3.5).toFixed(1)+'" text-anchor="end" font-size="'+tickFont+'" fill="currentColor" fill-opacity="0.6">'+tickLabel(t)+'</text>';
     });
 
     function path(series){
@@ -572,23 +592,25 @@ input[type=range]{width:100%;height:26px;accent-color:var(--accent);background:t
     var lineCash = path(cashLine.series);
     var area = lineMain + ' L' + X(END).toFixed(1) + ' ' + (T+ih) + ' L' + X(START).toFixed(1) + ' ' + (T+ih) + ' Z';
 
-    var marks = [
-      { y:1610, t:'첫 배당(육두구 껍질)' },
-      { y:1720, t:'주가 정점' },
-      { y:1782, t:'배당 중단' },
-      { y:1796, t:'국유화' }
-    ];
+    var marks = (W < 520)
+      ? [ { y:1720, t:'1720 정점', anchor:'middle', row:0 },
+          { y:1796, t:'1796 국유화', anchor:'end', row:1 } ]
+      : [ { y:1610, t:'1610 첫 배당(현물)', anchor:'start', row:0 },
+          { y:1720, t:'1720 주가 정점', anchor:'middle', row:0 },
+          { y:1782, t:'1782 배당 중단', anchor:'middle', row:1 },
+          { y:1796, t:'1796 국유화', anchor:'end', row:1 } ];
     var markSvg = '';
-    marks.forEach(function(m, i){
+    marks.forEach(function(m){
       var x = X(m.y);
       markSvg += '<line x1="'+x.toFixed(1)+'" y1="'+T+'" x2="'+x.toFixed(1)+'" y2="'+(T+ih)+'" stroke="#d97706" stroke-opacity="0.45" stroke-width="1" stroke-dasharray="3 4"/>';
-      var anchor = i === 0 ? 'start' : (i === marks.length-1 ? 'end' : 'middle');
-      markSvg += '<text x="'+x.toFixed(1)+'" y="'+(T+11)+'" text-anchor="'+anchor+'" font-size="9.5" fill="#b45309" fill-opacity="0.95">'+m.y+' '+m.t+'</text>';
+      var ty = T + (m.row ? 30 : 13);
+      markSvg += '<text x="'+x.toFixed(1)+'" y="'+ty+'" text-anchor="'+m.anchor+'" font-size="9" fill="#b45309" fill-opacity="0.95">'+m.t+'</text>';
     });
 
     var xl = '';
-    [1602,1650,1700,1750,1799].forEach(function(y){
-      xl += '<text x="'+X(y).toFixed(1)+'" y="'+(H-10)+'" text-anchor="middle" font-size="10.5" fill="currentColor" fill-opacity="0.55">'+y+'</text>';
+    var xyears = (W < 520) ? [1602,1700,1799] : [1602,1650,1700,1750,1799];
+    xyears.forEach(function(y){
+      xl += '<text x="'+X(y).toFixed(1)+'" y="'+(H-9)+'" text-anchor="middle" font-size="'+(W<480?10:10.5)+'" fill="currentColor" fill-opacity="0.6">'+y+'</text>';
     });
 
     var last = main.series[main.series.length-1];
