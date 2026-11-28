@@ -598,12 +598,12 @@ input[type=range]{width:100%;height:26px;accent-color:var(--accent);background:t
       : [ { y:1610, t:'1610 첫 배당(현물)', anchor:'start', row:0 },
           { y:1720, t:'1720 주가 정점', anchor:'middle', row:0 },
           { y:1782, t:'1782 배당 중단', anchor:'middle', row:1 },
-          { y:1796, t:'1796 국유화', anchor:'end', row:1 } ];
+          { y:1796, t:'1796 국유화', anchor:'end', row:2 } ];
     var markSvg = '';
     marks.forEach(function(m){
       var x = X(m.y);
       markSvg += '<line x1="'+x.toFixed(1)+'" y1="'+T+'" x2="'+x.toFixed(1)+'" y2="'+(T+ih)+'" stroke="#d97706" stroke-opacity="0.45" stroke-width="1" stroke-dasharray="3 4"/>';
-      var ty = T + (m.row ? 30 : 13);
+      var ty = T + 13 + m.row * 16;
       markSvg += '<text x="'+x.toFixed(1)+'" y="'+ty+'" text-anchor="'+m.anchor+'" font-size="9" fill="#b45309" fill-opacity="0.95">'+m.t+'</text>';
     });
 
