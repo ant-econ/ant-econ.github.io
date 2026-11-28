@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>개미일지 계산기</title>
+    <title>주식하는 개구리 계산기</title>
     <link>https://ant-econ.github.io/</link>
     <description>미국주식 양도소득세·배당소득세·ISA·연금·환율·평단가·ETF 비용을 직접 계산하는 무료 금융 계산기와 2026년 기준 세법 가이드</description>
     <language>ko</language>
-    <copyright>개미일지 계산기</copyright>
-    <lastBuildDate>Thu, 26 Nov 2026 09:00:00 +0900</lastBuildDate>
+    <copyright>주식하는 개구리 계산기</copyright>
+    <lastBuildDate>Sat, 28 Nov 2026 15:40:00 +0900</lastBuildDate>
     <atom:link href="https://ant-econ.github.io/rss.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>1602년 100길더, 지금 얼마? — 동인도회사 197년 배당 시뮬레이터</title>
+      <link>https://ant-econ.github.io/voc-400.html</link>
+      <guid isPermaLink="true">https://ant-econ.github.io/voc-400.html</guid>
+      <description>하녀가 1602년 동인도회사 공모에 넣은 100길더. 액면 18% 배당과 실제 시가 수익률 3~7%, 배당 재투자와 현금 소비를 바꿔 1799년 회사 소멸까지 계산하고, 운하변 집·하루 품삯 기준으로 지금 돈에 환산해 보는 역사 시뮬레이터.</description>
+      <category>시뮬레이터</category>
+      <pubDate>Sat, 28 Nov 2026 15:40:00 +0900</pubDate>
+    </item>
     <item>
       <title>AI 포트폴리오 진단기 — 분산효과·PER·PBR·PSR·섹터 치중도 무료 분석</title>
       <link>https://ant-econ.github.io/portfolio-check.html</link>

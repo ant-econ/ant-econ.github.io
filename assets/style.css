@@ -1,4 +1,4 @@
-/* 개미일지 계산기 — 공용 스타일 */
+/* 주식하는 개구리 계산기 — 공용 스타일 */
 /* 기본은 라이트. 다크 변수는 오직 html[data-theme="dark"]에서만 적용된다.
    (data-theme 속성이 없거나 스크립트가 막혀도 다크로 뒤집히지 않도록 :root는 라이트 고정)
    color-scheme: only light 는 삼성 인터넷·모바일 크롬의 '사이트 강제 다크모드'(Auto Dark Theme)를

@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light" data-theme-default="light" data-theme-key="ae-theme-v2">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="only light">
+<title>1602년 100길더, 지금 얼마? 동인도회사 배당 시뮬레이터 1602~1799 | 주식하는 개구리</title>
+<meta name="description" content="1602년 네덜란드 동인도회사(VOC) 공모에 하녀가 넣은 100길더. 액면 18% 배당과 실제 시가 수익률 3~7%, 배당 재투자와 현금 소비를 직접 바꿔 1799년 회사 소멸까지 계산하고 지금 돈으로 환산해 봅니다.">
+<meta name="keywords" content="동인도회사, VOC, 1602년 주식, 최초의 주식회사, 배당 재투자 계산, 액면 배당, 시가 배당수익률, 길더 환산, 하녀 주주, 닐트헌 코르넬리스">
+<meta name="author" content="주식하는 개구리 계산기">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link rel="canonical" href="https://ant-econ.github.io/voc-400.html">
+<link rel="alternate" type="application/rss+xml" title="주식하는 개구리 계산기 RSS" href="https://ant-econ.github.io/rss.xml">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="주식하는 개구리 계산기">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:title" content="1602년 100길더, 지금 얼마? — 동인도회사 197년 배당 시뮬레이터">
+<meta property="og:description" content="하녀가 넣은 100길더, 액면 18%와 실제 3~7%, 재투자와 소비. 가정을 바꾸면 1799년 결과가 수천 배 달라집니다.">
+<meta property="og:url" content="https://ant-econ.github.io/voc-400.html">
+<meta property="og:image" content="https://ant-econ.github.io/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="1602년 100길더, 지금 얼마? — 동인도회사 197년 배당 시뮬레이터">
+<meta name="twitter:description" content="액면 18% 배당의 착시, 실제 3~7% 수익률, 1782년 배당 중단과 1799년 소멸까지 직접 계산해 봅니다.">
+<meta name="theme-color" content="#f6f8fc">
+<link rel="icon" href="assets/favicon.png" type="image/png" sizes="64x64">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/style.css?v=20261126d">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "WebApplication",
+   "name": "1602년 100길더, 지금 얼마? — 동인도회사 배당 시뮬레이터",
+   "url": "https://ant-econ.github.io/voc-400.html",
+   "applicationCategory": "FinanceApplication",
+   "operatingSystem": "Web",
+   "inLanguage": "ko-KR",
+   "isAccessibleForFree": true,
+   "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"},
+   "description": "1602년 네덜란드 동인도회사 공모에 투자한 금액을 넣고 배당률 가정(액면 18% 또는 시가 3~7%), 배당 재투자 여부, 1782년 이후 배당 중단 여부를 바꿔 1799년 회사 소멸 시점의 결과와 현대 원화 체감 환산을 계산하는 역사 시뮬레이터.",
+   "featureList": [
+    "초기 투자금 프리셋(50·100·1,000·3,000·12,000·85,000길더)과 슬라이더",
+    "액면 기준 연 18%와 실제 시가 배당수익률 3·5·7% 비교",
+    "배당 재투자(복리)와 매년 현금 소비 토글",
+    "1602년부터 1799년까지 197년 연도별 계산과 주가 지수 경로",
+    "운하변 집 2,000길더·하루 품삯 0.5길더 기준 체감 환산과 원화 환산"
+   ],
+   "publisher": {"@type": "Organization", "name": "주식하는 개구리 계산기", "url": "https://ant-econ.github.io/"}
+  },
+  {
+   "@type": "BreadcrumbList",
+   "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "계산기 홈", "item": "https://ant-econ.github.io/"},
+    {"@type": "ListItem", "position": 2, "name": "1602년 100길더, 지금 얼마?", "item": "https://ant-econ.github.io/voc-400.html"}
+   ]
+  },
+  {
+   "@type": "FAQPage",
+   "mainEntity": [
+    {
+     "@type": "Question",
+     "name": "연 18% 배당을 계속 받은 건가요?",
+     "acceptedAnswer": {"@type": "Answer", "text": "아닙니다. 18%는 200년 평균을 액면가 대비로 계산한 값입니다. 주가는 1720년에 액면의 12배까지 올랐기 때문에, 실제 시가 기준 배당수익률은 3~7%였습니다. 첫 배당은 현금이 아니라 육두구 껍질 75%였고, 1673년에는 채권으로, 1782년 이후에는 전면 중단됐습니다."}
+    },
+    {
+     "@type": "Question",
+     "name": "1799년에 주주는 무엇을 받았나요?",
+     "acceptedAnswer": {"@type": "Answer", "text": "사실상 아무것도 받지 못했습니다. 1795년 프랑스 침공 뒤 1796년 3월 1일 국유화됐고, 1799년 12월 31일 특허가 만료되며 회사가 소멸했습니다. 당시 부채는 1억 2천만 길더로 초기 자본의 약 19배였습니다. 이 페이지의 '1799년 재산'은 마지막 시세를 가정한 시뮬레이션 값입니다."}
+    },
+    {
+     "@type": "Question",
+     "name": "원화 환산은 어떤 기준인가요?",
+     "acceptedAnswer": {"@type": "Answer", "text": "명목 환산은 2002년 유로 도입 때 고정된 1유로=2.20371길더 환율로 유로를 구한 뒤 원/유로 환율을 곱합니다. 이 값은 통화 개혁 환율이라 400년 전 구매력을 담지 못합니다. 그래서 1602년 운하변 집 한 채 2,000길더, 하루 품삯 0.5길더, 숙련공 연 250~300길더라는 당시 물가로 나눈 체감 환산을 함께 보여 줍니다."}
+    },
+    {
+     "@type": "Question",
+     "name": "계산 결과를 실제 역사로 봐도 되나요?",
+     "acceptedAnswer": {"@type": "Answer", "text": "아닙니다. 이 시뮬레이터는 역사적 사실 기록이 아닌, 이해를 돕기 위한 가정 시뮬레이션입니다. 실제 17세기 배당은 현물·채권 지급 및 전쟁·파산으로 중단됐습니다. 배당률을 일정하게 두고 197년을 복리로 굴리면 결과가 수천 배까지 커지므로, 숫자의 크기보다 '어떤 가정이 결과를 바꾸는지'를 보는 도구로 쓰세요."}
+    }
+   ]
+  }
+ ]
+}
+</script>
+<style>
+/* ===== VOC 400 시뮬레이터 페이지 ===== */
+html[data-theme="light"]{color-scheme:light;color-scheme:only light}
+.hero-voc{padding:26px 0 4px}
+.disc{
+  border:1px solid color-mix(in srgb,var(--warn) 42%,var(--line));
+  border-left:4px solid var(--warn);
+  background:color-mix(in srgb,var(--warn) 8%,var(--card));
+  border-radius:14px;padding:13px 16px;margin:14px 0 20px;
+  font-size:13.8px;line-height:1.68;color:var(--text);
+}
+.disc b{display:block;font-size:12px;letter-spacing:.02em;color:var(--warn);margin-bottom:3px;font-weight:800}
+.simcard{margin-top:6px}
+.presets{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 8px}
+.presets .pill{font-size:12px;padding:5px 10px}
+.range{margin:6px 0 2px}
+input[type=range]{width:100%;height:26px;accent-color:var(--accent);background:transparent;cursor:pointer}
+.rangeends{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-top:-2px}
+.switch{display:flex;align-items:center;gap:11px;font-size:13.8px;color:var(--text);margin:0 0 12px;cursor:pointer;line-height:1.45}
+.switch input{appearance:none;-webkit-appearance:none;width:44px;height:26px;border-radius:999px;background:var(--line);position:relative;cursor:pointer;transition:.18s;flex:0 0 auto;margin:0;border:0}
+.switch input:checked{background:var(--accent)}
+.switch input::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .18s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.switch input:checked::after{transform:translateX(18px)}
+.switch span em{font-style:normal;display:block;font-size:11.8px;color:var(--muted);font-weight:500}
+.result .big2{margin-top:14px;padding-top:13px;border-top:1px solid var(--line)}
+.result .big2 span{display:block;font-size:12.5px;color:var(--muted);font-weight:700}
+.result .big2 b{display:block;font-size:clamp(24px,4.6vw,31px);letter-spacing:-.04em;font-weight:850;line-height:1.25;margin-top:2px;color:var(--accent)}
+.result .big2 .mini{display:block;margin-top:3px}
+.chartwrap{overflow:hidden;margin-top:4px}
+.chartwrap svg{display:block;width:100%;height:auto}
+.cmptable{width:100%;border-collapse:collapse;font-size:13.4px}
+.cmptable th,.cmptable td{border:1px solid var(--line);padding:8px 10px;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.cmptable th:first-child,.cmptable td:first-child{text-align:left;white-space:normal}
+.cmptable th{background:var(--card-2);font-weight:750}
+.cmptable tr.on td{background:color-mix(in srgb,var(--accent) 9%,transparent);font-weight:750}
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:12px 0 4px}
+.tl{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 2px}
+.tl .t{background:var(--card-2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.tl .t b{display:block;font-size:12px;color:var(--accent-2);letter-spacing:.02em}
+.tl .t span{display:block;font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:2px}
+@media(max-width:640px){.tl{grid-template-columns:1fr 1fr}}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:6px 0 0}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.factgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:12px 0 2px}
+.factgrid .fg{background:var(--card-2);border:1px solid var(--line);border-radius:12px;padding:11px 13px}
+.factgrid .fg b{display:block;font-size:16px;letter-spacing:-.02em}
+.factgrid .fg span{font-size:12.2px;color:var(--muted);line-height:1.5;display:block;margin-top:2px}
+.src{font-size:12px;color:var(--muted);line-height:1.7}
+.src a{color:var(--muted);text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--muted) 40%,transparent)}
+@media(max-width:560px){
+  .presets .pill{font-size:11.5px;padding:5px 9px}
+  .cmptable{font-size:12.3px}
+  .cmptable th,.cmptable td{padding:7px 8px}
+}
+</style>
+</head>
+<body>
+<div class="aura" aria-hidden="true"></div>
+<header class="site">
+  <div class="wrap bar">
+    <a class="brand" href="index.html"><img class="frog" src="assets/frog-mascot.png" alt="" width="26" height="26"> 주식하는 개구리 계산기</a>
+    <nav class="top">
+      <a href="index.html">계산기 홈</a>
+      <a href="portfolio-check.html">📊 포트폴리오 진단</a>
+      <a href="market-replay.html">🎮 트레이딩 게임</a>
+      <a href="index.html#calculators">계산기 7종</a>
+      <a href="voc-400.html" class="on">🏛 VOC 400년</a>
+      <a href="about.html">소개</a>
+    </nav>
+    <button class="themebtn" id="themebtn" aria-label="화면 테마 바꾸기" title="다크/라이트 전환">☾</button>
+  </div>
+</header>
+
+<main class="wrap">
+<nav class="breadcrumb" aria-label="현재 위치"><a href="index.html">계산기 홈</a><span>›</span>1602년 100길더, 지금 얼마?</nav>
+
+<section class="pagehead hero-voc">
+  <div class="crumbtab">🏛 역사 시뮬레이터</div>
+  <h1>1602년 100길더,<br><em>지금 얼마?</em></h1>
+  <p class="lede">1602년 8월, 암스테르담. 회계사의 하녀 닐트헌 코르넬리스가 하루 품삯 0.5길더도 안 되는 돈을 모아 <strong>100길더</strong>를 넣었습니다. 세계 최초의 공모였습니다. 그 돈은 1799년 회사가 사라질 때까지 어떻게 변했을까요? 배당률 가정을 직접 바꿔 계산해 보세요.</p>
+  <div class="hero-stats">
+    <div class="chipstat"><b>6,424,588길더</b>1602년 초기 자본</div>
+    <div class="chipstat"><b>액면 18%</b>200년 평균 배당률</div>
+    <div class="chipstat"><b>3~7%</b>실제 시가 배당수익률</div>
+    <div class="chipstat"><b>197년</b>1602 → 1799</div>
+  </div>
+</section>
+
+<div class="disc" role="note">
+  <b>먼저 읽어 주세요</b>
+  이 시뮬레이터는 역사적 사실 기록이 아닌, 이해를 돕기 위한 가정 시뮬레이션입니다. 실제 17세기 배당은 현물·채권 지급 및 전쟁·파산으로 중단됐습니다.
+</div>
+
+<div class="card simcard">
+  <h2 style="font-size:clamp(20px,3vw,25px);margin:0 0 6px;letter-spacing:-.03em">동인도회사 투자 시뮬레이터 <span class="badge">1602 → 1799</span></h2>
+  <p class="sub">금액과 가정을 바꾸면 1799년 결과가 즉시 다시 계산됩니다. 입력값은 서버로 전송되지 않고 브라우저 안에서만 계산됩니다.</p>
+
+  <div class="grid2">
+    <div>
+      <label class="f"><span>1602년 초기 투자금 <span class="hint">(길더 · 최소 금액 규정 없음, 실제 50~85,000)</span></span>
+        <div class="inp"><input type="text" id="in-amount" class="num" value="100" inputmode="numeric" autocomplete="off"><span class="unit">길더</span></div>
+      </label>
+      <div class="presets" id="presets">
+        <button type="button" class="pill" data-g="50">50길더 · 회계사 하인</button>
+        <button type="button" class="pill on" data-g="100">100길더 · 하녀 닐트헌</button>
+        <button type="button" class="pill" data-g="1000">1,000길더 · 주주 466명</button>
+        <button type="button" class="pill" data-g="3000">3,000길더 · 액면 표준주</button>
+        <button type="button" class="pill" data-g="12000">12,000길더 · 1640년대</button>
+        <button type="button" class="pill" data-g="85000">85,000길더 · 최대</button>
+      </div>
+      <div class="range"><input type="range" id="in-range" min="0" max="1000" step="1" value="87" aria-label="초기 투자금 슬라이더"></div>
+      <div class="rangeends"><span>50길더</span><span>85,000길더</span></div>
+      <p class="mini" style="margin:2px 0 16px" id="in-hint">100길더 ≈ 하루 품삯 0.5길더의 <b>200일치</b>. 숙련공 연봉(250~300길더)의 4~5개월치입니다.</p>
+
+      <label class="f" style="margin-top:4px"><span>배당률 시나리오</span></label>
+      <div class="pills" id="modes">
+        <button type="button" class="pill" data-mode="face">액면 18%</button>
+        <button type="button" class="pill on" data-mode="mkt3">시가 3%</button>
+        <button type="button" class="pill" data-mode="mkt5">시가 5%</button>
+        <button type="button" class="pill" data-mode="mkt7">시가 7%</button>
+        <button type="button" class="pill" data-mode="custom">직접 입력</button>
+      </div>
+      <div id="customwrap" hidden>
+        <label class="f"><span>연 배당수익률 직접 입력 <span class="hint">(시가 기준)</span></span>
+          <div class="inp"><input type="number" id="in-rate" value="4" min="0" max="50" step="0.1" inputmode="decimal"><span class="unit">%</span></div>
+        </label>
+      </div>
+      <p class="mini" style="margin:-4px 0 12px" id="mode-hint">시가 3% — 주가가 액면의 4~12배였던 18세기 실제 수익률에 가까운 보수적 가정입니다.</p>
+
+      <label class="switch"><input type="checkbox" id="in-reinv" checked><span>배당 재투자(복리)<em>끄면 배당을 매년 현금·현물로 받아 쓴 것으로 계산합니다.</em></span></label>
+      <label class="switch"><input type="checkbox" id="in-stop" checked><span>1782년 이후 배당 중단 반영<em>4차 영란전쟁 참패 뒤 배당이 전면 중단된 사실을 넣습니다.</em></span></label>
+
+      <div class="rowline">
+        <label class="f"><span>원/유로 환율 <span class="hint">(명목 환산용)</span></span><div class="inp"><input type="text" id="in-krw" class="num" value="1,600" inputmode="numeric"><span class="unit">원</span></div></label>
+        <label class="f"><span>오늘 우리 동네 집값 <span class="hint">(구매력 환산용)</span></span><div class="inp"><input type="text" id="in-house" class="num" value="1,000,000,000" inputmode="numeric"><span class="unit">원</span></div></label>
+      </div>
+      <div class="note">1602년 운하변 소박한 집 한 채가 2,000길더였습니다. 결과를 2,000으로 나눈 값이 ‘집 몇 채’이고, 여기에 오늘 집값을 곱하면 구매력 체감액이 됩니다.</div>
+    </div>
+
+    <div>
+      <div class="result">
+        <div class="big">1799년, 이 재산은<b id="r-total">—</b></div>
+        <div class="sub2" id="r-total-sub">—</div>
+        <div class="hr"></div>
+        <div class="kv"><span>1602년 출자</span><b id="r-in">—</b></div>
+        <div class="kv"><span>197년간 받은 배당 합계</span><b id="r-div">—</b></div>
+        <div class="kv" id="row-face"><span>재투자로 늘어난 보유 지분(액면)</span><b id="r-face">—</b></div>
+        <div class="kv"><span>1799년 지분 평가액</span><b id="r-share">—</b></div>
+        <div class="kv"><span>회사 전체 액면 대비</span><b id="r-pct">—</b></div>
+        <div class="kv"><span>연평균 수익률(CAGR)</span><b id="r-cagr">—</b></div>
+        <div class="big2">
+          <span>지금 돈으로 (구매력 환산)</span>
+          <b id="r-pow">—</b>
+          <span class="mini" id="r-pow-sub">—</span>
+        </div>
+        <div class="kv" style="margin-top:8px"><span>명목 환산 (유로 고정환율 × 원/유로)</span><b id="r-nom">—</b></div>
+        <div class="kv"><span>초기 자본(642만 길더≈4,000억) 대비</span><b id="r-cap">—</b></div>
+        <div class="note warn" id="r-warn">—</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="hr">
+  <h3 style="font-size:15.5px;margin:0 0 4px">연도별 재산 변화 <span class="mini">(세로축 로그 눈금)</span></h3>
+  <div class="chartwrap"><svg id="chart" viewBox="0 0 720 290" role="img" aria-label="1602년부터 1799년까지 재산 변화 차트"></svg></div>
+  <div class="legend">
+    <span><i style="background:#2563eb"></i>선택한 가정</span>
+    <span><i style="background:#0ea5e9"></i>재투자 안 하고 현금으로 받은 경우</span>
+    <span><i style="background:#d97706"></i>역사 사건</span>
+  </div>
+
+  <div class="tablewrap">
+    <table class="cmptable" id="cmp">
+      <thead><tr><th>가정 (재투자·1782 중단 동일 적용)</th><th>1799년 재산</th><th>지금 돈(구매력)</th><th>연평균</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <p class="mini" style="margin:6px 0 0">같은 돈으로 계산해도 액면 18%는 시가 3%보다 크지만, 시가 5%와 비슷하고 시가 7%에는 크게 못 미칩니다. 액면 18%는 주가가 오를수록 실효 수익률이 떨어지기 때문입니다(1720년 주가 12배 → 실효 1.5%). 배당률 숫자가 크다고 수익률이 큰 것은 아니라는 뜻입니다.</p>
+</div>
+
+<div class="card" style="margin-top:18px">
+  <h2 style="font-size:clamp(19px,3vw,23px);margin:0 0 6px;letter-spacing:-.03em">1602년의 100길더는 어느 정도였나</h2>
+  <p class="sub" style="margin-bottom:6px">같은 100길더를 당시 물가로 나눠 보면 감이 잡힙니다.</p>
+  <div class="factgrid">
+    <div class="fg"><b>200일치 하루 품삯</b><span>하녀의 하루 품삯은 0.5길더 미만. 100길더는 꼬박 200일을 일한 돈입니다.</span></div>
+    <div class="fg"><b>운하변 집의 1/20</b><span>집 한 채가 2,000길더. 100길더는 집값의 5%입니다.</span></div>
+    <div class="fg"><b>숙련공 4~5개월</b><span>숙련공 연봉은 250~300길더. 100길더는 그 4~5개월치입니다.</span></div>
+    <div class="fg"><b>주주 1,143명 중 466명</b><span>암스테르담 주주 가운데 466명이 1,000길더 이하였습니다. 작은 돈도 주주가 됐습니다.</span></div>
+  </div>
+</div>
+
+<div class="card prose" style="margin-top:18px">
+  <h2>18%는 배당수익률이 아니었습니다</h2>
+  <p>동인도회사는 200년 평균 <strong>액면가 대비 약 18%</strong>를 배당했습니다. 하지만 이 숫자를 ‘연 18% 수익률’로 읽으면 완전히 틀립니다. 액면 3,000길더짜리 표준주가 1640년대 이후 12,000길더를 넘었고, 1720년 주가는 액면의 12배(1602년=100 기준 1,200)까지 올랐습니다. 같은 18%를 주가로 나누면 실제 시가 배당수익률은 <strong>3~7%</strong>로 떨어집니다.</p>
+  <p>배당의 형태도 지금과 달랐습니다. 1610년 4월 첫 배당은 현금이 아니라 <strong>육두구 껍질(메이스) 75%</strong>였고, 1612년에는 육두구 30%, 1673년에는 <strong>홀란트 주 채권 33.5%</strong>로 지급했습니다. 1618년까지 누적 162.5%를 받은 주주들은 “시장에 향신료가 쏟아져 시가로는 125%밖에 안 된다”고 항의했습니다. 그리고 <strong>1782년 이후 배당은 전면 중단</strong>됩니다.</p>
+
+  <h2>1799년, 주주에게 남은 것</h2>
+  <p>1795년 프랑스가 침공했고, 1796년 3월 1일 회사는 국유화됐습니다. 1799년 12월 31일 특허가 만료되며 회사는 사라졌습니다. 그때 남은 것은 자산이 아니라 <strong>부채 1억 2천만 길더</strong>였습니다. 초기 자본 642만 길더의 약 <strong>19배</strong>입니다. 이 페이지의 ‘1799년 재산’은 마지막 시세를 가정해 계산한 값이며, 실제 주주가 받은 것은 사실상 없었습니다.</p>
+
+  <div class="tl">
+    <div class="t"><b>1602</b><span>8월 공모, 초기 자본 642만 길더. 헌장 10조 “모든 주민이 주식을 살 수 있다”</span></div>
+    <div class="t"><b>1610</b><span>첫 배당은 육두구 껍질 75%. 같은 해 2월 27일 세계 최초 공매도 금지령</span></div>
+    <div class="t"><b>1720</b><span>주가 1,200(1602=100), 시가총액 7,700만 길더. 120년 만의 정점</span></div>
+    <div class="t"><b>1782 → 1799</b><span>배당 전면 중단 → 1796 국유화 → 1799 특허 만료 소멸</span></div>
+  </div>
+
+  <h2>계산 가정 (숨기지 않고 적습니다)</h2>
+  <ul>
+    <li><strong>주가 지수</strong>: 1602년=100. 사료로 확인된 값(1610년 126, 1633년 200, 1637년 270, 1672년 566→1673년 290, 1690년 450, 1720년 1,200) 사이는 기하 보간했습니다. 1720년 이후는 연속 시계열 사료가 없어 1780년 600, 1796년 450으로 <em>가정</em>했습니다.</li>
+    <li><strong>액면 18% 시나리오</strong>: 보유 액면 × 18%를 매년 지급. 재투자하면 그 돈으로 그해 주가에 지분을 더 삽니다.</li>
+    <li><strong>시가 3·5·7% 시나리오</strong>: 보유 지분의 시가(액면 × 주가지수) × 해당 수익률.</li>
+    <li><strong>1782년 이후 중단</strong>: 체크하면 1782~1799년 배당이 0이 됩니다(사실). 끄면 197년 내내 같은 배당률이 유지됐다고 가정합니다(가정).</li>
+    <li><strong>재투자</strong>: 배당으로 같은 회사 지분을 계속 사들인다고 봅니다. 회사 전체 액면은 6,424,588길더로 고정이므로, 계산된 지분이 100%를 넘으면 그 가정은 실제로 불가능합니다(팔 사람이 있어야 살 수 있으므로).</li>
+    <li><strong>명목 환산</strong>: 1유로 = 2.20371길더(2002년 유로 도입 고정환율)로 유로를 구한 뒤 원/유로 환율을 곱합니다. 400년 전 구매력을 담지 못하는 참고값입니다.</li>
+    <li><strong>구매력 환산</strong>: 운하변 집 1채 2,000길더를 기준으로 ‘집 몇 채’를 구하고, 여기에 입력한 오늘 집값을 곱합니다. 1602년 물가 기준을 오늘 집값에 대입한 값이므로 역시 가정입니다.</li>
+    <li><strong>초기 자본 대비</strong>: 642만 길더를 ‘지금 돈 4,000억 원 안팎’으로 보는 통용 환산(환율·금가치 방식에 따라 3,000~4,500억 편차)을 기준으로 비율만 계산합니다.</li>
+  </ul>
+
+  <div class="prose" style="margin-top:6px">
+    <p class="mini">참고 기록: 페트람(Petram)의 연구에 따르면 1602년 100길더를 배당 재투자로 굴렸을 때 1697년 약 65,000길더가 됩니다(약 650배). 이 시뮬레이터는 배당률을 일정하게 두기 때문에 그보다 크게 나올 수 있습니다. 실제 배당은 해마다 달랐고 현물·채권으로 지급되거나 끊겼기 때문입니다. <strong>차이가 나는 이유 자체가 ‘18%는 수익률이 아니었다’는 증거</strong>입니다.</p>
+  </div>
+
+  <h2>자주 묻는 질문</h2>
+  <h3>100길더를 1799년까지 들고 있었으면 부자가 됐나요?</h3>
+  <p>회사가 1796년 국유화되고 1799년 소멸하면서 주주가 받은 것은 사실상 없었습니다. 중간에 1720년 정점에서 팔았다면 이야기가 달라지지만, 그 시점을 맞히는 일은 지금 주식과 다르지 않았습니다.</p>
+  <h3>왜 18%가 3%보다 작게 나오나요?</h3>
+  <p>18%는 액면 대비, 3%는 시가 대비이기 때문입니다. 주가가 액면의 12배가 되면 액면 18%는 시가의 1.5%로 줄어듭니다. 배당률 숫자만 보면 안 되고 ‘무엇 대비’인지를 봐야 하는 이유입니다.</p>
+  <h3>배당 재투자를 끄면 어떻게 되나요?</h3>
+  <p>매년 받은 배당을 그대로 쓴 것으로 계산합니다. 원금 100길더는 그대로 있고, 1799년 평가액은 100길더 × 주가지수(450/100) = 450길더가 됩니다. 대신 197년간 받은 현금이 쌓입니다.</p>
+
+  <p class="src" style="margin-top:22px">자료: Pieter van Dam 《Beschryvinge》·VOCsite(초기 자본 6,424,588길더), 암스테르담시 기록관(주주 1,143명·466명), L. Petram 《The World's First Stock Exchange》(주가 지수·배당 연표·공매도 금지령 1610-02-27), Petram ESB 2011(액면 표준주 3,000길더), Gelderblom·de Jong·Jonker(배당 형태), G. Koot 《The VOC, 1602-1799》(1796 국유화·부채 1억 2천만 길더). 1유로=2.20371길더는 2002년 유로 도입 시 고정환율.</p>
+</div>
+
+<div class="card related">
+  <h2>같이 쓰면 좋은 도구</h2>
+  <p class="mini">배당·복리 감각을 지금 숫자로 확인해 보세요.</p>
+  <div class="calgrid">
+    <a class="calcard" href="dividend-health-insurance.html"><div class="ic">🏥</div><h3>배당소득세·건보료</h3><p>배당 실수령액과 2,000만 원 종합과세, 피부양자 위험.</p><span class="tag">배당 →</span></a>
+    <a class="calcard" href="index.html#compound"><div class="ic">📈</div><h3>복리·적립식</h3><p>같은 원금이 몇 년 뒤 얼마가 되는지 직접 계산.</p><span class="tag">복리 →</span></a>
+    <a class="calcard" href="portfolio-check.html"><div class="ic">📊</div><h3>AI 포트폴리오 진단</h3><p>분산·밸류에이션·섹터 쏠림을 0~100점으로.</p><span class="tag">진단 →</span></a>
+    <a class="calcard" href="market-replay.html"><div class="ic">🎮</div><h3>어제 장 트레이딩 게임</h3><p>직전 거래일 5분봉으로 1,000만 원 매매 연습.</p><span class="tag">게임 →</span></a>
+  </div>
+</div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div class="fnav">
+      <a href="index.html">계산기</a>
+      <a href="voc-400.html">🏛 VOC 400년 시뮬레이터</a>
+      <a href="market-replay.html">🎮 어제 장 트레이딩 게임</a>
+      <a href="portfolio-check.html">📊 AI 포트폴리오 진단</a>
+      <a href="dividend-health-insurance.html">배당·건보료</a>
+      <a href="about.html">사이트 소개</a>
+    </div>
+    <div class="fnav">
+      <a href="us-stock-tax-guide.html">미국주식 양도세</a>
+      <a href="isa-pension-tax.html">ISA·연금</a>
+      <a href="sp500-vs-nasdaq100.html">S&amp;P500 vs 나스닥100</a>
+      <a href="fx-breakeven.html">환율 손익분기</a>
+      <a href="avg-price-water.html">물타기·평단가</a>
+      <a href="etf-fee-drag.html">ETF 비용</a>
+      <a href="privacy.html">개인정보처리방침</a>
+      <a href="terms.html">이용약관·면책</a>
+    </div>
+    <p class="fine">이 시뮬레이터는 역사적 사실 기록이 아닌, 이해를 돕기 위한 가정 시뮬레이션입니다. 실제 17세기 배당은 현물·채권 지급 및 전쟁·파산으로 중단됐습니다. 계산 결과는 특정 종목·자산의 매수·매도를 권유하지 않으며, 투자 판단의 책임은 본인에게 있습니다. © 2026 주식하는 개구리 계산기.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* ---------- 테마 ---------- */
+  var root = document.documentElement, KEY = root.getAttribute('data-theme-key') || 'ae-theme-v2';
+  var btn = $('themebtn');
+  function paint(){ if(btn) btn.textContent = root.getAttribute('data-theme') === 'light' ? '☾' : '☀'; }
+  try { var saved = localStorage.getItem(KEY); if (saved === 'dark' || saved === 'light') root.setAttribute('data-theme', saved); } catch(e){}
+  paint();
+  if (btn) btn.addEventListener('click', function(){
+    var light = root.getAttribute('data-theme') === 'light';
+    root.setAttribute('data-theme', light ? 'dark' : 'light');
+    try { localStorage.setItem(KEY, light ? 'dark' : 'light'); } catch(e){}
+    paint(); drawChart();
+  });
+
+  /* ---------- 상수 (사료 값) ---------- */
+  var TOTAL_CAPITAL = 6424588;   /* 1602년 초기 자본(길더) */
+  var HOUSE_G = 2000;            /* 운하변 집 1채 */
+  var WAGE_DAY = 0.5;            /* 하루 품삯 */
+  var WAGE_YEAR = 300;           /* 숙련공 연봉(250~300) */
+  var EUR_PER_G = 1 / 2.20371;   /* 1유로 = 2.20371길더 */
+  var START = 1602, END = 1799;
+
+  /* 주가지수 (1602=100). 사료 확인값 + 1720년 이후 가정값 */
+  var ANCHORS = [[1602,100],[1610,126],[1633,200],[1637,270],[1672,566],[1673,290],[1690,450],[1720,1200],[1780,600],[1796,450]];
+  function priceIdx(y){
+    for (var i=0;i<ANCHORS.length-1;i++){
+      var a=ANCHORS[i], b=ANCHORS[i+1];
+      if (y>=a[0] && y<=b[0]){
+        var t=(y-a[0])/(b[0]-a[0]);
+        return a[1]*Math.pow(b[1]/a[1], t);
+      }
+    }
+    return y<ANCHORS[0][0] ? ANCHORS[0][1] : ANCHORS[ANCHORS.length-1][1];
+  }
+
+  /* ---------- 계산 ---------- */
+  function sim(G, mode, rate, reinvest, stop1782){
+    var face = G, cash = 0, divTotal = 0, series = [];
+    for (var y=START; y<=END; y++){
+      var p = priceIdx(y)/100;
+      var div = (stop1782 && y>=1782) ? 0 : (mode === 'face' ? 0.18*face : rate*face*p);
+      divTotal += div;
+      if (reinvest) face += div/p; else cash += div;
+      series.push({ y:y, value: face*p + cash });
+    }
+    var pEnd = priceIdx(END)/100;
+    var shareVal = face*pEnd;
+    return { face:face, cash:cash, divTotal:divTotal, shareVal:shareVal, total:cash+shareVal, series:series };
+  }
+
+  /* ---------- 숫자 포맷 ---------- */
+  function comma(n){
+    n = Math.round(n);
+    if (!isFinite(n)) n = 0;
+    return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+  function gUnit(n){
+    n = Math.max(0, n);
+    if (n >= 1e8){
+      var eok = Math.floor(n/1e8), man = Math.round((n%1e8)/1e4);
+      return comma(eok) + '억' + (man ? ' ' + comma(man) + '만' : '') + ' 길더';
+    }
+    if (n >= 1e4) return comma(Math.round(n/1e4)) + '만 길더';
+    if (n >= 1) return comma(n) + '길더';
+    return n.toFixed(2) + '길더';
+  }
+  function gExact(n){ return comma(n) + '길더'; }
+  function wonUnit(n){
+    n = Math.max(0, n);
+    if (n >= 1e12){
+      var jo = Math.floor(n/1e12), eok2 = Math.round((n%1e12)/1e8);
+      return comma(jo) + '조' + (eok2 ? ' ' + comma(eok2) + '억' : '') + ' 원';
+    }
+    if (n >= 1e8){
+      var eok = Math.floor(n/1e8), man = Math.round((n%1e8)/1e4);
+      return comma(eok) + '억' + (man ? ' ' + comma(man) + '만' : '') + ' 원';
+    }
+    if (n >= 1e4) return comma(Math.round(n/1e4)) + '만 원';
+    return comma(n) + '원';
+  }
+  function pct(n, d){ return (isFinite(n) ? n : 0).toFixed(d==null?1:d) + '%'; }
+
+  /* ---------- 상태 ---------- */
+  var state = { amount:100, mode:'mkt3', custom:4, reinv:true, stop:true, krw:1600, house:1e9 };
+
+  function readNum(el, def){
+    if (!el) return def;
+    var v = parseFloat(String(el.value||'').replace(/[^0-9.]/g,''));
+    return isFinite(v) ? v : def;
+  }
+  function modeRate(){
+    if (state.mode === 'face') return 0.18;
+    if (state.mode === 'mkt3') return 0.03;
+    if (state.mode === 'mkt5') return 0.05;
+    if (state.mode === 'mkt7') return 0.07;
+    return Math.max(0, Math.min(50, state.custom)) / 100;
+  }
+
+  /* 슬라이더: 로그 스케일 50~85,000 */
+  var MIN_G = 50, MAX_G = 85000, LMIN = Math.log(MIN_G), LMAX = Math.log(MAX_G);
+  function posToG(pos){
+    var g = Math.exp(LMIN + (LMAX-LMIN) * (pos/1000));
+    if (g < 200) return Math.max(50, Math.round(g/10)*10);
+    if (g < 2000) return Math.round(g/50)*50;
+    if (g < 20000) return Math.round(g/100)*100;
+    return Math.round(g/500)*500;
+  }
+  function gToPos(g){
+    g = Math.max(MIN_G, Math.min(MAX_G, g));
+    return Math.round(1000 * (Math.log(g)-LMIN)/(LMAX-LMIN));
+  }
+
+  /* ---------- 렌더 ---------- */
+  function render(){
+    var G = Math.max(1, Math.min(state.amount, TOTAL_CAPITAL));
+    var r = modeRate();
+    var res = sim(G, state.mode === 'face' ? 'face' : 'mkt', r, state.reinv, state.stop);
+    var years = END - START + 1;
+    var cagr = (res.total > 0 && G > 0) ? Math.pow(res.total/G, 1/years) - 1 : 0;
+    var pctOfCompany = res.face / TOTAL_CAPITAL * 100;
+
+    $('r-total').textContent = gUnit(res.total);
+    $('r-total-sub').textContent = state.reinv
+      ? '배당을 매년 다시 샀다고 가정한 값입니다. 현금 ' + gUnit(res.cash) + ' + 지분 ' + gUnit(res.shareVal) + '.'
+      : '배당은 매년 받아 썼고, 원래 지분만 남았습니다. 현금 ' + gUnit(res.cash) + ' + 지분 ' + gUnit(res.shareVal) + '.';
+    $('r-in').textContent = gExact(G);
+    $('r-div').textContent = gExact(res.divTotal);
+    if (state.reinv){
+      $('row-face').style.display = '';
+      $('r-face').textContent = gExact(res.face);
+    } else {
+      $('row-face').style.display = 'none';
+    }
+    $('r-share').textContent = gExact(res.shareVal);
+    $('r-pct').textContent = pct(pctOfCompany, 2);
+    $('r-cagr').textContent = '연 ' + pct(cagr*100, 2);
+
+    var houses = res.total / HOUSE_G;
+    var powKrw = houses * state.house;
+    var nomKrw = res.total * EUR_PER_G * state.krw;
+
+    $('r-pow').textContent = wonUnit(powKrw);
+    $('r-pow-sub').textContent = '운하변 집 ' + comma(houses) + '채 × 오늘 집값 ' + wonUnit(state.house) + ' (1602년 물가 기준을 오늘 집값에 대입)';
+    $('r-nom').textContent = wonUnit(nomKrw);
+    $('r-cap').textContent = wonUnit(res.total / TOTAL_CAPITAL * 4000e8);
+
+    var warn = [];
+    if (pctOfCompany > 100) warn.push('보유 지분이 회사 전체 액면의 ' + pct(pctOfCompany,0) + '로 100%를 넘습니다. 이 가정은 실제로 불가능합니다(팔 사람이 있어야 재투자할 수 있으므로).');
+    warn.push('실제로는 1796년 국유화와 1799년 특허 만료로 주주가 받은 것이 사실상 없었습니다. 위 값은 마지막 시세(1602년=100 기준 450)를 가정한 시뮬레이션입니다.');
+    $('r-warn').textContent = warn.join(' ');
+
+    renderCmp(G);
+    drawChart(res);
+
+    $('in-hint').innerHTML = comma(G) + '길더 ≈ 하루 품삯 0.5길더의 <b>' + comma(G/WAGE_DAY) + '일치</b>(약 ' + (G/WAGE_DAY/365).toFixed(1) + '년). 숙련공 연봉 300길더 기준 <b>' + (G/WAGE_YEAR).toFixed(2) + '년치</b>입니다.';
+  }
+
+  function renderCmp(G){
+    var rows = [
+      { key:'face', label:'액면 18% (200년 평균 배당률)', mode:'face', rate:0.18 },
+      { key:'mkt3', label:'시가 3%', mode:'mkt', rate:0.03 },
+      { key:'mkt5', label:'시가 5%', mode:'mkt', rate:0.05 },
+      { key:'mkt7', label:'시가 7%', mode:'mkt', rate:0.07 }
+    ];
+    var tb = $('cmp').querySelector('tbody');
+    var html = '';
+    rows.forEach(function(row){
+      var s = sim(G, row.mode, row.rate, state.reinv, state.stop);
+      var cagr = Math.pow(s.total/G, 1/(END-START+1)) - 1;
+      var on = (state.mode === row.key) ? ' class="on"' : '';
+      html += '<tr' + on + '><td>' + row.label + '</td><td>' + comma(s.total) + '길더</td><td>' + wonUnit(s.total/HOUSE_G*state.house) + '</td><td>' + pct(cagr*100,1) + '</td></tr>';
+    });
+    var cashCase = sim(G, state.mode === 'face' ? 'face' : 'mkt', modeRate(), false, state.stop);
+    html += '<tr><td>지금 가정으로 <b>재투자 안 함</b> (현금 소비)</td><td>' + comma(cashCase.total) + '길더</td><td>' + wonUnit(cashCase.total/HOUSE_G*state.house) + '</td><td>' + pct((Math.pow(cashCase.total/G,1/(END-START+1))-1)*100,1) + '</td></tr>';
+    tb.innerHTML = html;
+  }
+
+  /* ---------- 차트 ---------- */
+  function drawChart(res){
+    var svg = $('chart');
+    if (!svg) return;
+    var main = res || sim(state.amount, state.mode==='face'?'face':'mkt', modeRate(), state.reinv, state.stop);
+    var cashLine = sim(Math.max(1,state.amount), state.mode==='face'?'face':'mkt', modeRate(), false, state.stop);
+    var W = 720, H = 290, L = 58, R = 14, T = 16, B = 30;
+    var iw = W-L-R, ih = H-T-B;
+
+    var vals = [];
+    main.series.forEach(function(d){ vals.push(d.value); });
+    cashLine.series.forEach(function(d){ vals.push(d.value); });
+    var vmax = Math.max.apply(null, vals);
+    var vmin = Math.min.apply(null, vals.filter(function(v){ return v>0; }));
+    if (!isFinite(vmin) || vmin <= 0) vmin = 1;
+    var hi = Math.log10(Math.max(vmax, 10)) + 0.08;
+    var lo = Math.log10(Math.max(vmin, 1)) - 0.08;
+    if (hi - lo < 1) { hi = lo + 1; }
+
+    function X(y){ return L + iw * (y-START)/(END-START); }
+    function Y(v){ return T + ih * (1 - (Math.log10(Math.max(v,1))-lo)/(hi-lo)); }
+
+    var grid = '';
+    var ticks = [1,10,100,1000,10000,100000,1000000,10000000,100000000];
+    ticks.forEach(function(t){
+      var lg = Math.log10(t);
+      if (lg < lo || lg > hi) return;
+      var y = Y(t);
+      grid += '<line x1="'+L+'" y1="'+y.toFixed(1)+'" x2="'+(W-R)+'" y2="'+y.toFixed(1)+'" stroke="currentColor" stroke-opacity="0.12" stroke-width="1"/>';
+      grid += '<text x="'+(L-7)+'" y="'+(y+3.5).toFixed(1)+'" text-anchor="end" font-size="10" fill="currentColor" fill-opacity="0.55">'+(t>=10000?(t/10000)+'만':t>=1?comma(t):t)+'</text>';
+    });
+
+    function path(series){
+      return series.map(function(d,i){ return (i? 'L':'M') + X(d.y).toFixed(1) + ' ' + Y(d.value).toFixed(1); }).join(' ');
+    }
+    var lineMain = path(main.series);
+    var lineCash = path(cashLine.series);
+    var area = lineMain + ' L' + X(END).toFixed(1) + ' ' + (T+ih) + ' L' + X(START).toFixed(1) + ' ' + (T+ih) + ' Z';
+
+    var marks = [
+      { y:1610, t:'첫 배당(육두구 껍질)' },
+      { y:1720, t:'주가 정점' },
+      { y:1782, t:'배당 중단' },
+      { y:1796, t:'국유화' }
+    ];
+    var markSvg = '';
+    marks.forEach(function(m, i){
+      var x = X(m.y);
+      markSvg += '<line x1="'+x.toFixed(1)+'" y1="'+T+'" x2="'+x.toFixed(1)+'" y2="'+(T+ih)+'" stroke="#d97706" stroke-opacity="0.45" stroke-width="1" stroke-dasharray="3 4"/>';
+      var anchor = i === 0 ? 'start' : (i === marks.length-1 ? 'end' : 'middle');
+      markSvg += '<text x="'+x.toFixed(1)+'" y="'+(T+11)+'" text-anchor="'+anchor+'" font-size="9.5" fill="#b45309" fill-opacity="0.95">'+m.y+' '+m.t+'</text>';
+    });
+
+    var xl = '';
+    [1602,1650,1700,1750,1799].forEach(function(y){
+      xl += '<text x="'+X(y).toFixed(1)+'" y="'+(H-10)+'" text-anchor="middle" font-size="10.5" fill="currentColor" fill-opacity="0.55">'+y+'</text>';
+    });
+
+    var last = main.series[main.series.length-1];
+    var dot = '<circle cx="'+X(END).toFixed(1)+'" cy="'+Y(last.value).toFixed(1)+'" r="3.6" fill="#2563eb"/>';
+
+    svg.innerHTML =
+      '<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="none"/>' +
+      grid + markSvg + xl +
+      '<path d="M'+X(START).toFixed(1)+' '+(T+ih)+' '+lineMain.replace(/^M/, 'L')+' L'+X(START).toFixed(1)+' '+(T+ih)+'Z" fill="#2563eb" fill-opacity="0.07" stroke="none"/>' +
+      '<path d="'+lineCash+'" fill="none" stroke="#0ea5e9" stroke-width="1.6" stroke-opacity="0.85" stroke-dasharray="5 4"/>' +
+      '<path d="'+lineMain+'" fill="none" stroke="#2563eb" stroke-width="2.2" stroke-linejoin="round"/>' +
+      dot +
+      '<line x1="'+L+'" y1="'+(T+ih)+'" x2="'+(W-R)+'" y2="'+(T+ih)+'" stroke="currentColor" stroke-opacity="0.25"/>';
+  }
+
+  /* ---------- 이벤트 ---------- */
+  var inAmount = $('in-amount'), inRange = $('in-range');
+  function setAmount(g, fromRange){
+    g = Math.max(1, Math.min(TOTAL_CAPITAL, Math.round(g)));
+    state.amount = g;
+    inAmount.value = comma(g);
+    inRange.value = gToPos(g);
+    document.querySelectorAll('#presets .pill').forEach(function(b){
+      b.classList.toggle('on', Number(b.getAttribute('data-g')) === g);
+    });
+    render();
+  }
+  inAmount.addEventListener('input', function(){
+    var digits = (inAmount.value||'').replace(/[^0-9]/g,'').replace(/^0+(?=\d)/,'');
+    inAmount.value = digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    var v = parseFloat(digits || '0');
+    if (isFinite(v) && v > 0){ state.amount = Math.min(v, TOTAL_CAPITAL); inRange.value = gToPos(state.amount); render(); }
+  });
+  inAmount.addEventListener('blur', function(){ setAmount(readNum(inAmount, 100)); });
+  inRange.addEventListener('input', function(){ setAmount(posToG(Number(inRange.value)), true); });
+  document.querySelectorAll('#presets .pill').forEach(function(b){
+    b.addEventListener('click', function(){ setAmount(Number(b.getAttribute('data-g'))); });
+  });
+
+  var MODE_HINT = {
+    face:'액면 18% — 200년 평균을 액면가 대비로 계산한 값. 주가가 오를수록 실효 수익률은 떨어집니다.',
+    mkt3:'시가 3% — 주가가 액면의 4~12배였던 18세기 실제 수익률에 가까운 보수적 가정입니다.',
+    mkt5:'시가 5% — 3~7% 구간의 가운데 값입니다.',
+    mkt7:'시가 7% — 17세기 상승기에 가까운 낙관적 가정입니다.',
+    custom:'직접 입력 — 시가 대비 연 배당수익률을 지정합니다.'
+  };
+  document.querySelectorAll('#modes .pill').forEach(function(b){
+    b.addEventListener('click', function(){
+      state.mode = b.getAttribute('data-mode');
+      document.querySelectorAll('#modes .pill').forEach(function(x){ x.classList.toggle('on', x === b); });
+      $('customwrap').hidden = state.mode !== 'custom';
+      $('mode-hint').textContent = MODE_HINT[state.mode] || '';
+      render();
+    });
+  });
+  $('in-rate').addEventListener('input', function(){
+    state.custom = readNum($('in-rate'), 4);
+    if (state.mode === 'custom') render();
+  });
+
+  $('in-reinv').addEventListener('change', function(){ state.reinv = this.checked; render(); });
+  $('in-stop').addEventListener('change', function(){ state.stop = this.checked; render(); });
+  $('in-krw').addEventListener('input', function(){
+    var digits = (this.value||'').replace(/[^0-9]/g,'');
+    this.value = digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    state.krw = readNum(this, 1600); render();
+  });
+  $('in-house').addEventListener('input', function(){
+    var digits = (this.value||'').replace(/[^0-9]/g,'');
+    this.value = digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    state.house = Math.max(1e6, readNum(this, 1e9)); render();
+  });
+
+  /* 시작 */
+  inAmount.value = '100';
+  inRange.value = gToPos(100);
+  render();
+  window.addEventListener('resize', function(){ drawChart(); });
+})();
+</script>
+</body>
+</html>
